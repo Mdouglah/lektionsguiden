@@ -1,133 +1,234 @@
 import { useState } from "react";
 
 const DATA = {
-  1: { "Svenska": { "Bokstäver och ljud": ["Vokaler och konsonanter","Korta och långa ljud","Bokstavsformer"], "Läsning": ["Ordbilder","Enkel avläsning","Läsförståelse med bilder"], "Skrivning": ["Skriva sitt namn","Enkla meningar","Stor bokstav och punkt"] }, "Matematik": { "Tal och räkning": ["Talen 1–10","Räkna framåt och bakåt","Addition och subtraktion till 10"], "Geometri": ["Former: cirkel, kvadrat, triangel","Sortera och jämföra"] } },
-  2: { "Svenska": { "Läsning": ["Läsflyt och avkodning","Texttyper – berättande texter","Läsförståelsestrategier"], "Skrivning": ["Meningsbyggnad","Skiljetecken","Beskrivande texter"], "Grammatik": ["Substantiv och verb","Stor och liten bokstav"] }, "Matematik": { "Tal och räkning": ["Talen upp till 100","Tiokamrater","Addition och subtraktion med uppställning"], "Mätning": ["Längd och vikt","Tid – klockan"] } },
-  3: { "Svenska": { "Läsning": ["Lässtrategier – före, under, efter","Faktatexter vs skönlitteratur","Texters budskap"], "Skrivning": ["Berättande text med handling","Instruktioner","Menings- och styckebyggnad"] }, "Matematik": { "Tal och räkning": ["Tal upp till 1000","Multiplikationstabellen","Division med enkla tal"], "Geometri": ["Area och omkrets","Koordinatsystem"], "Statistik": ["Tabeller och diagram","Enkel dataanalys"] }, "Engelska": { "Kommunikation": ["Hälsningsfraser","Färger och siffror","Enkla meningar på engelska"] } },
-  4: { "Svenska": { "Läsning": ["Analysera karaktärer","Inferenser i text","Jämföra texter"], "Skrivning": ["Argumenterande text","Novellskrivning","Källkritik i enkla texter"] }, "Matematik": { "Tal och räkning": ["Decimaltal","Bråk – grundläggande","Skriftliga räknemetoder"], "Algebra": ["Enkla ekvationer","Mönster och talföljder"] }, "Engelska": { "Grammatik": ["Verb i presens och preteritum","Frågeord"], "Kommunikation": ["Beskriva vardagen","Enkla berättelser"] }, "SO": { "Historia": ["Forntiden i Sverige","Vikingatiden"], "Geografi": ["Kartan – Sverige","Väder och klimat"] } },
-  5: { "Svenska": { "Läsning": ["Källkritik","Skönlitteraturanalys","Retoriska grepp"], "Skrivning": ["Argumenterande text – för och emot","Reportage","Formell och informell stil"] }, "Matematik": { "Tal och räkning": ["Bråk, decimaltal, procent","Negativa tal","Prioriteringsregler"], "Geometri": ["Vinklar","Area av triangel och parallellogram"], "Statistik": ["Medelvärde, median, typvärde","Sannolikhet"] }, "NO": { "Biologi": ["Cellen – livets grund","Kroppens organ","Ekosystem"], "Fysik": ["Kraft och rörelse","Elektricitet – grunder"], "Kemi": ["Ämnen och material","Blandningar och lösningar"] }, "SO": { "Historia": ["Medeltiden","Kolonisationen"], "Samhällskunskap": ["Demokrati och val","Mänskliga rättigheter"] } },
-  6: { "Svenska": { "Läsning": ["Kritisk läsning av media","Litteraturhistoria – översikt","Analys av språkliga val"], "Skrivning": ["Utredande text","Debattartikel","Berättartekniker"] }, "Matematik": { "Tal och räkning": ["Procent och förändring","Rationella tal","Proportionalitet"], "Algebra": ["Ekvationer – lösning","Koordinatsystem och grafer"], "Geometri": ["Pythagoras sats – introduktion","Volymer"] }, "Engelska": { "Grammatik": ["Konditionalis","Passiv form","Modala hjälpverb"], "Kommunikation": ["Muntlig presentation","Skriva formella texter","Diskutera åsikter"] }, "Spanska": { "Kommunikation": ["Presentera sig och andra","Vardagliga fraser","Beställa och fråga om vägen"], "Grammatik": ["Substantiv och genus","Presens av vanliga verb","Adjektivkongruens"] }, "Franska": { "Kommunikation": ["Hälsningar och presentationer","Siffror, datum och tid","Beskriva familj och hem"], "Grammatik": ["Artiklar – bestämd/obestämd","Presens av être och avoir","Adjektivets placering"] }, "Tyska": { "Kommunikation": ["Hälsa och presentera sig","Beskriva platser och personer","Frågor och svar i vardagen"], "Grammatik": ["Nominativ och ackusativ","Presens av starka verb","Personliga pronomen"] }, "NO": { "Biologi": ["Genetik – arv och miljö","Evolution"], "Fysik": ["Ljud och ljus","Energi och effekt"], "Kemi": ["Periodiska systemet","Syror och baser"] }, "SO": { "Historia": ["Revolutionernas tid","Imperialismen"], "Geografi": ["Jordens resurser","Befolkning och migration"] } },
-  7: { "Svenska": { "Läsning": ["Modernistisk litteratur","Retorisk analys"], "Skrivning": ["Vetenskaplig rapport","Krönika"] }, "Matematik": { "Algebra": ["Linjära funktioner","Andragradsekvationer – intro"], "Statistik": ["Normalfördelning","Regression – intro"] }, "Engelska": { "Litteratur": ["Engelskspråkig skönlitteratur","Textanalys på engelska"], "Kommunikation": ["Debatt på engelska","Akademiskt skrivande"] }, "Spanska": { "Kommunikation": ["Beskriva rutiner och fritid","Handla och äta ute","Berätta om upplevelser"], "Grammatik": ["Preteritum – regelrätta verb","Reflexiva verb","Direkt objektspronomen"] }, "Franska": { "Kommunikation": ["Berätta om sin dag","Handla och äta ute","Beskriva platser och resor"], "Grammatik": ["Passé composé med avoir","Negation – ne...pas","Frågeord och frågeställningar"] }, "Tyska": { "Kommunikation": ["Berätta om skola och fritid","Diskutera mat och shopping","Planera och föreslå aktiviteter"], "Grammatik": ["Dativ – introduktion","Modala hjälpverb","Perfekt med haben och sein"] }, "Fysik": { "Mekanik": ["Newtons lagar","Rörelsemängd"], "Elektricitet": ["Kretsar och komponenter","Magnetism"] }, "Kemi": { "Organisk kemi": ["Kolföreningar","Reaktionstyper"], "Kvantitativ kemi": ["Molbegreppet","Reaktionslikvationer"] }, "Historia": { "Modern historia": ["Industrialismen","Första världskriget"] }, "Samhällskunskap": { "Politik": ["Sveriges statsskick","EU och internationella org."] } },
-  8: { "Svenska": { "Läsning": ["Postkolonial litteraturanalys","Diskursanalys"], "Skrivning": ["Akademisk essä","Litterär analys"] }, "Matematik": { "Algebra": ["Andragradsekvationer","Exponentialfunktioner"], "Geometri": ["Trigonometri","Vektorer – intro"] }, "Engelska": { "Grammatik": ["Tempus – fördjupning","Konjunktioner och satser"], "Kommunikation": ["Argumenterande tal","Engelska i media och kultur"] }, "Spanska": { "Kommunikation": ["Diskutera åsikter och nyheter","Beskriva känslor och relationer","Argumentera och övertala"], "Grammatik": ["Imperfecto vs preteritum","Subjunktiv – introduktion","Indirekt tal"] }, "Franska": { "Kommunikation": ["Diskutera samhällsfrågor","Beskriva dåtid och minnen","Skriva formella brev och mejl"], "Grammatik": ["Imparfait","Futur simple","Pronomen – COD och COI"] }, "Tyska": { "Kommunikation": ["Diskutera aktuella händelser","Argumentera för en ståndpunkt","Beskriva dåtida händelser"], "Grammatik": ["Genitiv","Konjunktioner och bisatser","Pluskvamperfekt"] }, "Fysik": { "Termodynamik": ["Värme och temperatur","Termodynamikens lagar"], "Modern fysik": ["Relativitetsteori – intro","Kvantmekanik – intro"] }, "Kemi": { "Elektrokemi": ["Galvaniska celler","Elektrolys"], "Biokemi": ["Proteiner och enzymer","Metabolism"] } },
-  9: { "Svenska": { "Läsning": ["Litteratur och samhälle","Argumentationsanalys"], "Skrivning": ["Nationella prov – förberedelse","Vetenskapligt skrivande"] }, "Matematik": { "Algebra": ["Komplexa tal – intro","Polynomekvationer"], "Analys": ["Derivata – intro","Integraler – intro"] }, "Engelska": { "Fördjupning": ["Litterär analys på engelska","Akademisk engelska – uppsats"], "Kommunikation": ["Förhandling och argumentation","Engelska i yrkeslivet"] }, "Spanska": { "Kommunikation": ["Debatt och retorik på spanska","Litteratur och kultur i spansktalande länder","Yrkesliv och framtidsplaner"], "Grammatik": ["Subjunktiv i bisatser","Konditionalis","Passiv konstruktion"] }, "Franska": { "Kommunikation": ["Debatt och argumentation på franska","Litteratur och frankofon kultur","Formell och informell register"], "Grammatik": ["Konditionalis och hypotetiska satser","Subjonctif présent","Avancerad meningsbyggnad"] }, "Tyska": { "Kommunikation": ["Debatt och muntlig argumentation","Tyska litteratur- och kulturhistoria","Yrkeskommunikation på tyska"], "Grammatik": ["Konjunktiv II – hypotetiska satser","Passiv i olika tempus","Avancerad satsbyggnad"] }, "Fysik": { "Kärnfysik": ["Radioaktivitet","Fission och fusion"], "Astrofysik": ["Stjärnors liv","Kosmologi"] }, "Kemi": { "Industriell kemi": ["Haber-processen","Polymerer"], "Miljökemi": ["Klimatförändring – kemi","Föroreningar"] }, "Historia": { "Samtidshistoria": ["Kalla kriget","Globaliseringen"] }, "Samhällskunskap": { "Globala frågor": ["Klimatpolitik","Migration och flykt"] } }
+  1: { "Svenska": {
+    "Bokstäver och ljud": ["Vokaler: a, e, i, o, u","Konsonanter och deras ljud","Korta vokaler – lyssna och säga","Långa vokaler – lyssna och säga","Skillnad mellan bokstavsnamn och ljud","Öva bokstavsordningen","Skriv och känna igen versaler","Skriv och känna igen gemener"],
+    "Läsning": ["Ordbilder – vanliga korta ord","Läsa enkla meningar med stöd","Läsförståelse med bilder","Rim och ramsor","Para ihop ord och bild","Läsa högt i par"],
+    "Skrivning": ["Skriva sitt förnamn","Skriva enkla ord","Skriva en enkel mening","Stor bokstav i början av mening","Punkt i slutet av mening","Skriva med mellanrum mellan ord"]
+  }, "Matematik": {
+    "Tal och räkning": ["Räkna föremål 1–5","Räkna föremål 1–10","Skriva siffror 1–10","Räkna framåt från vilket tal som helst","Räkna bakåt från 10","Addition – lägga ihop till 5","Addition – lägga ihop till 10","Subtraktion – ta bort till 5"],
+    "Geometri": ["Känna igen cirkeln","Känna igen kvadraten","Känna igen triangeln","Känna igen rektangeln","Sortera former","Jämföra storlekar: stor/liten, lång/kort"]
+  }},
+  2: { "Svenska": {
+    "Läsning": ["Läsa ord med dubbelteckning","Läsa ord med vokalkombinationer","Läsa berättande text och svara på frågor","Hitta information i en fakttext","Förstå händelseförlopp i en berättelse","Läsa högt med flyt","Texttyper – berättelse vs fakta"],
+    "Skrivning": ["Skriva en berättelse med början och slut","Skriva beskrivande text","Använda punkt och frågetecken","Skriva med sammanhängande meningar","Revisera och förbättra en text"],
+    "Grammatik": ["Substantiv – vad är ett substantiv?","Verb – vad är ett verb?","Adjektiv – beskrivande ord","Stor bokstav vid namn och meningsbörjan","Skillnad singular och plural"]
+  }, "Matematik": {
+    "Tal och räkning": ["Talen 11–20","Talen 20–100","Tiokamrater – par som ger 10","Addition utan uppställning till 20","Addition med uppställning till 100","Subtraktion utan uppställning till 20","Subtraktion med uppställning till 100","Jämföra tal: större än, mindre än, lika med"],
+    "Mätning": ["Mäta längd med linjal","Jämföra längder","Väga föremål – tyngre/lättare","Klockan – hel och halv timme","Dagar, veckor och månader"]
+  }},
+  3: { "Svenska": {
+    "Läsning": ["Lässtrategier: förutspå","Lässtrategier: ställa frågor","Lässtrategier: summera","Läsa faktatexter och hitta nyckelord","Jämföra faktatext och skönlitteratur","Förstå texters syfte och budskap","Läsförståelse – dra slutsatser"],
+    "Skrivning": ["Skriva berättelse med tydlig handling","Skriva instruktioner steg för steg","Skriva faktatexter","Styckeindelning","Använda bindeord: och, men, för, så","Revidera och ge respons på text"],
+    "Grammatik": ["Ordklasser – substantiv, verb, adjektiv","Meningsbyggnad – subjekt och predikat","Skiljetecken – komma i uppräkning","Plural – olika ändelser"]
+  }, "Matematik": {
+    "Tal och räkning": ["Tal upp till 1000","Skriva och läsa tal i tusental","Multiplikation – vad innebär det?","Multiplikationstabellen 1–5","Multiplikationstabellen 6–10","Division – lika dela","Sambandet multiplikation och division","Huvudräkning – strategier"],
+    "Geometri": ["Area – vad är det?","Räkna area i rutor","Omkrets – vad är det?","Räkna omkrets","Koordinatsystem – läsa av punkter","Rita figurer i koordinatsystem"],
+    "Statistik": ["Läsa tabeller","Läsa stapeldiagram","Skapa enkelt diagram","Tolka data och dra slutsatser"]
+  }, "Engelska": {
+    "Kommunikation": ["Hälsningsfraser – hello, goodbye, how are you","Färger på engelska","Siffror 1–20 på engelska","Veckodagar och månader","Beskriv dig själv på engelska","Enkla frågor och svar","Djur och natur på engelska"]
+  }},
+  4: { "Svenska": {
+    "Läsning": ["Analysera en karaktärs egenskaper","Förstå karaktärers motiv","Dra slutsatser om händelser","Inferenser – läsa mellan raderna","Jämföra två texter","Källkritik – vem har skrivit och varför?","Faktatexter – hitta huvudbudskap"],
+    "Skrivning": ["Argumenterande text – struktur","Skriva inledning och avslutning","Novellskrivning – spänningskurva","Beskrivande text med detaljer","Formell vs informell stil","Ge och ta emot skriftlig respons"],
+    "Grammatik": ["Ordklasser – fördjupning","Bisatser och huvudsatser","Kommatecken – bisatsinledare","Direkt och indirekt tal"]
+  }, "Matematik": {
+    "Tal och räkning": ["Decimaltal – tiondel","Decimaltal – hundradel","Bråk – täljare och nämnare","Bråk på tallinjen","Skriftlig addition med decimaltal","Skriftlig subtraktion med decimaltal","Skriftlig multiplikation","Skriftlig division med enkla tal"],
+    "Algebra": ["Vad är en ekvation?","Lösa enkla ekvationer","Mönster i talföljder","Beskriva mönster med ord och symboler"]
+  }, "Engelska": {
+    "Grammatik": ["Verb i presens – he/she/it","Verb i preteritum – regelbundna","Verb i preteritum – oregelbundna","Frågeord: who, what, where, when, why","Ordföljd i frågor","Negation med don't/doesn't"],
+    "Kommunikation": ["Berätta om sin dag","Beskriva sin familj","Prata om fritidsintressen","Skriva ett enkelt mejl","Förstå en enkel text på engelska"]
+  }, "SO": {
+    "Historia": ["Stenåldern i Sverige","Bronsåldern","Järnåldern","Vikingarnas liv och samhälle","Vikingarnas resor och handel","Nordisk mytologi"],
+    "Geografi": ["Kartan – väderstreck","Kartan – Sverige, landskap och städer","Kartan – Norden","Naturtyper i Sverige","Väder och klimat i Sverige","Hav, sjöar och vattendrag"]
+  }},
+  5: { "Svenska": {
+    "Läsning": ["Källkritik – fyra källkritiska kriterier","Analysera nyhetsartiklar","Skönlitteraturanalys – tema","Skönlitteraturanalys – miljö","Retoriska grepp – ethos, pathos, logos","Läsa och förstå poesi","Jämföra olika textperspektiv"],
+    "Skrivning": ["Argumenterande text – för och emot","Reportage – struktur och språk","Insändare","Formell text – ansökan","Informell text – blogg","Källhänvisning och citat"],
+    "Grammatik": ["Satsdelar – subjekt, predikat, objekt","Adjektivets komparation","Adverb – hur, när, var","Meningsbyggnad och variation"]
+  }, "Matematik": {
+    "Tal och räkning": ["Bråk – addition och subtraktion","Bråk – multiplikation","Decimaltal – de fyra räknesätten","Procent – vad är det?","Procent av ett värde","Negativa tal på tallinjen","Negativa tal – addition och subtraktion","Prioriteringsregler – PEMDAS"],
+    "Geometri": ["Vinklar – mäta och rita","Vinkelsumma i triangel","Area av rektangel och kvadrat","Area av triangel","Area av parallellogram","Omkrets och area – blandade uppgifter"],
+    "Statistik": ["Medelvärde","Median","Typvärde","Jämföra medelvärde, median, typvärde","Sannolikhet – grundbegrepp","Sannolikhet – enkla experiment"]
+  }, "NO": {
+    "Biologi": ["Cellen – delar och funktion","Djurcell vs växcell","Kroppens organ – hjärtat","Kroppens organ – lungorna","Kroppens organ – matsmältningen","Ekosystem – producenter och konsumenter","Näringskedjor och näringsnät","Fotosyntesen"],
+    "Fysik": ["Kraft – vad är det?","Rörelse och hastighet","Friktion","Enkla maskiner","Elektricitet – krets och komponenter","Magnetism – grundbegrepp"],
+    "Kemi": ["Ämnen och material – egenskaper","Fast, flytande och gasform","Blandningar och lösningar","Filtrering och destillation","Syror och baser i vardagen"]
+  }, "SO": {
+    "Historia": ["Medeltiden – feodalsamhället","Korsfararna","Pesten – digerdöden","Renässansen","Reformationen","Kolonisationen – orsaker och konsekvenser","Slavhandeln"],
+    "Samhällskunskap": ["Demokrati – vad är det?","Sveriges riksdag","Hur en lag stiftas","Val och valdeltagande","Mänskliga rättigheter – FN","Barnkonventionen"]
+  }},
+  6: { "Svenska": {
+    "Läsning": ["Kritisk läsning av nyhetsmedier","Analysera reklamspråk","Litteraturhistoria – antiken","Litteraturhistoria – medeltiden","Analys av berättarperspektiv","Analys av språkliga val och stil","Tema och budskap i skönlitteratur"],
+    "Skrivning": ["Utredande text – struktur","Utredande text – källhantering","Debattartikel – argument och motargument","Krönika","Berättartekniker – inre monolog","Berättartekniker – dialog","Formell skriftlig kommunikation"],
+    "Grammatik": ["Nominalfras och verbalfras","Aktiv och passiv sats","Satsadverbial","Stilistik – ordval och meningslängd"]
+  }, "Matematik": {
+    "Tal och räkning": ["Procent och förändringsfaktor","Procentuell förändring","Rationella tal – addition och subtraktion","Rationella tal – multiplikation och division","Proportionalitet – direkt","Proportionalitet – invers","Skala och kartor"],
+    "Algebra": ["Förenkla algebraiska uttryck","Lösa ekvationer med en obekant","Ekvationer med parenteser","Koordinatsystem – plotta punkter","Rita linjära funktioner","Tolka grafer"],
+    "Geometri": ["Pythagoras sats – introduktion","Beräkna hypotenusa","Volymer – rätblock","Volymer – cylinder","Enhetsomvandlingar"]
+  }, "Engelska": {
+    "Grammatik": ["Konditionalis – typ 1","Konditionalis – typ 2","Passiv form i presens","Passiv form i preteritum","Modala hjälpverb – can, could, may","Modala hjälpverb – must, should, might","Relativa bisatser – who, which, that"],
+    "Kommunikation": ["Muntlig presentation – struktur","Skriva formella texter","Diskutera åsikter på engelska","Engelska i media – analysera en artikel","Engelska idiom och fraser"]
+  }, "Spanska": {
+    "Kommunikation": ["Presentera sig – namn, ålder, ursprung","Hälsningsfraser och artighetsfraser","Beskriva familjemedlemmar","Berätta om sin dag","Beställa mat och dryck","Fråga om vägen","Handla – priser och antal"],
+    "Grammatik": ["Substantiv – genus (masculino/femenino)","Artiklar – el, la, los, las","Presens av ser och estar","Presens av tener och hacer","Presens av regelbundna -ar verb","Presens av regelbundna -er och -ir verb","Adjektiv – kongruens och placering","Frågeord – qué, cómo, cuándo, dónde"]
+  }, "Franska": {
+    "Kommunikation": ["Hälsningar och presentationer","Berätta om sig själv","Siffror, datum och tid","Beskriva familj och hem","Fråga om och beskriva vägen","Beställa på café eller restaurang","Handla – kläder och mat"],
+    "Grammatik": ["Artiklar – un/une, le/la/les","Presens av être","Presens av avoir","Presens av -er verb","Adjektivets böjning och placering","Negation – ne…pas","Frågebildning – est-ce que och inversion"]
+  }, "Tyska": {
+    "Kommunikation": ["Hälsa och presentera sig","Berätta om familjen","Beskriva sitt hem och sin skola","Frågor och svar i vardagen","Tala om mat och måltider","Ge och förstå enkla instruktioner","Berätta om fritidsintressen"],
+    "Grammatik": ["Substantiv och genus (der/die/das)","Personliga pronomen","Presens av sein och haben","Presens av regelbundna verb","Presens av starka verb","Nominativ och ackusativ","Negation – nicht och kein"]
+  }, "NO": {
+    "Biologi": ["Genetik – DNA och arv","Dominant och recessiv egenskap","Ärftlighet och miljö","Evolution – naturligt urval","Artbegreppet"],
+    "Fysik": ["Ljud – vågor och frekvens","Ljus – reflektion och refraktion","Energiformer","Energiomvandlingar","Effekt och energi – beräkningar"],
+    "Kemi": ["Periodiska systemet – uppbyggnad","Metaller och ickemetaller","Syror – pH och egenskaper","Baser – pH och egenskaper","Neutralisation"]
+  }, "SO": {
+    "Historia": ["Franska revolutionen – orsaker","Franska revolutionen – förlopp","Napoleontiden","Industrialiseringens framväxt","Imperialismen – motiv och konsekvenser"],
+    "Geografi": ["Jordens resurser – vatten","Jordens resurser – energi","Jordens resurser – mineraler","Befolkningstillväxt och befolkningsfördelning","Migration – orsaker och mönster","Urbanisering"]
+  }},
+  7: { "Svenska": {
+    "Läsning": ["Modernistisk lyrik – analys","Epik – romanen som genre","Dramatik – pjäsens uppbyggnad","Retorisk analys – appelformer","Analysera språk och makt","Postkolonial läsning av text"],
+    "Skrivning": ["Vetenskaplig rapport – IMRaD","Krönika – personlig röst","Litterär essä","Argumenterande tal","Källkritik och källhänvisning – fördjupning"]
+  }, "Matematik": {
+    "Algebra": ["Linjära funktioner – k och m","Rita och tolka linjära funktioner","Bestämma ekvation för en linje","Linjära ekvationssystem – grafisk lösning","Linjära ekvationssystem – algebraisk lösning","Andragradsekvationer – introduktion"],
+    "Statistik": ["Frekvenstabeller och histogram","Lådagram","Spridningsmått – variationsbredd","Normalfördelning – introduktion","Korrelation och regression – introduktion","Kritisk granskning av statistik"]
+  }, "Engelska": {
+    "Litteratur": ["Läsa engelskspråkig skönlitteratur","Analysera karaktärer och tema","Analysera språk och stil","Jämföra två texter","Engelskspråkig poesi – analys"],
+    "Kommunikation": ["Debatt på engelska – struktur","Akademiskt skrivande – introduktion","Källhantering på engelska","Engelska i yrkeslivet","Presentationsteknik på engelska"]
+  }, "Spanska": {
+    "Kommunikation": ["Beskriva rutiner och vanor","Berätta om fritidsintressen","Handla och pruta","Berätta om en upplevelse","Diskutera kultur och traditioner","Skriva ett personligt brev","Förstå och sammanfatta en enkel spansk text"],
+    "Grammatik": ["Preteritum – regelrätta -ar verb","Preteritum – regelrätta -er/-ir verb","Preteritum – oregelbundna verb (ser, ir, hacer)","Reflexiva verb – presentera sig och rutiner","Direkt objektspronomen","Jämförelse med más/menos que","Prepositioner – en, de, con, por, para"]
+  }, "Franska": {
+    "Kommunikation": ["Berätta om sin dag och sina rutiner","Handla och äta ute","Beskriva en resa","Skriva ett vykort eller ett mejl","Förstå och sammanfatta en enkel fransk text","Diskutera film och musik"],
+    "Grammatik": ["Passé composé med avoir","Passé composé med être","Oregelbundna particip","Negation – ne…jamais, ne…rien","Frågeord och frågebildning – fördjupning","Possessiva pronomen","Jämförelse – plus, moins, aussi"]
+  }, "Tyska": {
+    "Kommunikation": ["Berätta om skola och schema","Diskutera mat och favoriträtter","Planera och föreslå aktiviteter","Beskriva en resa eller utflykt","Skriva ett mejl eller brev","Förstå enkel tysk text och sammanfatta"],
+    "Grammatik": ["Dativ – introduktion","Dativ med prepositioner","Modala hjälpverb – können, müssen, wollen","Perfekt med haben","Perfekt med sein","Ordföljd i bisatser","Imperativ"]
+  }, "Fysik": {
+    "Mekanik": ["Newtons första lag","Newtons andra lag – F=ma","Newtons tredje lag","Rörelsemängd och impuls","Arbete och energi","Effekt"],
+    "Elektricitet": ["Seriekoppling","Parallellkoppling","Ohms lag","Effekt i elektriska kretsar","Magnetfält kring ledare","Elektromagnetisk induktion – introduktion"]
+  }, "Kemi": {
+    "Organisk kemi": ["Kolkedjor – alkaner","Alkener och alkyner","Funktionella grupper","Förbränningsreaktioner","Polymerer – introduktion"],
+    "Kvantitativ kemi": ["Molbegreppet","Molmassa","Reaktionslikvationer – balansering","Beräkningar med mol","Koncentration och lösningar"]
+  }, "Historia": {
+    "Modern historia": ["Industrialismens framväxt i England","Industrialismens spridning till Sverige","Arbetarrörelsen","Första världskriget – orsaker","Första världskriget – förlopp och konsekvenser","Mellankrigstiden och demokratins kris"]
+  }, "Samhällskunskap": {
+    "Politik": ["Sveriges statsskick – maktdelning","Riksdag, regering och statschef","Kommuner och regioner","EU – uppbyggnad och beslutsprocess","FN och internationella organisationer","Demokrati vs auktoritära system"]
+  }},
+  8: { "Svenska": {
+    "Läsning": ["Postkolonial litteraturanalys","Feministisk litteraturanalys","Diskursanalys – vad är diskurs?","Analysera ideologi i text","Mediekritik – ägarskap och påverkan"],
+    "Skrivning": ["Akademisk essä – argumentation","Litterär analys – fördjupning","Vetenskaplig rapport – fördjupning","Akademiskt språk och stil","Referera och citera korrekt"]
+  }, "Matematik": {
+    "Algebra": ["Andragradsekvationer – lösningsformel","Andragradsekvationer – faktorisering","Andragradsfunktioner – parabeln","Exponentialfunktioner – tillväxt","Exponentialfunktioner – avklingning","Logaritmer – introduktion"],
+    "Geometri": ["Trigonometri – sinus, cosinus, tangens","Beräkna sidor och vinklar","Vektorer – addition och subtraktion","Vektorer – skalärprodukt","Bevisföring i geometri"]
+  }, "Engelska": {
+    "Grammatik": ["Tempus – alla former i översikt","Perfekt och pluperfekt","Konditionalis – typ 3","Konjunktioner och bisatser – fördjupning","Nominalfraser och inskjutna satser"],
+    "Kommunikation": ["Argumenterande tal – fördjupning","Engelska i media – kritisk analys","Engelska i vetenskapliga texter","Interkulturell kommunikation"]
+  }, "Spanska": {
+    "Kommunikation": ["Diskutera åsikter om samhällsfrågor","Argumentera och övertala","Beskriva känslor och relationer","Förstå och analysera spansk tidningsartikel","Skriva en argumenterande text","Presentera ett ämne muntligt på spanska"],
+    "Grammatik": ["Imperfecto – regelbundna verb","Imperfecto – oregelbundna verb","Preteritum vs imperfecto","Subjunktiv presens – introduktion","Subjunktiv efter önskeverb","Indirekt tal","Passiv konstruktion – ser + participio"]
+  }, "Franska": {
+    "Kommunikation": ["Diskutera samhällsfrågor på franska","Argumentera för en ståndpunkt","Beskriva dåtid och minnen","Skriva ett formellt brev","Förstå och analysera fransk tidningstext","Presentera ett ämne muntligt"],
+    "Grammatik": ["Imparfait – bildning och användning","Imparfait vs passé composé","Futur simple","Konditionalis – konditionnel présent","Pronomen – COD och COI","Subjonctif – introduktion","Passiv konstruktion"]
+  }, "Tyska": {
+    "Kommunikation": ["Diskutera aktuella händelser","Argumentera för en ståndpunkt","Beskriva och jämföra dåtida händelser","Förstå och sammanfatta tysk tidningstext","Skriva ett formellt brev eller mejl","Presentera ett ämne på tyska"],
+    "Grammatik": ["Genitiv – form och användning","Genitiv med prepositioner","Temporala konjunktioner – als, wenn, während","Kausala och koncessiva konjunktioner","Pluskvamperfekt","Konjunktiv II – introduktion","Passiv i presens och preteritum"]
+  }, "Fysik": {
+    "Termodynamik": ["Temperatur och värme – skillnad","Specifik värmekapacitet","Termodynamikens första lag","Termodynamikens andra lag – entropi","Värmeöverföring – ledning, konvektion, strålning"],
+    "Modern fysik": ["Relativitetsteorin – tid och rum","E=mc²","Fotoelektriska effekten","Kvantmekanik – vågpartikeldualitet","Atommodeller – historik"]
+  }, "Kemi": {
+    "Elektrokemi": ["Galvaniska celler – uppbyggnad","Elektrodpotential","Elektrolys – princip","Elektrolys – beräkningar","Korrosion och korrosionsskydd"],
+    "Biokemi": ["Aminosyror och proteiner","Enzymers funktion","Kolhydrater – struktur och funktion","Lipider","Metabolism – katabolism och anabolism"]
+  }},
+  9: { "Svenska": {
+    "Läsning": ["Litteratur och samhällskritik","Argumentationsanalys – fördjupning","Analysera retoriska strategier","Jämförande litteraturanalys","Textanalys inför nationellt prov"],
+    "Skrivning": ["Nationella provets skrivuppgifter","Argumenterande text – avancerad","Utredande text – avancerad","Vetenskaplig rapport – självständig","Revisions- och responsteknik"]
+  }, "Matematik": {
+    "Algebra": ["Polynomekvationer – faktorisering","Rationella uttryck – förenkling","Rationella ekvationer","Komplexa tal – introduktion","Komplexa tal – räkning"],
+    "Analys": ["Gränsvärden – introduktion","Derivata – definition","Derivata – räkningsregler","Derivata – tillämpningar","Integraler – introduktion","Integraler – beräkning av area"]
+  }, "Engelska": {
+    "Fördjupning": ["Litterär analys på engelska – avancerad","Akademisk engelska – uppsatsstruktur","Kritisk analys av engelska medier","Engelska i vetenskapliga sammanhang","Jämföra engelskspråkiga kulturer"],
+    "Kommunikation": ["Förhandling och argumentation på engelska","Engelska i yrkeslivet","Presentationsteknik – avancerad","Engelska i internationella sammanhang"]
+  }, "Spanska": {
+    "Kommunikation": ["Debatt och retorik på spanska","Analysera spanskspråkig litteratur","Förstå och diskutera spanska filmer","Yrkesliv och framtidsplaner på spanska","Presentera och försvara en ståndpunkt","Skriva en analytisk text på spanska"],
+    "Grammatik": ["Subjunktiv i temporal bisats","Subjunktiv i relativ bisats","Konditionalis – si-satser","Passiv med se","Avancerade prepositionskonstruktioner","Stilistik och register på spanska"]
+  }, "Franska": {
+    "Kommunikation": ["Debatt och argumentation på franska","Analysera franskspråkig litteratur","Diskutera samhälls- och kulturfrågor","Formellt och informellt register","Skriva analytisk text på franska","Presentera och försvara ett ämne"],
+    "Grammatik": ["Subjonctif présent – fördjupning","Subjonctif passé","Konditionalis – hypotetiska satser","Passiv – alla tempus","Particip – présent och passé","Avancerad meningsbyggnad och stilistik"]
+  }, "Tyska": {
+    "Kommunikation": ["Debatt och muntlig argumentation på tyska","Analysera tyskt litterärt verk","Diskutera samhällsfrågor på tyska","Yrkeskommunikation och formellt språk","Presentera och försvara ett ämne","Skriva analytisk text på tyska"],
+    "Grammatik": ["Konjunktiv II – hypotetiska satser","Konjunktiv II i konditionala satser","Passiv i alla tempus","Infinitivkonstruktioner – zu + infinitiv","Avancerad satsbyggnad","Stilistik och register på tyska"]
+  }, "Fysik": {
+    "Kärnfysik": ["Atomkärnan – protoner och neutroner","Radioaktivitet – alfa, beta, gamma","Halveringstid","Fission – principen","Fusion – principen","Kärnkraft – för och emot"],
+    "Astrofysik": ["Stjärnors uppkomst","Stjärnors liv – HR-diagrammet","Supernovor och svarta hål","Solsystemets uppbyggnad","Kosmologi – Big Bang","Mörk materia och mörk energi"]
+  }, "Kemi": {
+    "Industriell kemi": ["Haber-processen – ammoniak","Kontaktprocessen – svavelsyra","Polymerer – addition och kondensation","Plast och miljöpåverkan","Industriell katalys"],
+    "Miljökemi": ["Växthuseffekten – kemi bakom","Koldioxid och kolcykeln","Försurning av hav och mark","Ozon och ozonnedbrytning","Miljögifter och bioackumulering"]
+  }, "Historia": {
+    "Samtidshistoria": ["Andra världskriget – orsaker","Förintelsen","Kalla kriget – blocken och kapplöpningen","Avkolonisering","Globaliseringen – ekonomi och kultur","Nutida konflikter och geopolitik"]
+  }, "Samhällskunskap": {
+    "Globala frågor": ["Klimatpolitik – Paris-avtalet","Hållbar utveckling – Agenda 2030","Migration och flyktingpolitik","Global fattigdom och ojämlikhet","Demokratins utmaningar idag","Digitalisering och samhälle"]
+  }}
 };
 
-const LEVEL_LABELS = { 2: ["Grundläggande","Avancerad"], 3: ["Grundläggande","Medel","Avancerad"], 4: ["Grundläggande","Medel","Avancerad","Högnivå"] };
-const LEVEL_COLORS = ["#1b5e20","#2e7d32","#388e3c","#43a047"];
-const LEVEL_ICONS = ["🌱","🌿","🌳","🏆"];
+const STEG_IKONER = ["🌱","🌿","🌳","🏆"];
+const STEG_FARG = ["#1b5e20","#2e7d32","#388e3c","#43a047"];
 
-// Pre-built lesson templates
 function buildLesson(grade, subject, area, chapter, numLevels, variant = 0) {
-  const levels = LEVEL_LABELS[numLevels] || LEVEL_LABELS[3];
-  return {
-    meta: { grade, subject, area, chapter, numLevels },
-    mal: `Alla elever ska förstå grunderna i "${chapter}" och kunna tillämpa kunskapen på sin nivå.`,
-    forberedelse: [
-      [
-        `Skriv "${chapter}" på tavlan och fråga: "Vad tror ni detta handlar om?"`,
-        `Aktivera förkunskaper – låt elever diskutera i par i 1 minut`,
-        `Presentera lektionens mål tydligt för klassen`
-      ],
-      [
-        `Starta med en kort film eller bild kopplad till "${chapter}"`,
-        `Låt elever skriva ner vad de redan vet – dela i grupp`,
-        `Formulera gemensamt en fråga ni ska besvara under lektionen`
-      ],
-      [
-        `Börja med ett problemscenario: "Tänk er att..." kopplat till ${chapter}`,
-        `Pararbete: diskutera vad ni tror svaret är innan genomgången`,
-        `Samla hypoteser på tavlan – återkom till dem i slutet`
-      ]
-    ][variant % 3],
-    niva: levels.map((namn, i) => ({
-      namn,
-      fokus: getFokus(grade, subject, chapter, i, numLevels, variant),
-      moment: getMoment(grade, subject, chapter, i, numLevels, variant),
-      fragor: getFragor(grade, subject, chapter, i, numLevels, variant)
-    })),
-    avslutning: [
-      `Summera de viktigaste punkterna gemensamt`,
-      `"Exit ticket": varje elev skriver en sak de lärt sig`,
-      `Förhandsgranska nästa lektion kort`
+  const v = variant % 3;
+  const forberedelse = [
+    [`Skriv "${chapter}" på tavlan – fråga: "Vad tror ni detta handlar om?"`, `Aktivera förkunskaper – låt elever diskutera i par i 1 minut`, `Presentera lektionsmålet tydligt för hela klassen`],
+    [`Starta med en kort film eller bild kopplad till "${chapter}"`, `Låt elever skriva ner vad de redan vet – dela sedan i grupp`, `Formulera gemensamt en fråga ni ska besvara under lektionen`],
+    [`Börja med ett problemscenario kopplat till ${chapter}`, `Pararbete: diskutera vad ni tror svaret är innan genomgången`, `Samla hypoteser på tavlan – återkom till dem i slutet`]
+  ][v];
+
+  const grundMoment = [
+    [`Förklara begreppet med enkla ord och ett tydligt vardagsexempel`, `Visa steg-för-steg med visuellt stöd – tavla, bild eller konkret material`, `Kontrollera att alla hänger med: "Räck upp handen om du förstår så här långt"`],
+    [`Använd ett konkret föremål eller demonstration för att introducera begreppet`, `Rita eller skriv upp begreppet tillsammans med klassen`, `Ställ enkla kontrollfrågor: "Vad betyder det här? Vad ser ni?"`],
+    [`Starta med ett problem eleverna känner igen från vardagen`, `Guided practice: lös ett enkelt exempel tillsammans steg för steg`, `Låt elever upprepa förklaringen med egna ord till en kompis`]
+  ][v];
+  const mellanMoment = [
+    [`Koppla begreppet till vad eleverna redan kan från tidigare lektioner`, `Presentera 2–3 varierade exempel med stigande svårighetsgrad`, `Låt elever lösa ett exempel självständigt – jämför sedan med en partner`],
+    [`Visa samma begrepp på två sätt – låt klassen jämföra och diskutera`, `Grupparbete: lös ett problem och presentera lösningen`, `Gemensam rättning och diskussion av vanliga misstag`],
+    [`Starta med enklare variant, bygg gradvis till svårare`, `Pararbete: en förklarar, en lyssnar – byt roller`, `Koppla till ett aktuellt ämne eller nyhet klassen känner till`]
+  ][v];
+  const avanceratMoment = [
+    [`Presentera ett utmanande exempel – "Vad händer om vi ändrar förutsättningarna?"`, `Koppla till andra ämnen eller verkliga tillämpningar`, `Uppmuntra elever att formulera egna frågor kring ämnet`],
+    [`Ge ett öppet problem med flera möjliga lösningar`, `Diskutera gränsfall och undantag: "När fungerar detta inte?"`, `Låt elever designa en egen uppgift baserad på det de lärt sig`],
+    [`Utmana med ett dilemma eller paradox kopplad till ämnet`, `Debatt: två motstridiga ståndpunkter – vem har rätt och varför?`, `Reflektera: "Vad visste du inte förut? Vad vill du lära dig mer om?"`]
+  ][v];
+
+  const stegKonfig = {
+    2: [
+      { rubrik:"Del 1 – Gemensam grund", ikon:STEG_IKONER[0], farg:STEG_FARG[0], beskrivning:"Hela klassen börjar tillsammans. Bygg en trygg och tydlig grund som alla kan följa.", moment:grundMoment, fraga:`"Kan du förklara vad ${chapter.split(" ")[0]} betyder med egna ord?"`, signal:"När de flesta kan ge ett eget exempel – gå vidare." },
+      { rubrik:"Del 2 – Fördjupning och tillämpning", ikon:STEG_IKONER[2], farg:STEG_FARG[2], beskrivning:"Komplexiteten ökar. Elever som behöver mer tid stannar kvar vid grunduppgifterna, övriga utmanas vidare.", moment:[...mellanMoment.slice(0,2), avanceratMoment[0]], fraga:`"Vad händer om vi ändrar en förutsättning? Kan du hitta ett eget exempel?"`, signal:"Cirkulera och ge individuell återkoppling." }
     ],
-    tips: [
-      [
-        `Börja alltid med konkreta exempel som hela klassen förstår`,
-        `Använd pararbete – blanda gärna nivåer så elever lär av varandra`,
-        `Ge fördjupningsfrågor muntligt till avancerade elever under genomgången`
-      ],
-      [
-        `Använd "tänka högt"-tekniken – visa ditt eget resonemang steg för steg`,
-        `Låt elever förklara för varandra (peer teaching) – det befäster kunskapen`,
-        `Cirkulera i klassrummet och ge individuell återkoppling under övningstid`
-      ],
-      [
-        `Använd miniseminarier: ge olika grupper olika delar att presentera`,
-        `Bygg in reflektionsstopp var 10:e minut – "Vad förstår ni? Vad är oklart?"`,
-        `Låt elever skapa egna exempel – det visar verklig förståelse`
-      ]
-    ][variant % 3]
+    3: [
+      { rubrik:"Del 1 – Gemensam introduktion", ikon:STEG_IKONER[0], farg:STEG_FARG[0], beskrivning:"Hela klassen samlas. Konkret och tydlig start.", moment:grundMoment, fraga:`"Vad är det viktigaste du förstår nu?"`, signal:"Gå vidare när majoriteten visar grundförståelse." },
+      { rubrik:"Del 2 – Gemensam fördjupning", ikon:STEG_IKONER[1], farg:STEG_FARG[1], beskrivning:"Variera exempel och låt elever tillämpa kunskapen.", moment:mellanMoment, fraga:`"Hur skulle du förklara detta för någon som aldrig hört om det?"`, signal:"Elever som behöver stanna övar på grunduppgifter. Resten fortsätter." },
+      { rubrik:"Del 3 – Utmaning och analys", ikon:STEG_IKONER[2], farg:STEG_FARG[2], beskrivning:"De som är redo utmanas med öppna frågor och analys.", moment:avanceratMoment, fraga:`"Var finns gränserna – när fungerar detta inte?"`, signal:"Alla elever välkomnas att lyssna och bidra på sin nivå." }
+    ],
+    4: [
+      { rubrik:"Del 1 – Gemensam introduktion", ikon:STEG_IKONER[0], farg:STEG_FARG[0], beskrivning:"Konkret och tydlig start för hela klassen.", moment:grundMoment, fraga:`"Kan du förklara begreppet med egna ord?"`, signal:"Gå vidare när alla har en grundläggande förståelse." },
+      { rubrik:"Del 2 – Koppling och variation", ikon:STEG_IKONER[1], farg:STEG_FARG[1], beskrivning:"Koppla till tidigare kunskaper, variera exemplen.", moment:mellanMoment.slice(0,2), fraga:`"Vilket exempel tycker du är tydligast och varför?"`, signal:"Elever på grundnivå fortsätter öva här." },
+      { rubrik:"Del 3 – Tillämpning", ikon:STEG_IKONER[2], farg:STEG_FARG[2], beskrivning:"Tillämpa i mer komplexa sammanhang.", moment:[mellanMoment[2], avanceratMoment[0]], fraga:`"Hur kan du använda detta utanför skolan?"`, signal:"Låt elever som är klara börja formulera egna frågor." },
+      { rubrik:"Del 4 – Fördjupning och analys", ikon:STEG_IKONER[3], farg:STEG_FARG[3], beskrivning:"Öppna problem och analytiska frågor för de som är redo.", moment:avanceratMoment.slice(1), fraga:`"Om du skulle forska vidare – vad hade din fråga varit?"`, signal:"Skapa utrymme för självständigt arbete och egna slutsatser." }
+    ]
   };
-}
 
-function getFokus(grade, subject, chapter, levelIdx, total, variant = 0) {
-  const ratio = levelIdx / (total - 1);
-  const v = variant % 3;
-  if (ratio < 0.34) return [
-    `Förstå grundbegreppet i "${chapter}" med stöd av konkreta exempel och bilder`,
-    `Bygga en grundläggande förståelse för "${chapter}" genom praktiska övningar`,
-    `Känna igen och benämna nyckelbegrepp i "${chapter}" med stöd av läraren`
+  const avslutning = [
+    [`Samla klassen – summera de viktigaste punkterna tillsammans`, `"Exit ticket": varje elev skriver en sak de lärt sig och en fråga de har`, `Förhandsgranska nästa lektion kort`],
+    [`Gemensam reflektion: "Vad var svårast? Vad var mest intressant?"`, `Låt 2–3 elever dela sin exit ticket högt`, `Koppla tillbaka till hypoteserna från lektionens start`],
+    [`Pararbete: berätta för varandra vad ni tar med er`, `Läraren sammanfattar och lyfter det viktigaste`, `Kort förblick: "Nästa lektion bygger vi vidare på detta…"`]
   ][v];
-  if (ratio < 0.67) return [
-    `Tillämpa kunskaper om "${chapter}" i bekanta sammanhang`,
-    `Förklara och använda "${chapter}" i olika typer av uppgifter`,
-    `Koppla "${chapter}" till tidigare kunskaper och lösa varierade problem`
-  ][v];
-  return [
-    `Analysera och generalisera "${chapter}" – koppla till andra ämnen och verkliga problem`,
-    `Värdera och kritiskt granska "${chapter}" ur flera perspektiv`,
-    `Skapa egna exempel och fördjupa förståelsen av "${chapter}" bortom kursboken`
-  ][v];
-}
 
-function getMoment(grade, subject, chapter, levelIdx, total, variant = 0) {
-  const ratio = levelIdx / (total - 1);
-  const v = variant % 3;
-  if (ratio < 0.34) return [
-    [`Förklara begreppet med enkla ord och ett tydligt vardagsexempel`,`Visa steg-för-steg med visuellt stöd (tavla, bild eller konkret material)`,`Låt elever upprepa förklaringen med egna ord till en kompis`,`Kontrollera förståelse med en enkel tumme upp/ner-fråga`],
-    [`Använd ett konkret föremål eller demonstration för att introducera begreppet`,`Rita eller rita upp begreppet tillsammans med klassen`,`Öva med enkla repetitionsuppgifter som alla kan lyckas med`,`Ge positiv bekräftelse och bygg självförtroende steg för steg`],
-    [`Starta med ett problem eleverna känner igen från vardagen`,`Guided practice: lös uppgifter tillsammans, ett steg i taget`,`Använd färdiga mallar eller stödstrukturer för att minska kognitiv belastning`,`Avsluta med "visa mig att du förstår" – enkel mini-uppgift`]
+  const tips = [
+    [`Börja alltid med konkreta exempel – abstraktionen kommer senare`, `Använd pararbete under genomgången för att hålla alla aktiva`, `Cirkulera och ge individuell återkoppling under övningstiden`],
+    [`Visa ditt eget resonemang högt – sänker tröskeln för alla`, `Låt elever förklara för varandra – peer teaching befäster kunskapen`, `Bygg in reflektionsstopp var 10:e minut: "Vad förstår ni? Vad är oklart?"`],
+    [`Planera naturliga pauspunkter där elever kan stanna kvar eller gå vidare`, `Avancerade elever kan fungera som resurspersoner diskret`, `Samla upp frågor löpande – de ger värdefull formativ information`]
   ][v];
-  if (ratio < 0.67) return [
-    [`Koppla begreppet till vad eleverna redan kan`,`Presentera 2–3 varierade exempel med stigande svårighetsgrad`,`Diskutera: "Varför fungerar det så här?" i helklass`,`Låt elever lösa ett exempel självständigt, sedan jämföra med en partner`],
-    [`Visa samma begrepp på två olika sätt – låt klassen jämföra`,`Grupparbete: lösa ett problem och presentera lösningen`,`Låt elever hitta egna exempel från sin vardag`,`Gemensam rättning och diskussion av vanliga misstag`],
-    [`Starta med en lättare variant, bygg gradvis till svårare`,`Pararbete med rollerna "expert" och "nybörjare" – byt efter halva tiden`,`Koppla till ett aktuellt ämne eller nyhet som klassen känner till`,`Låt elever göra en snabb presentation av sin lösning för klassen`]
-  ][v];
-  return [
-    [`Presentera ett utmanande eller oväntat exempel – "Vad händer om...?"`,`Koppla till andra ämnen eller verkliga tillämpningar`,`Uppmuntra elever att formulera egna frågor kring ämnet`,`Diskutera möjliga felkällor, undantag eller gränsfall`],
-    [`Ge ett öppet problem med flera möjliga lösningar`,`Låt elever designa sin egen uppgift baserad på kapitlets innehåll`,`Diskutera: "Hur hade en expert löst detta?" – tänk som en forskare`,`Koppla till ett globalt eller samhälleligt problem`],
-    [`Utmana med ett dilemma eller paradox kopplad till ämnet`,`Debatt: presentera två motstridiga ståndpunkter – vem har rätt?`,`Skapa en mini-undervisning: eleven lär läraren`,`Reflektera: "Vad visste du inte förut? Vad vill du lära dig mer om?"`]
-  ][v];
-}
 
-function getFragor(grade, subject, chapter, levelIdx, total, variant = 0) {
-  const ratio = levelIdx / (total - 1);
-  const v = variant % 3;
-  if (ratio < 0.34) return [
-    [`Kan du förklara vad ${chapter.split(" ")[0]} betyder med egna ord?`,`Var ser du detta i vardagen?`,`Vad är det viktigaste du förstår nu?`],
-    [`Kan du peka på ett exempel på det vi pratar om?`,`Vad är det svåraste med ${chapter.split(" ")[0]}?`,`Vad skulle du vilja veta mer om?`],
-    [`Hur skulle du förklara detta för en yngre elev?`,`Vad påminner detta om som ni gjort tidigare?`,`Finns det något som känns oklart?`]
-  ][v];
-  if (ratio < 0.67) return [
-    [`Hur skulle du förklara detta för någon som aldrig hört om det?`,`Vilket exempel tycker du är tydligast och varför?`,`Vad är skillnaden mellan de olika fallen vi sett?`],
-    [`Om du fick välja ett eget exempel, vilket hade det varit?`,`Vad tror du är den vanligaste missuppfattningen om detta?`,`Hur vet du att ditt svar är rätt?`],
-    [`Kan du hitta ett mönster i de exempel vi gått igenom?`,`Vad hade hänt om du gjort tvärtom?`,`Hur kan du använda detta utanför skolan?`]
-  ][v];
-  return [
-    [`Kan du hitta ett eget exempel som är ännu svårare?`,`Vad tror du händer om vi ändrar på en av förutsättningarna?`,`Hur hänger detta ihop med det vi lärde oss förra veckan?`],
-    [`Var finns gränserna för det vi lärt oss – när fungerar det inte?`,`Kan du koppla detta till ett samhällsproblem eller en verklig utmaning?`,`Om du skulle forska vidare – vad hade din fråga varit?`],
-    [`Vad är det mest förvånande du lärt dig idag?`,`Hur skulle du designa en uppgift som testar detta?`,`Vad skulle en expert säga om din förklaring?`]
-  ][v];
+  return { meta: { grade, subject, area, chapter, numLevels }, forberedelse, steg: stegKonfig[numLevels], avslutning, tips };
 }
 
 export default function LektionsGuiden() {
@@ -136,6 +237,7 @@ export default function LektionsGuiden() {
   const [subject, setSubject] = useState(null);
   const [area, setArea] = useState(null);
   const [chapter, setChapter] = useState(null);
+  const [customChapter, setCustomChapter] = useState("");
   const [numLevels, setNumLevels] = useState(null);
   const [lesson, setLesson] = useState(null);
   const [variant, setVariant] = useState(0);
@@ -145,111 +247,97 @@ export default function LektionsGuiden() {
   const areas = grade && subject ? Object.keys(DATA[grade]?.[subject] || {}) : [];
   const chapters = grade && subject && area ? DATA[grade]?.[subject]?.[area] || [] : [];
 
-  function generate() {
-    setLesson(buildLesson(grade, subject, area, chapter, numLevels, 0));
-    setVariant(0);
+  const activeChapter = customChapter.trim() || chapter;
+
+  function generate(v = 0) {
+    setLesson(buildLesson(grade, subject, area, activeChapter, numLevels, v));
+    setVariant(v);
     setStep(5);
   }
 
   function reset() {
-    setStep(1); setGrade(null); setSubject(null);
-    setArea(null); setChapter(null); setNumLevels(null); setLesson(null);
+    setStep(1); setGrade(null); setSubject(null); setArea(null);
+    setChapter(null); setCustomChapter(""); setNumLevels(null); setLesson(null);
   }
 
-  const stepLabels = ["Klass","Ämne","Nivåer"];
-
   return (
-    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 40%,#e0f2f1 100%)",fontFamily:"'Georgia',serif",padding:"1.5rem 1rem"}}>
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 40%,#e0f2f1 100%)",fontFamily:"Georgia,serif",padding:"1.5rem 1rem"}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
-        .cbtn{transition:all .18s;border:2px solid #a5d6a7;background:white;border-radius:12px;padding:.75rem 1rem;cursor:pointer;font-family:Georgia,serif;font-size:.92rem;color:#1a3a2a;text-align:left;width:100%}
+        .cbtn{transition:all .18s;border:2px solid #a5d6a7;background:white;border-radius:12px;padding:.65rem .9rem;cursor:pointer;font-family:Georgia,serif;font-size:.88rem;color:#1a3a2a;text-align:left;width:100%}
         .cbtn:hover{border-color:#2e7d32;background:#f1f8e9;transform:translateY(-1px);box-shadow:0 3px 12px rgba(46,125,50,.12)}
         .cbtn.on{border-color:#2e7d32;background:#e8f5e9;font-weight:700}
-        .lvlbtn{transition:all .18s;border:2px solid #a5d6a7;background:white;border-radius:50px;padding:.65rem 1.4rem;cursor:pointer;font-family:Georgia,serif;font-size:.95rem;color:#1a3a2a}
+        .lvlbtn{transition:all .18s;border:2px solid #a5d6a7;background:white;border-radius:12px;padding:.8rem 1.2rem;cursor:pointer;font-family:Georgia,serif;font-size:.92rem;color:#1a3a2a;text-align:left;width:100%}
         .lvlbtn:hover{border-color:#2e7d32;background:#f1f8e9}
-        .lvlbtn.on{border-color:#2e7d32;background:#2e7d32;color:white;font-weight:700}
+        .lvlbtn.on{border-color:#2e7d32;background:#e8f5e9;font-weight:700}
         .gbtn{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:white;border:none;border-radius:50px;padding:.85rem 2.2rem;font-size:1rem;font-family:Georgia,serif;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(46,125,50,.3)}
         .gbtn:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(46,125,50,.4)}
+        .gbtn:disabled{opacity:.4;cursor:not-allowed;transform:none}
         .gbtn.sec{background:linear-gradient(135deg,#78909c,#546e7a)}
+        .ftxt{width:100%;border:2px solid #a5d6a7;border-radius:12px;padding:.75rem 1rem;font-family:Georgia,serif;font-size:.92rem;color:#1a3a2a;outline:none;box-sizing:border-box;resize:vertical;transition:border-color .18s}
+        .ftxt:focus{border-color:#2e7d32}
         @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         .fi{animation:fi .35s ease}
         ul{padding-left:1.3rem;margin:.3rem 0}
         li{margin-bottom:.35rem;line-height:1.6;color:#1a2e1a}
       `}</style>
 
-      {/* Header */}
       <div style={{textAlign:"center",marginBottom:"2rem"}}>
         <div style={{display:"inline-flex",alignItems:"center",gap:".5rem",marginBottom:".3rem"}}>
           <span style={{fontSize:"1.8rem"}}>🌿</span>
-          <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:"2rem",color:"#1b5e20",margin:0}}>LektionsGuiden</h1>
+          <h1 style={{fontSize:"2rem",color:"#1b5e20",margin:0,fontWeight:700}}>LektionsGuiden</h1>
         </div>
         <p style={{color:"#4a7c59",fontSize:".9rem",margin:0}}>Differentierade genomgångar · Lgr22</p>
       </div>
 
-      {/* Progress */}
-      {step < 5 && (
-        <div style={{display:"flex",justifyContent:"center",gap:".5rem",marginBottom:"1.5rem"}}>
-          {stepLabels.map((label,i) => (
-            <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"3px"}}>
-              <div style={{width:30,height:30,borderRadius:"50%",background:i+1<=step?"#2e7d32":"#c8e6c9",color:i+1<=step?"white":"#4a7c59",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".8rem",fontWeight:700,transition:"all .3s"}}>
-                {i+1 < step ? "✓" : i+1}
-              </div>
-              <span style={{fontSize:".68rem",color:i+1<=step?"#2e7d32":"#a5d6a7"}}>{label}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      <div style={{maxWidth:660,margin:"0 auto"}}>
 
-      <div style={{maxWidth:640,margin:"0 auto"}}>
-
-        {/* STEP 1 */}
         {step === 1 && (
           <div className="fi" style={{background:"white",borderRadius:20,padding:"1.8rem",boxShadow:"0 4px 20px rgba(46,125,50,.08)"}}>
-            <h2 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",marginTop:0,fontSize:"1.3rem"}}>Välj klass</h2>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:".6rem"}}>
-              {grades.map(g => (
-                <button key={g} className={`cbtn${grade===g?" on":""}`} onClick={() => { setGrade(g); setSubject(null); setArea(null); setChapter(null); }}>
-                  Klass {g}
-                </button>
-              ))}
+            <h2 style={{color:"#1a3a2a",marginTop:0,fontSize:"1.2rem"}}>Välj klass</h2>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:".6rem",marginBottom:"1rem"}}>
+              {grades.map(g => <button key={g} className={`cbtn${grade===g?" on":""}`} onClick={() => { setGrade(g); setSubject(null); setArea(null); setChapter(null); setCustomChapter(""); }}>Klass {g}</button>)}
             </div>
-            {grade && (
-              <>
-                <h2 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",fontSize:"1.2rem",marginTop:"1.5rem"}}>Välj ämne</h2>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:".6rem"}}>
-                  {subjects.map(s => (
-                    <button key={s} className={`cbtn${subject===s?" on":""}`} onClick={() => { setSubject(s); setArea(null); setChapter(null); }}>
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-            {subject && (
-              <>
-                <h2 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",fontSize:"1.2rem",marginTop:"1.5rem"}}>Välj område</h2>
-                <div style={{display:"grid",gridTemplateColumns:"1fr",gap:".5rem"}}>
-                  {areas.map(a => (
-                    <button key={a} className={`cbtn${area===a?" on":""}`} onClick={() => { setArea(a); setChapter(null); }}>
-                      {a}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-            {area && (
-              <>
-                <h2 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",fontSize:"1.2rem",marginTop:"1.5rem"}}>Välj kapitel / lektion</h2>
-                <div style={{display:"grid",gridTemplateColumns:"1fr",gap:".5rem"}}>
-                  {chapters.map(c => (
-                    <button key={c} className={`cbtn${chapter===c?" on":""}`} onClick={() => setChapter(c)}>
-                      📖 {c}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-            {chapter && (
+
+            {grade && (<>
+              <h2 style={{color:"#1a3a2a",fontSize:"1.1rem",marginTop:"1.2rem"}}>Välj ämne</h2>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:".6rem",marginBottom:"1rem"}}>
+                {subjects.map(s => <button key={s} className={`cbtn${subject===s?" on":""}`} onClick={() => { setSubject(s); setArea(null); setChapter(null); setCustomChapter(""); }}>{s}</button>)}
+              </div>
+            </>)}
+
+            {subject && (<>
+              <h2 style={{color:"#1a3a2a",fontSize:"1.1rem",marginTop:"1.2rem"}}>Välj område</h2>
+              <div style={{display:"grid",gap:".5rem",marginBottom:"1rem"}}>
+                {areas.map(a => <button key={a} className={`cbtn${area===a?" on":""}`} onClick={() => { setArea(a); setChapter(null); setCustomChapter(""); }}>{a}</button>)}
+              </div>
+            </>)}
+
+            {area && (<>
+              <h2 style={{color:"#1a3a2a",fontSize:"1.1rem",marginTop:"1.2rem"}}>Välj kapitel / lektion</h2>
+              <div style={{display:"grid",gap:".4rem",marginBottom:"1rem",maxHeight:260,overflowY:"auto",paddingRight:4}}>
+                {chapters.map(c => (
+                  <button key={c} className={`cbtn${chapter===c&&!customChapter?" on":""}`} onClick={() => { setChapter(c); setCustomChapter(""); }}>
+                    📖 {c}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{borderTop:"2px dashed #c8e6c9",paddingTop:"1rem",marginTop:".5rem"}}>
+                <p style={{color:"#2e7d32",fontWeight:700,fontSize:".9rem",margin:"0 0 .5rem"}}>✏️ Eller skriv eget kapitel / lektionsinnehåll</p>
+                <textarea
+                  className="ftxt"
+                  rows={3}
+                  placeholder={`T.ex. "Adjektivets komparation – övningar från s. 47" eller "Repetition inför prov på multiplikationstabellen"`}
+                  value={customChapter}
+                  onChange={e => { setCustomChapter(e.target.value); if(e.target.value) setChapter(null); }}
+                />
+                {customChapter.trim() && (
+                  <p style={{color:"#4a7c59",fontSize:".8rem",margin:".4rem 0 0",fontStyle:"italic"}}>✅ Genomgången anpassas till: "{customChapter.trim()}"</p>
+                )}
+              </div>
+            </>)}
+
+            {activeChapter && (
               <div style={{textAlign:"right",marginTop:"1.5rem"}}>
                 <button className="gbtn" onClick={() => setStep(2)}>Nästa →</button>
               </div>
@@ -257,87 +345,81 @@ export default function LektionsGuiden() {
           </div>
         )}
 
-        {/* STEP 2 */}
         {step === 2 && (
           <div className="fi" style={{background:"white",borderRadius:20,padding:"1.8rem",boxShadow:"0 4px 20px rgba(46,125,50,.08)"}}>
-            <h2 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",marginTop:0,fontSize:"1.3rem"}}>Hur många kunskapsnivåer finns i klassen?</h2>
-            <p style={{color:"#4a7c59",fontSize:".88rem",marginBottom:"1.5rem"}}>Basera detta på din kartläggning av klassen</p>
-            <div style={{display:"flex",flexDirection:"column",gap:".8rem",marginBottom:"1.5rem"}}>
-              {[2,3,4].map(n => (
+            <h2 style={{color:"#1a3a2a",marginTop:0,fontSize:"1.2rem"}}>Hur många kunskapsnivåer finns i klassen?</h2>
+            <p style={{color:"#4a7c59",fontSize:".88rem",marginBottom:"1.2rem"}}>Genomgången blir ett sammanhängande flöde från enkel till avancerad.</p>
+            <div style={{display:"flex",flexDirection:"column",gap:".7rem",marginBottom:"1.5rem"}}>
+              {[{n:2,desc:"Två steg – grund och fördjupning"},{n:3,desc:"Tre steg – introduktion, fördjupning, analys"},{n:4,desc:"Fyra steg – gradvis från grund till avancerad"}].map(({n,desc}) => (
                 <button key={n} className={`lvlbtn${numLevels===n?" on":""}`} onClick={() => setNumLevels(n)}>
-                  <strong>{n} nivåer</strong>
-                  <span style={{fontSize:".8rem",marginLeft:".5rem",opacity:.8}}>{LEVEL_LABELS[n].join(" · ")}</span>
+                  <strong>{n} nivåer</strong> <span style={{fontSize:".82rem",opacity:.75,marginLeft:".4rem"}}>{desc}</span>
                 </button>
               ))}
             </div>
             <div style={{display:"flex",justifyContent:"space-between"}}>
               <button className="gbtn sec" onClick={() => setStep(1)}>← Tillbaka</button>
-              {numLevels && <button className="gbtn" onClick={generate}>✨ Skapa genomgång</button>}
+              <button className="gbtn" disabled={!numLevels} onClick={() => generate(0)}>✨ Skapa genomgång</button>
             </div>
           </div>
         )}
 
-        {/* STEP 5: Result */}
         {step === 5 && lesson && (
           <div className="fi">
-            {/* Summary bar */}
             <div style={{background:"#2e7d32",borderRadius:14,padding:"1rem 1.4rem",marginBottom:"1rem",display:"flex",flexWrap:"wrap",gap:".4rem",alignItems:"center"}}>
               <span style={{color:"white",fontSize:".82rem",opacity:.85}}>Klass {lesson.meta.grade}</span>
               <span style={{color:"#a5d6a7"}}>·</span>
               <span style={{color:"white",fontSize:".82rem",opacity:.85}}>{lesson.meta.subject}</span>
               <span style={{color:"#a5d6a7"}}>·</span>
-              <span style={{color:"white",fontSize:".9rem",fontWeight:700}}>{lesson.meta.chapter}</span>
+              <span style={{color:"white",fontSize:".95rem",fontWeight:700}}>{lesson.meta.chapter}</span>
               <span style={{color:"#a5d6a7"}}>·</span>
               <span style={{color:"#c8e6c9",fontSize:".82rem"}}>{lesson.meta.numLevels} nivåer</span>
             </div>
 
-            {/* Mal */}
             <div style={{background:"white",borderRadius:16,padding:"1.4rem",boxShadow:"0 3px 16px rgba(46,125,50,.07)",marginBottom:"1rem"}}>
-              <h3 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",marginTop:0,fontSize:"1.05rem",borderBottom:"2px solid #c8e6c9",paddingBottom:"6px"}}>🎯 Lektionsmål</h3>
-              <p style={{margin:0,lineHeight:1.7,color:"#1a2e1a"}}>{lesson.mal}</p>
-            </div>
-
-            {/* Forberedelse */}
-            <div style={{background:"white",borderRadius:16,padding:"1.4rem",boxShadow:"0 3px 16px rgba(46,125,50,.07)",marginBottom:"1rem"}}>
-              <h3 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",marginTop:0,fontSize:"1.05rem",borderBottom:"2px solid #c8e6c9",paddingBottom:"6px"}}>📋 Förberedelse (5 min)</h3>
+              <h3 style={{color:"#1a3a2a",marginTop:0,fontSize:"1.05rem",borderBottom:"2px solid #c8e6c9",paddingBottom:"6px"}}>📋 Förberedelse – aktivera förkunskaper (5 min)</h3>
               <ul>{lesson.forberedelse.map((p,i) => <li key={i}>{p}</li>)}</ul>
             </div>
 
-            {/* Nivåer */}
-            {lesson.niva.map((niva, i) => (
-              <div key={i} style={{background:"white",borderRadius:16,padding:"1.4rem",boxShadow:"0 3px 16px rgba(46,125,50,.07)",marginBottom:"1rem",borderLeft:`5px solid ${LEVEL_COLORS[i]}`}}>
-                <h3 style={{fontFamily:"'Playfair Display',serif",color:LEVEL_COLORS[i],marginTop:0,fontSize:"1.05rem"}}>
-                  {LEVEL_ICONS[i]} Nivå {i+1}: {niva.namn}
-                </h3>
-                <p style={{fontWeight:700,color:"#2e7d32",margin:"0 0 .5rem",fontSize:".9rem"}}>Fokus:</p>
-                <p style={{margin:"0 0 .8rem",lineHeight:1.6,color:"#1a2e1a",fontSize:".9rem"}}>{niva.fokus}</p>
-                <p style={{fontWeight:700,color:"#2e7d32",margin:"0 0 .3rem",fontSize:".9rem"}}>Nyckelmoment:</p>
-                <ul>{niva.moment.map((m,j) => <li key={j} style={{fontSize:".9rem"}}>{m}</li>)}</ul>
-                <p style={{fontWeight:700,color:"#2e7d32",margin:".8rem 0 .3rem",fontSize:".9rem"}}>Frågor att ställa:</p>
-                <ul>{niva.fragor.map((f,j) => <li key={j} style={{fontSize:".9rem",fontStyle:"italic"}}>"{f}"</li>)}</ul>
-              </div>
-            ))}
-
-            {/* Avslutning */}
             <div style={{background:"white",borderRadius:16,padding:"1.4rem",boxShadow:"0 3px 16px rgba(46,125,50,.07)",marginBottom:"1rem"}}>
-              <h3 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",marginTop:0,fontSize:"1.05rem",borderBottom:"2px solid #c8e6c9",paddingBottom:"6px"}}>🔄 Gemensam avslutning (5 min)</h3>
+              <h3 style={{color:"#1a3a2a",marginTop:0,fontSize:"1.05rem",borderBottom:"2px solid #c8e6c9",paddingBottom:"6px"}}>📈 Genomgång – sammanhängande flöde</h3>
+              <p style={{color:"#4a7c59",fontSize:".85rem",marginBottom:"1.2rem"}}>Hela klassen följer samma genomgång. Komplexiteten ökar gradvis – elever arbetar vidare på den nivå som passar dem.</p>
+              {lesson.steg.map((steg, i) => (
+                <div key={i} style={{borderLeft:`4px solid ${steg.farg}`,paddingLeft:"1rem",marginBottom:"1.4rem"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".4rem"}}>
+                    <span style={{fontSize:"1.2rem"}}>{steg.ikon}</span>
+                    <strong style={{color:steg.farg,fontSize:".98rem"}}>{steg.rubrik}</strong>
+                  </div>
+                  <p style={{margin:"0 0 .6rem",color:"#1a2e1a",fontSize:".87rem",fontStyle:"italic"}}>{steg.beskrivning}</p>
+                  <ul style={{marginBottom:".6rem"}}>{steg.moment.map((m,j) => <li key={j} style={{fontSize:".88rem"}}>{m}</li>)}</ul>
+                  <div style={{background:"#f1f8e9",borderRadius:8,padding:".5rem .8rem",marginBottom:".4rem"}}>
+                    <span style={{fontSize:".78rem",color:"#2e7d32",fontWeight:700}}>❓ Fråga att ställa: </span>
+                    <span style={{fontSize:".84rem",color:"#1a2e1a",fontStyle:"italic"}}>{steg.fraga}</span>
+                  </div>
+                  <div style={{background:"#fff8e1",borderRadius:8,padding:".5rem .8rem"}}>
+                    <span style={{fontSize:".78rem",color:"#f57f17",fontWeight:700}}>⏭ Signal att gå vidare: </span>
+                    <span style={{fontSize:".84rem",color:"#1a2e1a"}}>{steg.signal}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{background:"white",borderRadius:16,padding:"1.4rem",boxShadow:"0 3px 16px rgba(46,125,50,.07)",marginBottom:"1rem"}}>
+              <h3 style={{color:"#1a3a2a",marginTop:0,fontSize:"1.05rem",borderBottom:"2px solid #c8e6c9",paddingBottom:"6px"}}>🔄 Gemensam avslutning (5 min)</h3>
               <ul>{lesson.avslutning.map((p,i) => <li key={i}>{p}</li>)}</ul>
             </div>
 
-            {/* Tips */}
             <div style={{background:"#e8f5e9",borderRadius:16,padding:"1.4rem",marginBottom:"1.5rem",border:"1px solid #c8e6c9"}}>
-              <h3 style={{fontFamily:"'Playfair Display',serif",color:"#1a3a2a",marginTop:0,fontSize:"1.05rem"}}>💡 Tips till läraren</h3>
+              <h3 style={{color:"#1a3a2a",marginTop:0,fontSize:"1.05rem"}}>💡 Tips till läraren</h3>
               <ul>{lesson.tips.map((t,i) => <li key={i}>{t}</li>)}</ul>
             </div>
 
             <div style={{display:"flex",gap:"1rem",justifyContent:"center",flexWrap:"wrap",paddingBottom:"2rem"}}>
               <button className="gbtn sec" onClick={reset}>🔄 Ny genomgång</button>
-              <button className="gbtn" onClick={() => { const v = variant + 1; setVariant(v); setLesson(buildLesson(grade, subject, area, chapter, numLevels, v)); }}>✨ Variera genomgång</button>
+              <button className="gbtn" onClick={() => generate(variant + 1)}>✨ Variera genomgång</button>
             </div>
           </div>
         )}
       </div>
-
       <p style={{textAlign:"center",color:"#a5d6a7",fontSize:".75rem",marginTop:"2rem"}}>LektionsGuiden · Lgr22 · Differentierad undervisning</p>
     </div>
   );

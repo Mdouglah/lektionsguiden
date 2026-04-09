@@ -2,25 +2,25 @@ import { useState, useRef, useEffect } from "react";
 
 // ─── LGR22 ──────────────────────────────────────────────────────────────────
 const LGR22 = {
-  "Svenska":"Eleven ska läsa, analysera och kommunicera i tal och skrift med anpassning till syfte och mottagare.",
-  "Matematik":"Eleven ska formulera och lösa problem, använda matematiska metoder och föra matematiska resonemang.",
-  "Engelska":"Eleven ska kommunicera på engelska i tal och skrift och förstå olika typer av texter.",
-  "Spanska":"Eleven ska kommunicera på spanska och reflektera över kulturer i spansktalande länder.",
-  "Franska":"Eleven ska kommunicera på franska och reflektera över kulturer i fransktalande länder.",
-  "Tyska":"Eleven ska kommunicera på tyska och reflektera över kulturer i tysktalande länder.",
-  "Biologi":"Eleven ska använda biologikunskaper för att ta ställning i frågor om hälsa och ekologisk hållbarhet.",
-  "Fysik":"Eleven ska använda fysikkunskaper för att granska information om energi, teknik och miljö.",
-  "Kemi":"Eleven ska använda kemikunskaper för att ta ställning i frågor om kemikaliers påverkan på hälsa och miljö.",
-  "Geografi":"Eleven ska analysera hur naturens processer och människors verksamheter formar livsmiljöer.",
-  "Historia":"Eleven ska använda historiska begrepp för att förstå hur det förflutna påverkar nutiden.",
-  "Religionskunskap":"Eleven ska analysera religioner, livsåskådningar och etiska frågor utifrån olika perspektiv.",
-  "Samhällskunskap":"Eleven ska analysera samhällsstrukturer och reflektera kring demokrati och hållbar utveckling.",
-  "Bild":"Eleven ska kommunicera med bilder, skapa med olika tekniker och analysera bilduttryck.",
-  "Musik":"Eleven ska spela, sjunga, skapa musik och förstå musikens sammanhang i samhälle och kultur.",
-  "Idrott och hälsa":"Eleven ska röra sig allsidigt och reflektera kring hälsa, livsstil och välmående.",
-  "Slöjd":"Eleven ska formge och framställa föremål och utveckla förmåga att planera och utvärdera skapande processer.",
-  "Teknik":"Eleven ska identifiera tekniska lösningar och konstruera med hänsyn till hållbarhet.",
-  "Hemkunskap":"Eleven ska planera och tillaga mat, hantera resurser och reflektera kring hälsa och hållbar livsstil."
+  "Svenska":{ kort:"Eleven ska läsa, analysera och kommunicera i tal och skrift med anpassning till syfte och mottagare.", citat:"Lgr22, Svenska: 'Undervisningen ska stimulera elevernas intresse för att läsa och skriva samt ge dem möjlighet att möta och arbeta med olika typer av texter och digitala verktyg.'" },
+  "Matematik":{ kort:"Eleven ska formulera och lösa problem, använda matematiska metoder och föra matematiska resonemang.", citat:"Lgr22, Matematik: 'Undervisningen ska bidra till att eleverna utvecklar förmåga att argumentera logiskt och föra matematiska resonemang.'" },
+  "Engelska":{ kort:"Eleven ska kommunicera på engelska i tal och skrift och förstå olika typer av texter.", citat:"Lgr22, Engelska: 'Undervisningen ska ge eleverna möjlighet att kommunicera på engelska i autentiska sammanhang och i möten med andras kulturer.'" },
+  "Spanska":{ kort:"Eleven ska kommunicera på spanska och reflektera över kulturer i spansktalande länder.", citat:"Lgr22, Moderna språk – Spanska: 'Undervisningen ska ge eleverna möjlighet att kommunicera på målspråket och reflektera över likheter och skillnader mellan olika kulturer.'" },
+  "Franska":{ kort:"Eleven ska kommunicera på franska och reflektera över kulturer i fransktalande länder.", citat:"Lgr22, Moderna språk – Franska: 'Undervisningen ska ge eleverna möjlighet att kommunicera på målspråket och reflektera över likheter och skillnader mellan olika kulturer.'" },
+  "Tyska":{ kort:"Eleven ska kommunicera på tyska och reflektera över kulturer i tysktalande länder.", citat:"Lgr22, Moderna språk – Tyska: 'Undervisningen ska ge eleverna möjlighet att kommunicera på målspråket och reflektera över likheter och skillnader mellan olika kulturer.'" },
+  "Biologi":{ kort:"Eleven ska använda biologikunskaper för att ta ställning i frågor om hälsa och ekologisk hållbarhet.", citat:"Lgr22, Biologi: 'Undervisningen ska ge eleverna förutsättningar att söka svar på frågor om naturen och levande varelsers livsvillkor och anpassningar.'" },
+  "Fysik":{ kort:"Eleven ska använda fysikkunskaper för att granska information om energi, teknik och miljö.", citat:"Lgr22, Fysik: 'Undervisningen ska ge eleverna möjligheter att använda och utveckla kunskaper och redskap för att formulera egna och granska andras argument.'" },
+  "Kemi":{ kort:"Eleven ska använda kemikunskaper för att ta ställning i frågor om kemikaliers påverkan på hälsa och miljö.", citat:"Lgr22, Kemi: 'Undervisningen ska ge eleverna förutsättningar att använda kemins begrepp och förklaringsmodeller för att beskriva och förklara kemiska processer.'" },
+  "Geografi":{ kort:"Eleven ska analysera hur naturens processer och människors verksamheter formar livsmiljöer.", citat:"Lgr22, Geografi: 'Undervisningen ska ge eleverna kunskap om geografiska förhållanden och ge dem verktyg för att förstå omvärlden.'" },
+  "Historia":{ kort:"Eleven ska använda historiska begrepp för att förstå hur det förflutna påverkar nutiden.", citat:"Lgr22, Historia: 'Undervisningen ska ge eleverna förutsättningar att tillägna sig en historisk referensram och förmåga att förstå och förklara historiska skeenden.'" },
+  "Religionskunskap":{ kort:"Eleven ska analysera religioner, livsåskådningar och etiska frågor utifrån olika perspektiv.", citat:"Lgr22, Religionskunskap: 'Undervisningen ska ge eleverna förutsättningar att kunna analysera och ta ställning i etiska och existentiella frågor.'" },
+  "Samhällskunskap":{ kort:"Eleven ska analysera samhällsstrukturer och reflektera kring demokrati och hållbar utveckling.", citat:"Lgr22, Samhällskunskap: 'Undervisningen ska ge eleverna verktyg att kritiskt granska information och förstå hur demokratiska processer fungerar.'" },
+  "Bild":{ kort:"Eleven ska kommunicera med bilder, skapa med olika tekniker och analysera bilduttryck.", citat:"Lgr22, Bild: 'Undervisningen ska ge eleverna förutsättningar att utveckla sitt bildspråk och förmåga att kommunicera och uttrycka sig med hjälp av bilder.'" },
+  "Musik":{ kort:"Eleven ska spela, sjunga, skapa musik och förstå musikens sammanhang i samhälle och kultur.", citat:"Lgr22, Musik: 'Undervisningen ska ge eleverna möjlighet att uppleva, reflektera och kommunicera med musik som estetiskt uttryckssätt.'" },
+  "Idrott och hälsa":{ kort:"Eleven ska röra sig allsidigt och reflektera kring hälsa, livsstil och välmående.", citat:"Lgr22, Idrott och hälsa: 'Undervisningen ska ge eleverna förutsättningar att röra sig allsidigt i olika sammanhang och få en förståelse för hur livsstilsval påverkar hälsan.'" },
+  "Slöjd":{ kort:"Eleven ska formge och framställa föremål och utveckla förmåga att planera och utvärdera skapande processer.", citat:"Lgr22, Slöjd: 'Undervisningen ska ge eleverna möjlighet att arbeta med olika material och tekniker och ge dem förutsättningar att utveckla sin kreativitet och sitt hantverk.'" },
+  "Teknik":{ kort:"Eleven ska identifiera tekniska lösningar och konstruera med hänsyn till hållbarhet.", citat:"Lgr22, Teknik: 'Undervisningen ska ge eleverna förutsättningar att utveckla sin förmåga att identifiera tekniska lösningar och deras funktion i vardagen.'" },
+  "Hemkunskap":{ kort:"Eleven ska planera och tillaga mat, hantera resurser och reflektera kring hälsa och hållbar livsstil.", citat:"Lgr22, Hem- och konsumentkunskap: 'Undervisningen ska ge eleverna förutsättningar att göra välgrundade val som konsumenter och hushålla med resurser på ett hållbart sätt.'" }
 };
 
 // ─── ÄMNESDATA ───────────────────────────────────────────────────────────────
@@ -62,6 +62,7 @@ const TIPS = [
 // ─── BYGG LEKTION ─────────────────────────────────────────────────────────────
 function buildLesson(grade, subject, area, chapter, numLevels, v=0) {
   const totalTid = STEG_TIDER[numLevels].reduce((s,t)=>s+parseInt(t),0)+10;
+  const lgr22obj = LGR22[subject]||{kort:`Eleven ska utveckla kunskaper inom ${subject} enligt Lgr22.`, citat:`Lgr22, ${subject}: 'Undervisningen ska ge eleverna förutsättningar att utveckla kunskaper och förmågor inom ämnet.'`};
   const steg = STEG_RUBRIKER[numLevels].map((rubrik,i)=>{
     const ratio = i/(numLevels-1);
     const moment = ratio<0.34
@@ -73,7 +74,7 @@ function buildLesson(grade, subject, area, chapter, numLevels, v=0) {
     const signal = ratio<0.34 ? "Gå vidare när majoriteten visar grundförståelse." : ratio<0.67 ? "Elever som behöver stanna övar grunduppgifter." : "Alla välkomnas att lyssna och bidra på sin nivå.";
     return {rubrik:`Del ${i+1} – ${rubrik}`,ikon:STEG_IKONER[i],farg:STEG_FARG[i],tid:STEG_TIDER[numLevels][i],beskrivning:STEG_BESKRIVNING[numLevels][i],moment,fraga,signal};
   });
-  return {meta:{grade,subject,area,chapter,numLevels},lgr22:LGR22[subject]||`Eleven ska utveckla kunskaper inom ${subject} enligt Lgr22.`,totalTid,forberedelse:FORBEREDELSE[v%3],steg,avslutning:AVSLUTNING[v%3],tips:TIPS[v%3]};
+  return {meta:{grade,subject,area,chapter,numLevels},lgr22kort:lgr22obj.kort,lgr22citat:lgr22obj.citat,totalTid,forberedelse:FORBEREDELSE[v%3],steg,avslutning:AVSLUTNING[v%3],tips:TIPS[v%3]};
 }
 
 // ─── BYGG PROV ────────────────────────────────────────────────────────────────
@@ -147,6 +148,7 @@ function LessonCard({l,onCopy,onPrint,copied}) {
   const [as,setAs]=useState(null);
   return (
     <div>
+      {/* Hero */}
       <div style={{background:"linear-gradient(135deg,#1b5e20,#2e7d32)",borderRadius:14,padding:"1.2rem",color:"white",marginBottom:".7rem",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:-15,right:-15,width:70,height:70,borderRadius:"50%",background:"rgba(255,255,255,0.07)"}}/>
         <div style={{display:"flex",flexWrap:"wrap",gap:".3rem",marginBottom:".5rem"}}>
@@ -155,8 +157,16 @@ function LessonCard({l,onCopy,onPrint,copied}) {
           <span style={{background:"rgba(255,255,255,0.22)",borderRadius:50,padding:".2rem .65rem",fontSize:".73rem",fontWeight:700}}>⏱ {l.totalTid} min</span>
         </div>
         <h2 style={{margin:"0 0 .35rem",fontSize:"1.15rem",fontFamily:"Georgia,serif"}}>{l.meta.chapter}</h2>
-        <p style={{margin:0,fontSize:".78rem",opacity:.85,lineHeight:1.5}}>{l.lgr22}</p>
+        <p style={{margin:0,fontSize:".78rem",opacity:.85,lineHeight:1.5}}>{l.lgr22kort}</p>
       </div>
+
+      {/* Lgr22-citat */}
+      <div style={{background:"#e3f2fd",borderRadius:12,padding:"1rem 1.1rem",marginBottom:".7rem",borderLeft:"4px solid #1565c0"}}>
+        <p style={{margin:"0 0 .25rem",color:"#1565c0",fontWeight:700,fontSize:".78rem"}}>📌 Koppling till Lgr22</p>
+        <p style={{margin:0,color:"#0d2a4a",fontSize:".82rem",lineHeight:1.6,fontStyle:"italic"}}>{l.lgr22citat}</p>
+      </div>
+
+      {/* Stats */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:".45rem",marginBottom:".65rem"}}>
         {[["Nivåer",l.meta.numLevels],["Steg",l.steg.length],["Minuter",l.totalTid]].map(([lb,v])=>(
           <div key={lb} style={{background:"white",borderRadius:10,padding:".6rem",textAlign:"center",boxShadow:"0 2px 8px rgba(46,125,50,.07)"}}>
@@ -165,10 +175,14 @@ function LessonCard({l,onCopy,onPrint,copied}) {
           </div>
         ))}
       </div>
+
+      {/* Förberedelse */}
       <div style={{background:"white",borderRadius:10,padding:".9rem",marginBottom:".55rem",boxShadow:"0 2px 8px rgba(46,125,50,.07)"}}>
         <h4 style={{margin:"0 0 .4rem",color:"#1a3a2a",fontSize:".85rem"}}>📋 Förberedelse <span style={{fontWeight:400,color:"#4a7c59",fontSize:".72rem"}}>(5 min)</span></h4>
         <ul style={{margin:0,paddingLeft:"1.1rem"}}>{l.forberedelse.map((p,i)=><li key={i} style={{fontSize:".8rem",marginBottom:".2rem",color:"#1a2e1a"}}>{p}</li>)}</ul>
       </div>
+
+      {/* Genomgång */}
       <div style={{background:"white",borderRadius:10,padding:".9rem",marginBottom:".55rem",boxShadow:"0 2px 8px rgba(46,125,50,.07)"}}>
         <h4 style={{margin:"0 0 .6rem",color:"#1a3a2a",fontSize:".85rem"}}>📈 Genomgång</h4>
         <div style={{display:"flex",gap:".35rem",flexWrap:"wrap",marginBottom:".6rem"}}>
@@ -197,14 +211,20 @@ function LessonCard({l,onCopy,onPrint,copied}) {
           </div>
         ))}
       </div>
+
+      {/* Avslutning */}
       <div style={{background:"white",borderRadius:10,padding:".9rem",marginBottom:".55rem",boxShadow:"0 2px 8px rgba(46,125,50,.07)"}}>
         <h4 style={{margin:"0 0 .4rem",color:"#1a3a2a",fontSize:".85rem"}}>🔄 Avslutning <span style={{fontWeight:400,color:"#4a7c59",fontSize:".72rem"}}>(5 min)</span></h4>
         <ul style={{margin:0,paddingLeft:"1.1rem"}}>{l.avslutning.map((p,i)=><li key={i} style={{fontSize:".8rem",marginBottom:".18rem",color:"#1a2e1a"}}>{p}</li>)}</ul>
       </div>
+
+      {/* Tips */}
       <div style={{background:"#e8f5e9",borderRadius:10,padding:".9rem",marginBottom:".7rem",border:"1px solid #c8e6c9"}}>
         <h4 style={{margin:"0 0 .4rem",color:"#1a3a2a",fontSize:".85rem"}}>💡 Tips till läraren</h4>
         <ul style={{margin:0,paddingLeft:"1.1rem"}}>{l.tips.map((t,i)=><li key={i} style={{fontSize:".8rem",marginBottom:".18rem",color:"#1a2e1a"}}>{t}</li>)}</ul>
       </div>
+
+      {/* Export */}
       <div style={{display:"flex",gap:".45rem",flexWrap:"wrap"}}>
         <button onClick={onCopy} style={{background:"linear-gradient(135deg,#1565c0,#0d47a1)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer"}}>{copied?"✅ Kopierat!":"📋 Kopiera"}</button>
         <button onClick={onPrint} style={{background:"linear-gradient(135deg,#6a1b9a,#4a148c)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer"}}>🖨️ Skriv ut</button>
@@ -296,9 +316,9 @@ function GuidatLage({onBack}) {
               {chapters.map(c=><button key={c} className={`cbtn${chapter===c&&!custom?" on":""}`} onClick={()=>{setChapter(c);setCustom("");}}>📖 {c}</button>)}
             </div>
             <div style={{borderTop:"2px dashed #c8e6c9",paddingTop:".9rem"}}>
-              <p style={{color:"#2e7d32",fontWeight:700,fontSize:".85rem",margin:"0 0 .4rem"}}>✏️ Eller skriv eget innehåll</p>
-              <textarea value={custom} onChange={e=>{setCustom(e.target.value);if(e.target.value)setChapter(null);}} placeholder="T.ex. 'Källkritik – övningar s. 47'" rows={2} style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:10,padding:".65rem .9rem",fontFamily:"Georgia,serif",fontSize:".88rem",color:"#1a3a2a",outline:"none",resize:"vertical",boxSizing:"border-box"}}/>
-              {custom.trim()&&<p style={{color:"#4a7c59",fontSize:".75rem",margin:".35rem 0 0",fontStyle:"italic"}}>✅ Anpassas till: "{custom.trim()}"</p>}
+              <p style={{color:"#2e7d32",fontWeight:700,fontSize:".85rem",margin:"0 0 .4rem"}}>✏️ Skriv eget kapitel, sidnummer eller innehåll</p>
+              <textarea value={custom} onChange={e=>{setCustom(e.target.value);if(e.target.value)setChapter(null);}} placeholder="T.ex. 'Källkritik – övningar s. 47' eller 'Kap. 6 – Procentberäkning'" rows={3} style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:10,padding:".65rem .9rem",fontFamily:"Georgia,serif",fontSize:".88rem",color:"#1a3a2a",outline:"none",resize:"vertical",boxSizing:"border-box"}}/>
+              {custom.trim()&&<p style={{color:"#4a7c59",fontSize:".75rem",margin:".35rem 0 0",fontStyle:"italic"}}>✅ Genomgången anpassas till: "{custom.trim()}"</p>}
             </div></>}
             {activeChapter&&<><h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1.2rem"}}>Antal kunskapsnivåer</h2>
             <div style={{display:"flex",flexDirection:"column",gap:".55rem",marginBottom:"1.2rem"}}>

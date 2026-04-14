@@ -473,9 +473,8 @@ function PedagogAI({onBack}) {
       const reply = data.content?.[0]?.text || "Något gick fel. Försök igen.";
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
     } catch (e) {
-      setMessages(prev => [...prev, { role: "assistant", content: "Kunde inte ansluta. Kontrollera internetanslutningen och försök igen." }]);
-    }
-    setLoading(false);
+  console.error("PedagogAI fel:", e);
+  setMessages(prev => [...prev, { role: "assistant", content: "Fel: " + e.message }]);
   }
 
   function clearChat() {

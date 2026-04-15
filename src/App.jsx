@@ -346,7 +346,7 @@ function ChattLage({onBack}) {
       try {
         const result=parseInput(text);
         const type=result.type==="prov"?"__prov__":"__lesson__";
-        setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);
+        setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);window.scrollTo(0,0);
       } catch(e) {
         setMessages(prev=>[...prev,{role:"assistant",content:"Jag förstod inte riktigt. Försök t.ex: 'Matte åk 6 om procent, 3 nivåer' eller 'Prov svenska åk 9'"}]);
       }

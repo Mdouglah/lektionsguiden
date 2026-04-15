@@ -336,7 +336,7 @@ function ChattLage({onBack}) {
   const [loading,setLoading]=useState(false);
   const [copied,setCopied]=useState(false);
   const chatEndRef=useRef(null);
-  useEffect(()=>{chatEndRef.current?.scrollIntoView({behavior:"smooth"});},[messages,loading]);
+  useEffect(()=>{chatEndRef.current?.scrollIntoView({behavior:"smooth"});},[loading]);
 
   function sendMessage(text) {
     if (!text.trim()||loading) return;

@@ -336,6 +336,7 @@ function ChattLage({onBack}) {
   const [loading,setLoading]=useState(false);
   const [copied,setCopied]=useState(false);
   const chatEndRef=useRef(null);
+  const chatTopRef=useRef(null);
   useEffect(()=>{chatEndRef.current?.scrollIntoView({behavior:"smooth"});},[loading]);
 
   function sendMessage(text) {
@@ -346,7 +347,7 @@ function ChattLage({onBack}) {
       try {
         const result=parseInput(text);
         const type=result.type==="prov"?"__prov__":"__lesson__";
-        setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);window.scrollTo(0,0);
+        setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);setTimeout(()=>chatTopRef.current?.scrollIntoView({behavior:"smooth"}),50);
       } catch(e) {
         setMessages(prev=>[...prev,{role:"assistant",content:"Jag förstod inte riktigt. Försök t.ex: 'Matte åk 6 om procent, 3 nivåer' eller 'Prov svenska åk 9'"}]);
       }
@@ -363,7 +364,8 @@ function ChattLage({onBack}) {
         <div><div style={{color:"white",fontWeight:700,fontSize:".88rem"}}>LektionsGuiden</div><div style={{color:"#a5d6a7",fontSize:".65rem"}}>Chattläge · Lgr22 · Genomgångar & Prov</div></div>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:".9rem",maxWidth:680,width:"100%",margin:"0 auto",boxSizing:"border-box"}}>
-        {messages.length===0&&(
+        <div ref={chatTopRef}/>
+    {messages.length===0&&(
           <div className="fi" style={{textAlign:"center",padding:"1.2rem .5rem"}}>
             <div style={{fontSize:"2rem",marginBottom:".7rem"}}>👋</div>
             <h2 style={{color:"#1b5e20",margin:"0 0 .35rem",fontSize:"1.1rem"}}>Hej! Vad behöver du?</h2>

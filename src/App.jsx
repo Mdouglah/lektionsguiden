@@ -595,9 +595,9 @@ function PedagogAI({onBack}) {
 // ─── STARTSIDA + HUVUD ────────────────────────────────────────────────────────
 export default function LektionsGuiden() {
   const [mode,setMode]=useState(null);
-  if (mode==="chat") return <ChattLage onBack={()=>setMode(null)}/>;
-  if (mode==="guide") return <GuidatLage onBack={()=>setMode(null)}/>;
-  if (mode==="pedagogai") return <PedagogAI onBack={()=>setMode(null)}/>;
+  if (mode==="chat") return <ChattLage onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
+  if (mode==="guide") return <GuidatLage onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
+  if (mode==="pedagogai") return <PedagogAI onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
 
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5e9,#f1f8e9,#e0f2f1)",fontFamily:"Georgia,serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"2rem 1rem"}}>
@@ -608,12 +608,12 @@ export default function LektionsGuiden() {
         <p style={{color:"#4a7c59",marginBottom:"2rem",fontSize:".88rem"}}>Differentierad undervisning · Lgr22 · Åk 1–9</p>
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1rem"}}>
-          <button onClick={()=>setMode("chat")} style={{background:"linear-gradient(135deg,#1b5e20,#2e7d32)",color:"white",border:"none",borderRadius:16,padding:"1.5rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(27,94,32,0.25)"}}>
+          <button onClick={()=>{setMode("chat");window.scrollTo(0,0);}} style={{background:"linear-gradient(135deg,#1b5e20,#2e7d32)",color:"white",border:"none",borderRadius:16,padding:"1.5rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(27,94,32,0.25)"}}>
             <div style={{fontSize:"1.7rem",marginBottom:".35rem"}}>💬</div>
             <div style={{fontSize:".95rem",fontWeight:700,marginBottom:".2rem"}}>Chattläge</div>
             <div style={{fontSize:".72rem",opacity:.88}}>Skriv fritt – genomgång eller prov skapas direkt</div>
           </button>
-          <button onClick={()=>setMode("guide")} style={{background:"white",color:"#1b5e20",border:"2px solid #a5d6a7",borderRadius:16,padding:"1.5rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(27,94,32,0.08)"}}>
+          <button onClick={()=>{setMode("guide");window.scrollTo(0,0);}} style={{background:"white",color:"#1b5e20",border:"2px solid #a5d6a7",borderRadius:16,padding:"1.5rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(27,94,32,0.08)"}}>
             <div style={{fontSize:"1.7rem",marginBottom:".35rem"}}>📋</div>
             <div style={{fontSize:".95rem",fontWeight:700,marginBottom:".2rem"}}>Guidat läge</div>
             <div style={{fontSize:".72rem",color:"#4a7c59"}}>Välj klass, ämne och moment steg för steg</div>
@@ -621,7 +621,7 @@ export default function LektionsGuiden() {
         </div>
 
         {/* PedagogAI – full width */}
-        <button onClick={()=>setMode("pedagogai")} style={{width:"100%",background:"linear-gradient(135deg,#4527a0,#6a1b9a)",color:"white",border:"none",borderRadius:16,padding:"1.2rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(69,39,160,0.25)",marginBottom:"1.2rem",display:"flex",alignItems:"center",gap:"1rem",textAlign:"left"}}>
+        <button onClick={()=>{setMode("pedagogai");window.scrollTo(0,0);}} style={{width:"100%",background:"linear-gradient(135deg,#4527a0,#6a1b9a)",color:"white",border:"none",borderRadius:16,padding:"1.2rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(69,39,160,0.25)",marginBottom:"1.2rem",display:"flex",alignItems:"center",gap:"1rem",textAlign:"left"}}>
           <div style={{fontSize:"2rem",flexShrink:0}}>🧠</div>
           <div>
             <div style={{fontSize:"1rem",fontWeight:700,marginBottom:".15rem"}}>PedagogAI – din pedagogiska assistent</div>

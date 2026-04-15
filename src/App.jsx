@@ -260,8 +260,8 @@ function GuidatLage({onBack}) {
   const chapters=grade&&subject&&area?DATA[grade]?.[subject]?.[area]||[]:[];
   const activeChapter=custom.trim()||chapter;
 
-  function generate(v=0){setLesson(buildLesson(grade,subject,area,activeChapter,numLevels,v));setVariant(v);}
-  function reset(){setGrade(null);setSubject(null);setArea(null);setChapter(null);setCustom("");setNumLevels(null);setLesson(null);}
+  function generate(v=0){setLesson(buildLesson(grade,subject,area,activeChapter,numLevels,v));setVariant(v);window.scrollTo(0,0);}
+  function reset(){setGrade(null);setSubject(null);setArea(null);setChapter(null);setCustom("");setNumLevels(null);setLesson(null);window.scrollTo(0,0);}
 
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5e9,#f1f8e9,#e0f2f1)",fontFamily:"Georgia,serif",padding:"1rem"}}>

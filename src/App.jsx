@@ -324,8 +324,8 @@ function GuidatLage({onBack}) {
 // ─── CHATTLÄGE ────────────────────────────────────────────────────────────────
 const EXEMPEL = [
   "Genomgång i matte åk 6 om procent, 3 nivåer",
-  "Prov på franska åk 8, preteritum, 2 nivåer",
-  "Repetition inför nationellt prov svenska åk 9",
+  "Prov svenska åk 9, algebra, 3 nivåer",
+  "Prov svenska åk 9, argumenterande text, 3 nivåer",
   "Quiz biologi åk 7 – immunförsvaret, blandad klass",
   "Genomgång historia åk 5, vikingatiden"
 ];

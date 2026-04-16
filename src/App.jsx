@@ -62,6 +62,8 @@ const TIPS = [
 // ─── BYGG LEKTION ─────────────────────────────────────────────────────────────
 function buildLesson(grade, subject, area, chapter, numLevels, v=0) {
   if (![2,3,4].includes(numLevels)) numLevels = 3;
+  if (!chapter || chapter.trim()==="") chapter = subject + " – centralt moment";
+  if (!area || area.trim()==="") area = subject;
   const totalTid = STEG_TIDER[numLevels].reduce((s,t)=>s+parseInt(t),0)+10;
   const lgr22obj = LGR22[subject]||{kort:`Eleven ska utveckla kunskaper inom ${subject} enligt Lgr22.`, citat:`Lgr22, ${subject}: 'Undervisningen ska ge eleverna förutsättningar att utveckla kunskaper och förmågor inom ämnet.'`};
   const steg = STEG_RUBRIKER[numLevels].map((rubrik,i)=>{
@@ -402,8 +404,8 @@ function ChattLage({onBack}) {
     setTimeout(()=>{
       try {
         const result=parseInput(text);
-        const type=result.type==="prov"?"__prov__":"__lesson__";
         if(!result || !result.meta) throw new Error("Ogiltigt resultat");
+        const type=result.type==="prov"?"__prov__":"__lesson__";
         setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);setTimeout(()=>{if(scrollContainerRef.current)scrollContainerRef.current.scrollTop=0;},50);
       } catch(e) {
         setMessages(prev=>[...prev,{role:"assistant",content:"Jag förstod inte riktigt. Prova att skriva så här:

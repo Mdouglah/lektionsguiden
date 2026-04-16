@@ -61,6 +61,7 @@ const TIPS = [
 
 // ─── BYGG LEKTION ─────────────────────────────────────────────────────────────
 function buildLesson(grade, subject, area, chapter, numLevels, v=0) {
+  if (![2,3,4].includes(numLevels)) numLevels = 3;
   const totalTid = STEG_TIDER[numLevels].reduce((s,t)=>s+parseInt(t),0)+10;
   const lgr22obj = LGR22[subject]||{kort:`Eleven ska utveckla kunskaper inom ${subject} enligt Lgr22.`, citat:`Lgr22, ${subject}: 'Undervisningen ska ge eleverna förutsättningar att utveckla kunskaper och förmågor inom ämnet.'`};
   const steg = STEG_RUBRIKER[numLevels].map((rubrik,i)=>{
@@ -107,9 +108,10 @@ function parseInput(text) {
   
   // Nivådetektering
   let numLevels = 3;
-  const lm = t.match(/(\d)\s*nivå/);
-  if (lm) numLevels = Math.min(4,Math.max(2,parseInt(lm[1])));
+  const lm = t.match(/(\d)\s*nivå|nivå\s*(\d)/);
+  if (lm) numLevels = Math.min(4,Math.max(2,parseInt(lm[1]||lm[2])));
   if (t.includes("blandad")||t.includes("mix")) numLevels = 3;
+  if (![2,3,4].includes(numLevels)) numLevels = 3;
   
   // Ämnesdetektering – moderna språk måste komma före engelska
   let subject = "Matematik";

@@ -98,31 +98,84 @@ const AMNEN_LIST = ["Svenska","Matematik","Engelska","Spanska","Franska","Tyska"
 
 function parseInput(text) {
   const t = text.toLowerCase();
-  const isProv = /\bprov\b|\btest\b|\bquiz\b|\bfrågor\b|\bnp\b|nationellt prov/.test(t);
+  const isProv = /\bprov\b|\btest\b|\bquiz\b|\bfrågor\b|\bnp\b|nationellt prov|repetition|inför np|förberedelse/.test(t);
+  
+  // Klassdetektering
   let grade = 6;
   const gm = t.match(/åk\s*(\d)|klass\s*(\d)|(\d)\s*:?an/);
   if (gm) grade = parseInt(gm[1]||gm[2]||gm[3]);
+  
+  // Nivådetektering
   let numLevels = 3;
   const lm = t.match(/(\d)\s*nivå/);
   if (lm) numLevels = Math.min(4,Math.max(2,parseInt(lm[1])));
   if (t.includes("blandad")||t.includes("mix")) numLevels = 3;
+  
+  // Ämnesdetektering – moderna språk måste komma före engelska
   let subject = "Matematik";
-  for (const a of AMNEN_LIST) { if (t.includes(a.toLowerCase())) { subject=a; break; } }
   if (t.includes("matte")) subject="Matematik";
-  if (t.includes("bio") && !t.includes("biologi")) subject="Biologi";
-  if (t.includes("geo") && !t.includes("geografi")) subject="Geografi";
-  if (t.includes("religion")||t.includes(" re ")) subject="Religionskunskap";
-  if (t.includes("samhäll")) subject="Samhällskunskap";
-  if (t.includes("idrott")) subject="Idrott och hälsa";
-  if (t.includes("hemkunskap")||t.includes("hem- och")) subject="Hemkunskap";
-  const keywords = ["nationellt prov","np matte","np svenska","np engelska","procent","bråk","decimaltal","algebra","ekvation","geometri","statistik","sannolikhet","preteritum","imperfecto","passé composé","perfekt","subjunktiv","konjunktiv","källkritik","argumenterande text","läsförståelse","grammatik","substantiv","verb","adjektiv","fotosyntesen","cellen","ekosystem","immunförsvaret","genetik","evolution","newtons lagar","elektricitet","termodynamik","radioaktivitet","franska revolutionen","vikingatiden","medeltiden","kalla kriget","industrialismen","demokrati","mänskliga rättigheter","klimatpolitik","multiplikation","division","addition","subtraktion","tallinjen","pythagoras","trigonometri","logaritm","derivata"];
+  else if (t.includes("matematik")) subject="Matematik";
+  else if (t.includes("franska")) subject="Franska";
+  else if (t.includes("spanska")) subject="Spanska";
+  else if (t.includes("tyska")) subject="Tyska";
+  else if (t.includes("engelska")) subject="Engelska";
+  else if (t.includes("svenska")) subject="Svenska";
+  else if (t.includes("biologi")) subject="Biologi";
+  else if (t.includes("bio")) subject="Biologi";
+  else if (t.includes("fysik")) subject="Fysik";
+  else if (t.includes("kemi")) subject="Kemi";
+  else if (t.includes("geografi")) subject="Geografi";
+  else if (t.includes("geo")) subject="Geografi";
+  else if (t.includes("historia")) subject="Historia";
+  else if (t.includes("religion")||t.includes(" re ")) subject="Religionskunskap";
+  else if (t.includes("samhäll")) subject="Samhällskunskap";
+  else if (t.includes("bild")) subject="Bild";
+  else if (t.includes("musik")) subject="Musik";
+  else if (t.includes("idrott")) subject="Idrott och hälsa";
+  else if (t.includes("slöjd")) subject="Slöjd";
+  else if (t.includes("teknik")) subject="Teknik";
+  else if (t.includes("hemkunskap")||t.includes("hem- och")) subject="Hemkunskap";
+
+  // Hämta tillgängliga områden för valt ämne och klass
+  const gradeData = DATA[grade] || DATA[6];
+  const subjectData = gradeData[subject] || {};
+  const areas = Object.keys(subjectData);
+  const defaultArea = areas[0] || subject;
+
+  // Kapiteldetektering – kolla om något nyckelord matchar ett känt kapitel
+  const keywords = [
+    "nationellt prov","np matte","np svenska","np engelska","inför np","repetition inför",
+    // Moderna språk
+    "preteritum","imperfecto","passé composé","imparfait","futur simple","subjunktiv",
+    "konjunktiv","perfekt","dativ","genitiv","konditionalis","grammatik","kommunikation",
+    // Matematik
+    "procent","bråk","decimaltal","algebra","ekvation","geometri","statistik",
+    "sannolikhet","multiplikation","division","addition","subtraktion","pythagoras",
+    "trigonometri","logaritm","derivata","potenser","rationella tal",
+    // Svenska/Engelska
+    "källkritik","argumenterande text","läsförståelse","substantiv","verb","adjektiv",
+    // NO
+    "fotosyntesen","cellen","ekosystem","immunförsvaret","genetik","evolution",
+    "newtons lagar","elektricitet","termodynamik","radioaktivitet",
+    // SO
+    "franska revolutionen","vikingatiden","medeltiden","kalla kriget","industrialismen",
+    "demokrati","mänskliga rättigheter","klimatpolitik"
+  ];
+  
   let chapter = subject + " – centralt moment";
   for (const kw of keywords) {
     if (t.includes(kw)) { chapter=kw.charAt(0).toUpperCase()+kw.slice(1); break; }
   }
+
+  // Hitta bäst matchande area
+  let bestArea = defaultArea;
+  for (const area of areas) {
+    if (t.includes(area.toLowerCase())) { bestArea = area; break; }
+  }
+
   const v = Math.floor(Math.random()*3);
   if (isProv) return buildProv(grade, subject, chapter, numLevels);
-  return buildLesson(grade, subject, subject, chapter, numLevels, v);
+  return buildLesson(grade, subject, bestArea, chapter, numLevels, v);
 }
 
 // ─── EXPORT TEXT ──────────────────────────────────────────────────────────────
@@ -323,11 +376,11 @@ function GuidatLage({onBack}) {
 
 // ─── CHATTLÄGE ────────────────────────────────────────────────────────────────
 const EXEMPEL = [
-  "Genomgång i matte åk 6 om procent, 3 nivåer",
-  "Prov svenska åk 9, algebra, 3 nivåer",
+  "Genomgång matte åk 6 om procent, 3 nivåer",
   "Prov svenska åk 9, argumenterande text, 3 nivåer",
+  "Prov matte åk 9, algebra, 3 nivåer",
   "Quiz biologi åk 7 – immunförsvaret, blandad klass",
-  "Genomgång historia åk 5, vikingatiden"
+  "Genomgång historia åk 5, vikingatiden, 2 nivåer"
 ];
 
 function ChattLage({onBack}) {
@@ -351,7 +404,14 @@ function ChattLage({onBack}) {
         if(!result || !result.meta) throw new Error("Ogiltigt resultat");
         setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);setTimeout(()=>{if(scrollContainerRef.current)scrollContainerRef.current.scrollTop=0;},50);
       } catch(e) {
-        setMessages(prev=>[...prev,{role:"assistant",content:"Jag förstod inte riktigt. Försök t.ex: 'Matte åk 6 om procent, 3 nivåer' eller 'Prov svenska åk 9'. Ange gärna ämne, klass och moment."}]);
+        setMessages(prev=>[...prev,{role:"assistant",content:"Jag förstod inte riktigt. Prova att skriva så här:
+
+• 'Repetition matte åk 9 – algebra'
+• 'Prov svenska åk 9'
+• 'NP-förberedelse matte åk 9'
+• 'Genomgång matte åk 7 – geometri, 3 nivåer'
+
+Ange ämne, klass och gärna moment."}]);
       }
       setLoading(false);
     },800);
@@ -386,9 +446,9 @@ function ChattLage({onBack}) {
                   <div style={{color:"#2e7d32",fontSize:".75rem",marginBottom:".28rem",fontWeight:700}}>🌿 LektionsGuiden</div>
                   <div style={{background:"white",borderRadius:"4px 16px 16px 16px",padding:".9rem",boxShadow:"0 2px 12px rgba(46,125,50,.1)"}}>
                     <p style={{margin:"0 0 .5rem",color:"#1a3a2a",fontSize:".83rem",fontWeight:700}}>{msg.content==="__prov__"?"📝 Här är ditt prov!":"✅ Här är din genomgång!"}</p>
-                    {msg.content==="__prov__"
+                    {msg.data && msg.content==="__prov__"
                       ? <ProvCard p={msg.data} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportProv(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}}/>
-                      : <LessonCard l={msg.data} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportLesson(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}} onPrint={()=>window.print()}/>}
+                      : msg.data ? <LessonCard l={msg.data} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportLesson(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}} onPrint={()=>window.print()}/> : <p style={{color:"#c0392b",fontSize:".82rem"}}>Kunde inte skapa innehåll. Försök igen med ett annat ämne.</p>}
                   </div>
                 </div>
               : <div style={{width:"100%"}}>

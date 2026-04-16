@@ -91,7 +91,7 @@ function buildProv(grade, subject, chapter, numLevels) {
       : [`Analysera ett komplext problem som rör ${chapter}.`,`Koppla ${chapter} till ett verkligt sammanhang utanför skolan.`,`Motivera och argumentera: Varför är ${chapter} viktigt att förstå?`];
     return {namn,fragor};
   });
-  return {type:"prov",meta:{grade,subject,chapter,numLevels},lgr22:LGR22[subject]||``,nivor};
+  return {type:"prov",meta:{grade,subject,chapter,numLevels},lgr22:LGR22[subject]?.kort||``,nivor};
 }
 
 // ─── TOLKA FRITEXT ────────────────────────────────────────────────────────────

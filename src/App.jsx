@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-// ─── LGR22 ──────────────────────────────────────────────────────────────────
+// ─── LGR22 ─────────────────────────────────────────────────────────────────── v2
 const LGR22 = {
 "Svenska":{ kort:"Eleven ska läsa, analysera och kommunicera i tal och skrift med anpassning till syfte och mottagare.", citat:"Lgr22, Svenska: 'Undervisningen ska stimulera elevernas intresse för att läsa och skriva samt ge dem möjlighet att möta och arbeta med olika typer av texter och digitala verktyg.'" },
 "Matematik":{ kort:"Eleven ska formulera och lösa problem, använda matematiska metoder och föra matematiska resonemang.", citat:"Lgr22, Matematik: 'Undervisningen ska bidra till att eleverna utvecklar förmåga att argumentera logiskt och föra matematiska resonemang.'" },
@@ -381,9 +381,9 @@ function GuidatLage({onBack}) {
 // ─── CHATTLÄGE ────────────────────────────────────────────────────────────────
 const EXEMPEL = [
   "Genomgång matte åk 6 om procent, 3 nivåer",
- "Genomgång svenska åk 8, 3 nivåer",
-"Genomgång matte åk 9, algebra, 3 nivåer",
-"Genomgång biologi åk 7, genetik, 2 nivåer",
+  "Genomgång svenska åk 8, 3 nivåer",
+  "Genomgång matte åk 9, algebra, 3 nivåer",
+  "Genomgång biologi åk 7, genetik, 2 nivåer",
   "Genomgång historia åk 5, vikingatiden, 2 nivåer"
 ];
 
@@ -408,14 +408,7 @@ function ChattLage({onBack}) {
         const type=result.type==="prov"?"__prov__":"__lesson__";
         setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);setTimeout(()=>{if(scrollContainerRef.current)scrollContainerRef.current.scrollTop=0;},50);
       } catch(e) {
-        setMessages(prev=>[...prev,{role:"assistant",content:"Jag förstod inte riktigt. Prova att skriva så här:
-
-• 'Repetition matte åk 9 – algebra'
-• 'Prov svenska åk 9'
-• 'NP-förberedelse matte åk 9'
-• 'Genomgång matte åk 7 – geometri, 3 nivåer'
-
-Ange ämne, klass och gärna moment."}]);
+        setMessages(prev=>[...prev,{role:"assistant",content:"Försök t.ex: Genomgång matte åk 6, Prov svenska åk 9"}]);
       }
       setLoading(false);
     },800);

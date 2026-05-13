@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-// ─── LGR22 ─────────────────────────────────────────────────────────────────── v2
+// ─── LGR22 ───────────────────────────────────────────────────────────────────
 const LGR22 = {
 "Svenska":{ kort:"Eleven ska läsa, analysera och kommunicera i tal och skrift med anpassning till syfte och mottagare.", citat:"Lgr22, Svenska: 'Undervisningen ska stimulera elevernas intresse för att läsa och skriva samt ge dem möjlighet att möta och arbeta med olika typer av texter och digitala verktyg.'" },
 "Matematik":{ kort:"Eleven ska formulera och lösa problem, använda matematiska metoder och föra matematiska resonemang.", citat:"Lgr22, Matematik: 'Undervisningen ska bidra till att eleverna utvecklar förmåga att argumentera logiskt och föra matematiska resonemang.'" },
@@ -59,6 +59,123 @@ const TIPS = [
 ["Planera naturliga pauspunkter","Avancerade elever som resurspersoner","Samla frågor löpande – värdefull formativ info"]
 ];
 
+// ─── NPF-PROFILER ─────────────────────────────────────────────────────────────
+const NPF_PROFILER = [
+{ id:"adhd", label:"ADHD / ADD", emoji:"🔵", undertitel:"Uppmärksamhet, impuls", farg:"#1565c0", bgFarg:"#e3f2fd", textFarg:"#0d3a6e" },
+{ id:"ast",  label:"Autismspektrum (AST)", emoji:"🟡", undertitel:"Struktur, tydlighet", farg:"#f57c00", bgFarg:"#fff8e1", textFarg:"#6d3a00" },
+{ id:"dyslexi", label:"Dyslexi", emoji:"🔴", undertitel:"Läsning, skrivning", farg:"#c62828", bgFarg:"#ffebee", textFarg:"#7f0000" },
+{ id:"dyskalkyli", label:"Dyskalkyli", emoji:"🟠", undertitel:"Tal, matematik", farg:"#e65100", bgFarg:"#fff3e0", textFarg:"#7b2b00" },
+{ id:"hog", label:"Hög begåvning", emoji:"🟣", undertitel:"Extra utmaning", farg:"#6a1b9a", bgFarg:"#f3e5f5", textFarg:"#38006b" },
+{ id:"annat", label:"Annat / oklart", emoji:"⚪", undertitel:"Allmänna anpassningar", farg:"#546e7a", bgFarg:"#eceff1", textFarg:"#263238" },
+];
+
+// ─── BYGG NPF ─────────────────────────────────────────────────────────────────
+function buildNPF(profiles, chapter, subject) {
+  const w = chapter ? chapter.split(" ")[0] : subject;
+  const anpassningar = {};
+
+  if (profiles.includes("adhd")) {
+    anpassningar["adhd"] = [
+      `Dela upp genomgången i tydliga block om 5–7 minuter – ge en visuell signal (t.ex. timer på tavlan) vid varje skifte.`,
+      `Använd korta, konkreta instruktioner – max ett steg i taget. Skriv stegen synligt på tavlan under hela lektionen.`,
+      `Variera aktivitetsformen ofta: visa → diskutera i par → lös uppgift. Undvik längre envägskommunikation.`,
+      `Tillåt rörelsepauser – t.ex. "sträck på dig och svara" istället för traditionell handuppräckning.`,
+      `Ge eleven en checklista med lektionens steg – minskar kognitiv belastning och ökar känslan av kontroll.`,
+      `Placera eleven nära tavlan och läraren, bort från fönster och dörr för att minska distraktioner.`,
+    ];
+  }
+
+  if (profiles.includes("ast")) {
+    anpassningar["ast"] = [
+      `Presentera lektionens struktur tydligt i början: "Vi gör X (10 min), sedan Y (15 min), sedan Z (10 min)."`,
+      `Undvik vaga instruktioner. Ersätt "jobba lite med ${w}" med "lös uppgift 1–3 på sidan X, skriv svaret i häftet".`,
+      `Förvarna om övergångar och förändringar i god tid – "om 3 minuter byter vi aktivitet".`,
+      `Koppla ${w} till ett konkret och förutsägbart exempel som eleven känner igen från sin vardag eller ett specialintresse.`,
+      `Undvik öppna sociala uppgifter utan tydlig struktur. Om pararbete: ge tydliga roller och tidsramar.`,
+      `Erbjud skriftliga instruktioner som komplement till muntliga – eleven kan återgå till dem vid behov.`,
+    ];
+  }
+
+  if (profiles.includes("dyslexi")) {
+    anpassningar["dyslexi"] = [
+      `Minimera textmängden på tavlan och i material – använd punktlistor, bilder och diagram istället för långa meningar.`,
+      `Läs alltid upp skriven text högt och ge eleven tillgång till digitalt stöd (t.ex. inläsningstjänst, talsyntes).`,
+      `Ge extra tid för skriftliga uppgifter – erbjud muntligt alternativ när möjligt.`,
+      `Använd tydligt typsnitt (Arial, Verdana), minst 14pt, och undvik text direkt på färgad bakgrund.`,
+      `Låt eleven visa kunskaper om ${w} muntligt eller via bilder snarare än enbart skriftligt.`,
+      `Ge stödstrukturer: färdiga meningsstartar, ordlistor och mallar för att minska skrivbördan.`,
+    ];
+  }
+
+  if (profiles.includes("dyskalkyli")) {
+    anpassningar["dyskalkyli"] = [
+      `Tillåt alltid hjälpmedel: räknare, tallinje, rutpapper och formelsamling – det handlar om förståelse, inte huvudräkning.`,
+      `Konkretisera abstrakta tal och begrepp i ${w} med fysiska föremål, pengar eller vardagsexempel.`,
+      `Dela upp beräkningar i tydliga, numrerade steg och visa varje steg separat på tavlan.`,
+      `Undvik tidpress – eleven behöver ofta mer tid för att bearbeta numerisk information.`,
+      `Använd grafiska representationer (bilder, diagram, konkret material) som komplement till siffror.`,
+      `Bekräfta elevens förståelse av principen bakom ${w} – inte enbart om rätt svar uppnåddes.`,
+    ];
+  }
+
+  if (profiles.includes("hog")) {
+    anpassningar["hog"] = [
+      `Förbered fördjupningsfrågor kopplade till ${w} som eleven kan arbeta med när grunduppgifterna är klara.`,
+      `Erbjud öppna problem utan ett givet svar – t.ex. "Kan du hitta ett eget exempel som är ännu mer komplext?"`,
+      `Låt eleven ta rollen som "expert" och förklara för en kamrat – stärker förståelsen och bidrar till klassen.`,
+      `Koppla ${w} till angränsande ämnen, verkliga tillämpningar eller vetenskapliga sammanhang.`,
+      `Undvik repetitionsuppgifter eleven redan behärskar – ersätt med utmaningar på högre abstraktionsnivå.`,
+      `Uppmuntra eleven att formulera egna frågor och hypoteser om ${w} – tränar metakognition.`,
+    ];
+  }
+
+  if (profiles.includes("annat")) {
+    anpassningar["annat"] = [
+      `Var tydlig med lektionens mål och struktur från start – hjälper alla elever oavsett specifik profil.`,
+      `Erbjud valmöjligheter i hur eleven visar sin kunskap: muntligt, skriftligt eller praktiskt.`,
+      `Bygg in regelbundna incheckningar – en snabb tumme upp/ner eller kort fråga ger formativ information.`,
+      `Reducera onödig kognitiv belastning: ha material framme, skriv instruktioner synligt, var konsekvent i rutiner.`,
+      `Säkerställ att eleven har en trygg relation till dig – trygghet är förutsättningen för inlärning.`,
+      `Samråd med specialpedagog om du är osäker på elevens behov – åtgärdsprogram och extra anpassningar.`,
+    ];
+  }
+
+  return anpassningar;
+}
+
+// ─── NPF-KORT ─────────────────────────────────────────────────────────────────
+function NPFCard({ profiles, chapter, subject }) {
+  const anpassningar = buildNPF(profiles, chapter, subject);
+  const aktiva = NPF_PROFILER.filter(p => profiles.includes(p.id));
+  if (aktiva.length === 0) return null;
+
+  return (
+    <div style={{background:"white",borderRadius:14,padding:"1.1rem",boxShadow:"0 2px 12px rgba(46,125,50,.08)",marginBottom:".7rem",border:"2px solid #e8eaf6"}}>
+      <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".9rem",paddingBottom:".7rem",borderBottom:"1px solid #e8eaf6"}}>
+        <span style={{fontSize:"1.2rem"}}>🧩</span>
+        <div>
+          <div style={{fontFamily:"Georgia,serif",fontWeight:700,color:"#1a3a2a",fontSize:".95rem"}}>NPF-anpassningar</div>
+          <div style={{fontSize:".72rem",color:"#4a7c59"}}>{chapter} · {aktiva.length} {aktiva.length===1?"profil":"profiler"} valda</div>
+        </div>
+      </div>
+
+      {aktiva.map((profil, idx) => (
+        <div key={profil.id} style={{marginBottom: idx < aktiva.length-1 ? "1rem" : 0, paddingBottom: idx < aktiva.length-1 ? "1rem" : 0, borderBottom: idx < aktiva.length-1 ? "1px solid #f1f8e9" : "none"}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:".4rem",background:profil.bgFarg,border:`1.5px solid ${profil.farg}`,borderRadius:50,padding:".2rem .8rem",marginBottom:".55rem"}}>
+            <span style={{fontSize:".85rem"}}>{profil.emoji}</span>
+            <span style={{fontSize:".78rem",fontWeight:700,color:profil.textFarg}}>{profil.label}</span>
+          </div>
+          <ul style={{margin:0,paddingLeft:"1.2rem"}}>
+            {(anpassningar[profil.id]||[]).map((punkt,i) => (
+              <li key={i} style={{fontSize:".8rem",marginBottom:".3rem",lineHeight:1.6,color:"#1a2e1a"}}>{punkt}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── BYGG LEKTION ─────────────────────────────────────────────────────────────
 function buildLesson(grade, subject, area, chapter, numLevels, v=0) {
   if (![2,3,4].includes(numLevels)) numLevels = 3;
@@ -97,25 +214,17 @@ function buildProv(grade, subject, chapter, numLevels) {
 }
 
 // ─── TOLKA FRITEXT ────────────────────────────────────────────────────────────
-const AMNEN_LIST = ["Svenska","Matematik","Engelska","Spanska","Franska","Tyska","Biologi","Fysik","Kemi","Geografi","Historia","Religionskunskap","Samhällskunskap","Bild","Musik","Idrott och hälsa","Slöjd","Teknik","Hemkunskap"];
-
 function parseInput(text) {
   const t = text.toLowerCase();
   const isProv = /\bprov\b|\btest\b|\bquiz\b|\bfrågor\b|\bnp\b|nationellt prov|repetition|inför np|förberedelse/.test(t);
-  
-  // Klassdetektering
   let grade = 6;
   const gm = t.match(/åk\s*(\d)|klass\s*(\d)|(\d)\s*:?an/);
   if (gm) grade = parseInt(gm[1]||gm[2]||gm[3]);
-  
-  // Nivådetektering
   let numLevels = 3;
   const lm = t.match(/(\d)\s*nivå|nivå\s*(\d)/);
   if (lm) numLevels = Math.min(4,Math.max(2,parseInt(lm[1]||lm[2])));
   if (t.includes("blandad")||t.includes("mix")) numLevels = 3;
   if (![2,3,4].includes(numLevels)) numLevels = 3;
-  
-  // Ämnesdetektering – moderna språk måste komma före engelska
   let subject = "Matematik";
   if (t.includes("matte")) subject="Matematik";
   else if (t.includes("matematik")) subject="Matematik";
@@ -129,7 +238,6 @@ function parseInput(text) {
   else if (t.includes("fysik")) subject="Fysik";
   else if (t.includes("kemi")) subject="Kemi";
   else if (t.includes("geografi")) subject="Geografi";
-  else if (t.includes("geo")) subject="Geografi";
   else if (t.includes("historia")) subject="Historia";
   else if (t.includes("religion")||t.includes(" re ")) subject="Religionskunskap";
   else if (t.includes("samhäll")) subject="Samhällskunskap";
@@ -138,45 +246,20 @@ function parseInput(text) {
   else if (t.includes("idrott")) subject="Idrott och hälsa";
   else if (t.includes("slöjd")) subject="Slöjd";
   else if (t.includes("teknik")) subject="Teknik";
-  else if (t.includes("hemkunskap")||t.includes("hem- och")) subject="Hemkunskap";
-
-  // Hämta tillgängliga områden för valt ämne och klass
+  else if (t.includes("hemkunskap")) subject="Hemkunskap";
   const gradeData = DATA[grade] || DATA[6];
   const subjectData = gradeData[subject] || {};
   const areas = Object.keys(subjectData);
   const defaultArea = areas[0] || subject;
-
-  // Kapiteldetektering – kolla om något nyckelord matchar ett känt kapitel
-  const keywords = [
-    "nationellt prov","np matte","np svenska","np engelska","inför np","repetition inför",
-    // Moderna språk
-    "preteritum","imperfecto","passé composé","imparfait","futur simple","subjunktiv",
-    "konjunktiv","perfekt","dativ","genitiv","konditionalis","grammatik","kommunikation",
-    // Matematik
-    "procent","bråk","decimaltal","algebra","ekvation","geometri","statistik",
-    "sannolikhet","multiplikation","division","addition","subtraktion","pythagoras",
-    "trigonometri","logaritm","derivata","potenser","rationella tal",
-    // Svenska/Engelska
-    "källkritik","argumenterande text","läsförståelse","substantiv","verb","adjektiv",
-    // NO
-    "fotosyntesen","cellen","ekosystem","immunförsvaret","genetik","evolution",
-    "newtons lagar","elektricitet","termodynamik","radioaktivitet",
-    // SO
-    "franska revolutionen","vikingatiden","medeltiden","kalla kriget","industrialismen",
-    "demokrati","mänskliga rättigheter","klimatpolitik"
-  ];
-  
+  const keywords = ["nationellt prov","preteritum","imperfecto","passé composé","imparfait","futur simple","subjunktiv","konjunktiv","perfekt","dativ","genitiv","konditionalis","grammatik","kommunikation","procent","bråk","decimaltal","algebra","ekvation","geometri","statistik","sannolikhet","multiplikation","division","addition","subtraktion","pythagoras","trigonometri","logaritm","derivata","potenser","rationella tal","källkritik","argumenterande text","läsförståelse","substantiv","verb","adjektiv","fotosyntesen","cellen","ekosystem","immunförsvaret","genetik","evolution","newtons lagar","elektricitet","termodynamik","radioaktivitet","franska revolutionen","vikingatiden","medeltiden","kalla kriget","industrialismen","demokrati","mänskliga rättigheter","klimatpolitik"];
   let chapter = subject + " – centralt moment";
   for (const kw of keywords) {
     if (t.includes(kw)) { chapter=kw.charAt(0).toUpperCase()+kw.slice(1); break; }
   }
-
-  // Hitta bäst matchande area
   let bestArea = defaultArea;
   for (const area of areas) {
     if (t.includes(area.toLowerCase())) { bestArea = area; break; }
   }
-
   const v = Math.floor(Math.random()*3);
   if (isProv) return buildProv(grade, subject, chapter, numLevels);
   return buildLesson(grade, subject, bestArea, chapter, numLevels, v);
@@ -195,7 +278,7 @@ function exportProv(p) {
   return t;
 }
 
-// ─── KORT-KOMPONENTER ────────────────────────────────────────────────────────
+// ─── LESSON CARD ─────────────────────────────────────────────────────────────
 function LessonCard({l,onCopy,onPrint,copied}) {
   const [as,setAs]=useState(null);
   return (
@@ -270,6 +353,7 @@ function LessonCard({l,onCopy,onPrint,copied}) {
   );
 }
 
+// ─── PROV CARD ────────────────────────────────────────────────────────────────
 function ProvCard({p,onCopy,copied}) {
   const NIVA_FARG = ["#1b5e20","#2e7d32","#388e3c","#43a047"];
   return (
@@ -307,6 +391,8 @@ function GuidatLage({onBack}) {
   const [chapter,setChapter]=useState(null);
   const [custom,setCustom]=useState("");
   const [numLevels,setNumLevels]=useState(null);
+  const [npfStep,setNpfStep]=useState(false);
+  const [npfProfiles,setNpfProfiles]=useState([]);
   const [lesson,setLesson]=useState(null);
   const [variant,setVariant]=useState(0);
   const [copied,setCopied]=useState(false);
@@ -317,59 +403,151 @@ function GuidatLage({onBack}) {
   const chapters=grade&&subject&&area?DATA[grade]?.[subject]?.[area]||[]:[];
   const activeChapter=custom.trim()||chapter;
 
-  function generate(v=0){setLesson(buildLesson(grade,subject,area,activeChapter,numLevels,v));setVariant(v);window.scrollTo(0,0);}
-  function reset(){setGrade(null);setSubject(null);setArea(null);setChapter(null);setCustom("");setNumLevels(null);setLesson(null);window.scrollTo(0,0);}
+  function toggleNpf(id) {
+    setNpfProfiles(prev => prev.includes(id) ? prev.filter(p=>p!==id) : [...prev,id]);
+  }
+
+  function generate(v=0, profiles=npfProfiles) {
+    setLesson(buildLesson(grade,subject,area,activeChapter,numLevels,v));
+    setVariant(v);
+    setNpfProfiles(profiles);
+    window.scrollTo(0,0);
+  }
+
+  function handleNpfNext() {
+    generate(0, npfProfiles);
+  }
+
+  function handleSkipNpf() {
+    setNpfProfiles([]);
+    generate(0, []);
+  }
+
+  function reset() {
+    setGrade(null);setSubject(null);setArea(null);setChapter(null);
+    setCustom("");setNumLevels(null);setNpfStep(false);
+    setNpfProfiles([]);setLesson(null);window.scrollTo(0,0);
+  }
 
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5e9,#f1f8e9,#e0f2f1)",fontFamily:"Georgia,serif",padding:"1rem"}}>
-      <style>{`.cbtn{transition:all .18s;border:2px solid #a5d6a7;background:white;border-radius:10px;padding:.55rem .8rem;cursor:pointer;font-family:Georgia,serif;font-size:.83rem;color:#1a3a2a;text-align:left;width:100%}.cbtn:hover{border-color:#2e7d32;background:#f1f8e9}.cbtn.on{border-color:#2e7d32;background:#e8f5e9;font-weight:700}.gbtn{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:white;border:none;border-radius:50px;padding:.75rem 1.8rem;font-size:.9rem;font-family:Georgia,serif;font-weight:700;cursor:pointer}.gbtn.sec{background:linear-gradient(135deg,#78909c,#546e7a)}ul{padding-left:1.2rem;margin:.3rem 0}li{margin-bottom:.3rem;line-height:1.55;color:#1a2e1a}`}</style>
+      <style>{`
+        .cbtn{transition:all .18s;border:2px solid #a5d6a7;background:white;border-radius:10px;padding:.55rem .8rem;cursor:pointer;font-family:Georgia,serif;font-size:.83rem;color:#1a3a2a;text-align:left;width:100%}
+        .cbtn:hover{border-color:#2e7d32;background:#f1f8e9}
+        .cbtn.on{border-color:#2e7d32;background:#e8f5e9;font-weight:700}
+        .gbtn{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:white;border:none;border-radius:50px;padding:.75rem 1.8rem;font-size:.9rem;font-family:Georgia,serif;font-weight:700;cursor:pointer}
+        .gbtn.sec{background:linear-gradient(135deg,#78909c,#546e7a)}
+        .npf-pill{transition:all .18s;display:flex;align-items:center;gap:.6rem;border-radius:12px;padding:.65rem .9rem;cursor:pointer;border:2px solid transparent}
+        ul{padding-left:1.2rem;margin:.3rem 0}
+        li{margin-bottom:.3rem;line-height:1.55;color:#1a2e1a}
+      `}</style>
       <div style={{maxWidth:660,margin:"0 auto"}}>
         <div style={{display:"flex",alignItems:"center",gap:".7rem",marginBottom:"1.2rem"}}>
           <button onClick={onBack} style={{background:"#2e7d32",color:"white",border:"none",borderRadius:8,padding:".4rem .85rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem"}}>← Hem</button>
           <span style={{fontSize:"1.5rem"}}>🌿</span>
           <div><div style={{color:"#1b5e20",fontWeight:700,fontSize:".95rem"}}>LektionsGuiden</div><div style={{color:"#4a7c59",fontSize:".72rem"}}>Guidat läge · Lgr22</div></div>
         </div>
-        {!lesson ? (
+
+        {/* ── NPF-STEG ── */}
+        {!lesson && npfStep && (
+          <div style={{background:"white",borderRadius:18,padding:"1.5rem",boxShadow:"0 4px 20px rgba(46,125,50,.08)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".3rem"}}>
+              <span style={{fontSize:"1.3rem"}}>🧩</span>
+              <h2 style={{color:"#1a3a2a",margin:0,fontSize:"1.1rem"}}>Finns det elever med särskilda behov?</h2>
+            </div>
+            <p style={{color:"#4a7c59",fontSize:".83rem",marginBottom:"1.2rem",lineHeight:1.6}}>
+              Välj de NPF-profiler som finns i klassen. Genomgången kompletteras med ett separat anpassningskort. Steget är frivilligt.
+            </p>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:".55rem",marginBottom:"1.3rem"}}>
+              {NPF_PROFILER.map(profil => {
+                const vald = npfProfiles.includes(profil.id);
+                return (
+                  <div key={profil.id} className="npf-pill"
+                    onClick={()=>toggleNpf(profil.id)}
+                    style={{background: vald ? profil.bgFarg : "white", border: `2px solid ${vald ? profil.farg : "#a5d6a7"}`}}>
+                    <div style={{width:30,height:30,borderRadius:"50%",background:profil.farg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem",flexShrink:0}}>
+                      {profil.emoji}
+                    </div>
+                    <div>
+                      <div style={{fontSize:".82rem",fontWeight:700,color: vald ? profil.textFarg : "#1a3a2a"}}>{profil.label}</div>
+                      <div style={{fontSize:".7rem",color: vald ? profil.farg : "#4a7c59"}}>{profil.undertitel}</div>
+                    </div>
+                    {vald && <span style={{marginLeft:"auto",fontSize:".9rem"}}>✅</span>}
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:".5rem",flexWrap:"wrap"}}>
+              <button onClick={handleSkipNpf} style={{background:"none",border:"2px solid #c8e6c9",borderRadius:50,padding:".6rem 1.3rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".83rem",color:"#4a7c59"}}>
+                Hoppa över
+              </button>
+              <button className="gbtn" onClick={handleNpfNext}>
+                {npfProfiles.length > 0 ? `✨ Skapa genomgång med ${npfProfiles.length} profil${npfProfiles.length > 1 ? "er" : ""}` : "✨ Skapa genomgång"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── VÄLJ-FORMULÄR ── */}
+        {!lesson && !npfStep && (
           <div style={{background:"white",borderRadius:18,padding:"1.5rem",boxShadow:"0 4px 20px rgba(46,125,50,.08)"}}>
             <h2 style={{color:"#1a3a2a",marginTop:0,fontSize:"1.1rem"}}>Välj klass</h2>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:".45rem",marginBottom:"1rem"}}>
               {grades.map(g=><button key={g} className={`cbtn${grade===g?" on":""}`} onClick={()=>{setGrade(g);setSubject(null);setArea(null);setChapter(null);setCustom("");}}>Klass {g}</button>)}
             </div>
-            {grade&&<><h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1rem"}}>Välj ämne</h2>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:".45rem",marginBottom:"1rem"}}>
-              {subjects.map(s=><button key={s} className={`cbtn${subject===s?" on":""}`} onClick={()=>{setSubject(s);setArea(null);setChapter(null);setCustom("");}}>{s}</button>)}
-            </div></>}
-            {subject&&<><h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1rem"}}>Välj område</h2>
-            <div style={{display:"grid",gap:".4rem",marginBottom:"1rem"}}>
-              {areas.map(a=><button key={a} className={`cbtn${area===a?" on":""}`} onClick={()=>{setArea(a);setChapter(null);setCustom("");}}>{a}</button>)}
-            </div></>}
-            {area&&<><h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1rem"}}>Välj kapitel / lektion</h2>
-            <div style={{display:"grid",gap:".35rem",maxHeight:240,overflowY:"auto",paddingRight:4,marginBottom:"1rem"}}>
-              {chapters.map(c=><button key={c} className={`cbtn${chapter===c&&!custom?" on":""}`} onClick={()=>{setChapter(c);setCustom("");}}>📖 {c}</button>)}
-            </div>
-            <div style={{borderTop:"2px dashed #c8e6c9",paddingTop:".9rem"}}>
-              <p style={{color:"#2e7d32",fontWeight:700,fontSize:".85rem",margin:"0 0 .4rem"}}>✏️ Skriv eget kapitel, sidnummer eller innehåll</p>
-              <textarea value={custom} onChange={e=>{setCustom(e.target.value);if(e.target.value)setChapter(null);}} placeholder="T.ex. 'Källkritik – övningar s. 47' eller 'Kap. 6 – Procentberäkning'" rows={3} style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:10,padding:".65rem .9rem",fontFamily:"Georgia,serif",fontSize:".88rem",color:"#1a3a2a",outline:"none",resize:"vertical",boxSizing:"border-box"}}/>
-              {custom.trim()&&<p style={{color:"#4a7c59",fontSize:".75rem",margin:".35rem 0 0",fontStyle:"italic"}}>✅ Genomgången anpassas till: "{custom.trim()}"</p>}
-            </div></>}
-            {activeChapter&&<><h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1.2rem"}}>Antal kunskapsnivåer</h2>
-            <div style={{display:"flex",flexDirection:"column",gap:".55rem",marginBottom:"1.2rem"}}>
-              {[{n:2,d:"Två steg – grund och fördjupning"},{n:3,d:"Tre steg – introduktion, fördjupning, analys"},{n:4,d:"Fyra steg – gradvis från grund till avancerad"}].map(({n,d})=>(
-                <button key={n} onClick={()=>setNumLevels(n)} style={{border:`2px solid ${numLevels===n?"#2e7d32":"#a5d6a7"}`,background:numLevels===n?"#e8f5e9":"white",borderRadius:10,padding:".7rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".88rem",color:"#1a3a2a",textAlign:"left"}}>
-                  <strong>{n} nivåer</strong><span style={{fontSize:".78rem",opacity:.75,marginLeft:".4rem"}}>{d}</span>
+            {grade&&<>
+              <h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1rem"}}>Välj ämne</h2>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:".45rem",marginBottom:"1rem"}}>
+                {subjects.map(s=><button key={s} className={`cbtn${subject===s?" on":""}`} onClick={()=>{setSubject(s);setArea(null);setChapter(null);setCustom("");}}>{s}</button>)}
+              </div>
+            </>}
+            {subject&&<>
+              <h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1rem"}}>Välj område</h2>
+              <div style={{display:"grid",gap:".4rem",marginBottom:"1rem"}}>
+                {areas.map(a=><button key={a} className={`cbtn${area===a?" on":""}`} onClick={()=>{setArea(a);setChapter(null);setCustom("");}}>{a}</button>)}
+              </div>
+            </>}
+            {area&&<>
+              <h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1rem"}}>Välj kapitel / lektion</h2>
+              <div style={{display:"grid",gap:".35rem",maxHeight:240,overflowY:"auto",paddingRight:4,marginBottom:"1rem"}}>
+                {chapters.map(c=><button key={c} className={`cbtn${chapter===c&&!custom?" on":""}`} onClick={()=>{setChapter(c);setCustom("");}}>📖 {c}</button>)}
+              </div>
+              <div style={{borderTop:"2px dashed #c8e6c9",paddingTop:".9rem"}}>
+                <p style={{color:"#2e7d32",fontWeight:700,fontSize:".85rem",margin:"0 0 .4rem"}}>✏️ Skriv eget kapitel, sidnummer eller innehåll</p>
+                <textarea value={custom} onChange={e=>{setCustom(e.target.value);if(e.target.value)setChapter(null);}} placeholder="T.ex. 'Källkritik – övningar s. 47' eller 'Kap. 6 – Procentberäkning'" rows={3} style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:10,padding:".65rem .9rem",fontFamily:"Georgia,serif",fontSize:".88rem",color:"#1a3a2a",outline:"none",resize:"vertical",boxSizing:"border-box"}}/>
+                {custom.trim()&&<p style={{color:"#4a7c59",fontSize:".75rem",margin:".35rem 0 0",fontStyle:"italic"}}>✅ Genomgången anpassas till: "{custom.trim()}"</p>}
+              </div>
+            </>}
+            {activeChapter&&<>
+              <h2 style={{color:"#1a3a2a",fontSize:"1rem",marginTop:"1.2rem"}}>Antal kunskapsnivåer</h2>
+              <div style={{display:"flex",flexDirection:"column",gap:".55rem",marginBottom:"1.2rem"}}>
+                {[{n:2,d:"Två steg – grund och fördjupning"},{n:3,d:"Tre steg – introduktion, fördjupning, analys"},{n:4,d:"Fyra steg – gradvis från grund till avancerad"}].map(({n,d})=>(
+                  <button key={n} onClick={()=>setNumLevels(n)} style={{border:`2px solid ${numLevels===n?"#2e7d32":"#a5d6a7"}`,background:numLevels===n?"#e8f5e9":"white",borderRadius:10,padding:".7rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".88rem",color:"#1a3a2a",textAlign:"left"}}>
+                    <strong>{n} nivåer</strong><span style={{fontSize:".78rem",opacity:.75,marginLeft:".4rem"}}>{d}</span>
+                  </button>
+                ))}
+              </div>
+              <div style={{display:"flex",justifyContent:"flex-end"}}>
+                <button className="gbtn" disabled={!numLevels} onClick={()=>setNpfStep(true)} style={{opacity:numLevels?1:.4}}>
+                  Nästa →
                 </button>
-              ))}
-            </div>
-            <div style={{display:"flex",justifyContent:"flex-end"}}>
-              <button className="gbtn" disabled={!numLevels} onClick={()=>generate(0)} style={{opacity:numLevels?1:.4}}>✨ Skapa genomgång</button>
-            </div></>}
+              </div>
+            </>}
           </div>
-        ) : (
+        )}
+
+        {/* ── RESULTAT ── */}
+        {lesson && (
           <div>
-            <LessonCard l={lesson} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportLesson(lesson)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}} onPrint={()=>window.print()}/>
+            <LessonCard l={lesson} copied={copied}
+              onCopy={()=>{navigator.clipboard.writeText(exportLesson(lesson)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}}
+              onPrint={()=>window.print()}/>
+            {npfProfiles.length > 0 && (
+              <NPFCard profiles={npfProfiles} chapter={lesson.meta.chapter} subject={lesson.meta.subject} />
+            )}
             <div style={{display:"flex",gap:".5rem",justifyContent:"center",flexWrap:"wrap",marginTop:"1rem",paddingBottom:"2rem"}}>
               <button className="gbtn sec" onClick={reset}>🔄 Ny genomgång</button>
-              <button className="gbtn" onClick={()=>generate(variant+1)}>✨ Variera</button>
+              <button className="gbtn" onClick={()=>generate(variant+1, npfProfiles)}>✨ Variera</button>
             </div>
           </div>
         )}
@@ -393,9 +571,7 @@ function ChattLage({onBack}) {
   const [loading,setLoading]=useState(false);
   const [copied,setCopied]=useState(false);
   const chatEndRef=useRef(null);
-  const chatTopRef=useRef(null);
   const scrollContainerRef=useRef(null);
-
 
   function sendMessage(text) {
     if (!text.trim()||loading) return;
@@ -406,7 +582,8 @@ function ChattLage({onBack}) {
         const result=parseInput(text);
         if(!result || !result.meta) throw new Error("Ogiltigt resultat");
         const type=result.type==="prov"?"__prov__":"__lesson__";
-        setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);setTimeout(()=>{if(scrollContainerRef.current)scrollContainerRef.current.scrollTop=0;},50);
+        setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);
+        setTimeout(()=>{if(scrollContainerRef.current)scrollContainerRef.current.scrollTop=0;},50);
       } catch(e) {
         setMessages(prev=>[...prev,{role:"assistant",content:"Försök t.ex: Genomgång matte åk 6, Prov svenska åk 9"}]);
       }
@@ -423,8 +600,7 @@ function ChattLage({onBack}) {
         <div><div style={{color:"white",fontWeight:700,fontSize:".88rem"}}>LektionsGuiden</div><div style={{color:"#a5d6a7",fontSize:".65rem"}}>Chattläge · Lgr22 · Genomgångar & Prov</div></div>
       </div>
       <div ref={scrollContainerRef} style={{flex:1,overflowY:"auto",padding:".9rem",maxWidth:680,width:"100%",margin:"0 auto",boxSizing:"border-box"}}>
-        <div ref={chatTopRef}/>
-    {messages.length===0&&(
+        {messages.length===0&&(
           <div className="fi" style={{textAlign:"center",padding:"1.2rem .5rem"}}>
             <div style={{fontSize:"2rem",marginBottom:".7rem"}}>👋</div>
             <h2 style={{color:"#1b5e20",margin:"0 0 .35rem",fontSize:"1.1rem"}}>Hej! Vad behöver du?</h2>
@@ -445,7 +621,7 @@ function ChattLage({onBack}) {
                     <p style={{margin:"0 0 .5rem",color:"#1a3a2a",fontSize:".83rem",fontWeight:700}}>{msg.content==="__prov__"?"📝 Här är ditt prov!":"✅ Här är din genomgång!"}</p>
                     {msg.data && msg.content==="__prov__"
                       ? <ProvCard p={msg.data} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportProv(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}}/>
-                      : msg.data ? <LessonCard l={msg.data} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportLesson(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}} onPrint={()=>window.print()}/> : <p style={{color:"#c0392b",fontSize:".82rem"}}>Kunde inte skapa innehåll. Försök igen med ett annat ämne.</p>}
+                      : msg.data ? <LessonCard l={msg.data} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportLesson(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}} onPrint={()=>window.print()}/> : null}
                   </div>
                 </div>
               : <div style={{width:"100%"}}>
@@ -490,6 +666,7 @@ Du är specialiserad på:
 - Kollegialt lärande och kompetensutveckling
 - Elevers välmående och motivation
 - Samarbete med vårdnadshavare
+- NPF-anpassningar i klassrummet (ADHD, AST, dyslexi, dyskalkyli, hög begåvning)
 
 Du svarar alltid på svenska, är konkret och praktisk, och ger svar som en erfaren kollega skulle ge. Du är varm, uppmuntrande och professionell. Om läraren verkar stressad eller frustrerad, möt dem med förståelse först.
 
@@ -500,7 +677,7 @@ const PEDAGOGAI_EXAMPLES = [
   "Tips på hur jag hanterar en elev som stör lektionen?",
   "Hur skriver jag ett bra omdöme i svenska?",
   "Vad säger Lgr22 om formativ bedömning?",
-  "Hur motiverar jag omotiverade elever i åk 8?",
+  "Hur anpassar jag undervisningen för en elev med ADHD?",
 ];
 
 function PedagogAI({onBack}) {
@@ -520,7 +697,6 @@ function PedagogAI({onBack}) {
     setMessages(newMessages);
     setInput("");
     setLoading(true);
-
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -539,10 +715,6 @@ function PedagogAI({onBack}) {
     setLoading(false);
   }
 
-  function clearChat() {
-    setMessages([]);
-  }
-
   return (
     <div style={{height:"100vh",background:"linear-gradient(135deg,#e8eaf6,#f3e5f5,#e8f5e9)",fontFamily:"Georgia,serif",display:"flex",flexDirection:"column"}}>
       <style>{`
@@ -553,8 +725,6 @@ function PedagogAI({onBack}) {
         .pai-msg{white-space:pre-wrap;line-height:1.7}
         textarea:focus{outline:none}
       `}</style>
-
-      {/* Header */}
       <div style={{background:"linear-gradient(135deg,#4527a0,#6a1b9a)",padding:".8rem 1rem",display:"flex",alignItems:"center",gap:".65rem",boxShadow:"0 2px 12px rgba(69,39,160,.3)",flexShrink:0}}>
         <button onClick={onBack} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:7,padding:".28rem .6rem",color:"white",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".78rem"}}>← Hem</button>
         <div style={{fontSize:"1.2rem"}}>🧠</div>
@@ -563,13 +733,9 @@ function PedagogAI({onBack}) {
           <div style={{color:"#ce93d8",fontSize:".65rem"}}>Din pedagogiska assistent · Lgr22 · Grundskolan åk 1–9</div>
         </div>
         {messages.length > 0 && (
-          <button onClick={clearChat} style={{background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:7,padding:".28rem .7rem",color:"white",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".72rem"}}>
-            Rensa
-          </button>
+          <button onClick={()=>setMessages([])} style={{background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:7,padding:".28rem .7rem",color:"white",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".72rem"}}>Rensa</button>
         )}
       </div>
-
-      {/* Messages */}
       <div style={{flex:1,overflowY:"auto",padding:"1rem",maxWidth:700,width:"100%",margin:"0 auto",boxSizing:"border-box"}}>
         {messages.length === 0 && (
           <div className="pfi" style={{textAlign:"center",padding:"1.5rem .5rem"}}>
@@ -581,23 +747,19 @@ function PedagogAI({onBack}) {
             <div style={{display:"grid",gap:".45rem",textAlign:"left"}}>
               {PEDAGOGAI_EXAMPLES.map((ex,i)=>(
                 <button key={i} onClick={()=>sendMessage(ex)}
-                  style={{background:"white",border:"2px solid #d1c4e9",borderRadius:12,padding:".65rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".82rem",color:"#4527a0",textAlign:"left",transition:"all .15s"}}
+                  style={{background:"white",border:"2px solid #d1c4e9",borderRadius:12,padding:".65rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".82rem",color:"#4527a0",textAlign:"left"}}
                   onMouseEnter={e=>e.currentTarget.style.borderColor="#7b1fa2"}
-                  onMouseLeave={e=>e.currentTarget.style.borderColor="#d1c4e9"}
-                >
+                  onMouseLeave={e=>e.currentTarget.style.borderColor="#d1c4e9"}>
                   💬 {ex}
                 </button>
               ))}
             </div>
           </div>
         )}
-
         {messages.map((msg, i) => (
           <div key={i} className="pfi" style={{marginBottom:"1rem",display:"flex",flexDirection:"column",alignItems:msg.role==="user"?"flex-end":"flex-start"}}>
             {msg.role === "user" ? (
-              <div style={{background:"linear-gradient(135deg,#4527a0,#6a1b9a)",color:"white",borderRadius:"18px 18px 4px 18px",padding:".65rem 1rem",maxWidth:"80%",fontSize:".86rem",lineHeight:1.6}}>
-                {msg.content}
-              </div>
+              <div style={{background:"linear-gradient(135deg,#4527a0,#6a1b9a)",color:"white",borderRadius:"18px 18px 4px 18px",padding:".65rem 1rem",maxWidth:"80%",fontSize:".86rem",lineHeight:1.6}}>{msg.content}</div>
             ) : (
               <div style={{width:"100%"}}>
                 <div style={{display:"flex",alignItems:"center",gap:".4rem",marginBottom:".3rem"}}>
@@ -611,7 +773,6 @@ function PedagogAI({onBack}) {
             )}
           </div>
         ))}
-
         {loading && (
           <div style={{display:"flex",alignItems:"flex-start",gap:".4rem",marginBottom:"1rem"}}>
             <div style={{width:22,height:22,borderRadius:"50%",background:"linear-gradient(135deg,#4527a0,#6a1b9a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".7rem",flexShrink:0,marginTop:2}}>🧠</div>
@@ -627,33 +788,22 @@ function PedagogAI({onBack}) {
         )}
         <div ref={chatEndRef}/>
       </div>
-
-      {/* Input */}
       <div style={{background:"white",borderTop:"1px solid #e8d5f5",padding:".8rem 1rem",boxShadow:"0 -2px 16px rgba(69,39,160,.08)",flexShrink:0}}>
         <div style={{maxWidth:700,margin:"0 auto",display:"flex",gap:".5rem",alignItems:"flex-end"}}>
-          <textarea
-            value={input}
-            onChange={e=>setInput(e.target.value)}
-            onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage(input);}}}
-            placeholder="Fråga om pedagogik, lektioner, Lgr22, bedömning…"
-            rows={2}
-            style={{flex:1,border:"2px solid #d1c4e9",borderRadius:14,padding:".65rem .9rem",fontFamily:"Georgia,serif",fontSize:".86rem",color:"#1a1a2e",resize:"none",lineHeight:1.5,boxSizing:"border-box",transition:"border-color .15s"}}
+          <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage(input);}}} placeholder="Fråga om pedagogik, lektioner, Lgr22, bedömning, NPF…" rows={2}
+            style={{flex:1,border:"2px solid #d1c4e9",borderRadius:14,padding:".65rem .9rem",fontFamily:"Georgia,serif",fontSize:".86rem",color:"#1a1a2e",resize:"none",lineHeight:1.5,boxSizing:"border-box"}}
             onFocus={e=>e.target.style.borderColor="#6a1b9a"}
-            onBlur={e=>e.target.style.borderColor="#d1c4e9"}
-          />
-          <button
-            onClick={()=>sendMessage(input)}
-            disabled={!input.trim()||loading}
-            style={{background:!input.trim()||loading?"#e1bee7":"linear-gradient(135deg,#4527a0,#6a1b9a)",color:"white",border:"none",borderRadius:12,padding:".7rem 1rem",cursor:!input.trim()||loading?"default":"pointer",fontSize:"1.1rem",transition:"all .15s",flexShrink:0}}
-          >➤</button>
+            onBlur={e=>e.target.style.borderColor="#d1c4e9"}/>
+          <button onClick={()=>sendMessage(input)} disabled={!input.trim()||loading}
+            style={{background:!input.trim()||loading?"#e1bee7":"linear-gradient(135deg,#4527a0,#6a1b9a)",color:"white",border:"none",borderRadius:12,padding:".7rem 1rem",cursor:!input.trim()||loading?"default":"pointer",fontSize:"1.1rem",flexShrink:0}}>➤</button>
         </div>
-        <p style={{textAlign:"center",color:"#ce93d8",fontSize:".65rem",margin:".3rem 0 0"}}>Enter för att skicka · Shift+Enter för ny rad · Konversationen sparas under sessionen</p>
+        <p style={{textAlign:"center",color:"#ce93d8",fontSize:".65rem",margin:".3rem 0 0"}}>Enter för att skicka · Shift+Enter för ny rad</p>
       </div>
     </div>
   );
 }
 
-// ─── STARTSIDA + HUVUD ────────────────────────────────────────────────────────
+// ─── STARTSIDA ────────────────────────────────────────────────────────────────
 export default function LektionsGuiden() {
   const [mode,setMode]=useState(null);
   if (mode==="chat") return <ChattLage onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
@@ -669,31 +819,39 @@ export default function LektionsGuiden() {
         <p style={{color:"#4a7c59",marginBottom:"2rem",fontSize:".88rem"}}>Differentierad undervisning · Lgr22 · Åk 1–9</p>
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1rem"}}>
-          <button onClick={()=>{setMode("chat");window.scrollTo(0,0);if(window.gtag)window.gtag("event","open_flik",{flik:"Chattläge"});}} style={{background:"linear-gradient(135deg,#1b5e20,#2e7d32)",color:"white",border:"none",borderRadius:16,padding:"1.5rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(27,94,32,0.25)"}}>
+          <button onClick={()=>{setMode("chat");window.scrollTo(0,0);if(window.gtag)window.gtag("event","open_flik",{flik:"Chattläge"});}}
+            style={{background:"linear-gradient(135deg,#1b5e20,#2e7d32)",color:"white",border:"none",borderRadius:16,padding:"1.5rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(27,94,32,0.25)"}}>
             <div style={{fontSize:"1.7rem",marginBottom:".35rem"}}>💬</div>
             <div style={{fontSize:".95rem",fontWeight:700,marginBottom:".2rem"}}>Chattläge</div>
             <div style={{fontSize:".72rem",opacity:.88}}>Skriv fritt – genomgång eller prov skapas direkt</div>
           </button>
-          <button onClick={()=>{setMode("guide");window.scrollTo(0,0);if(window.gtag)window.gtag("event","open_flik",{flik:"Guidat läge"});}} style={{background:"white",color:"#1b5e20",border:"2px solid #a5d6a7",borderRadius:16,padding:"1.5rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(27,94,32,0.08)"}}>
+          <button onClick={()=>{setMode("guide");window.scrollTo(0,0);if(window.gtag)window.gtag("event","open_flik",{flik:"Guidat läge"});}}
+            style={{background:"white",color:"#1b5e20",border:"2px solid #a5d6a7",borderRadius:16,padding:"1.5rem .9rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(27,94,32,0.08)"}}>
             <div style={{fontSize:"1.7rem",marginBottom:".35rem"}}>📋</div>
             <div style={{fontSize:".95rem",fontWeight:700,marginBottom:".2rem"}}>Guidat läge</div>
             <div style={{fontSize:".72rem",color:"#4a7c59"}}>Välj klass, ämne och moment steg för steg</div>
           </button>
         </div>
 
-        {/* PedagogAI – full width */}
-        <button onClick={()=>{setMode("pedagogai");window.scrollTo(0,0);if(window.gtag)window.gtag("event","open_flik",{flik:"PedagogAI"});}} style={{width:"100%",background:"linear-gradient(135deg,#4527a0,#6a1b9a)",color:"white",border:"none",borderRadius:16,padding:"1.2rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(69,39,160,0.25)",marginBottom:"1.2rem",display:"flex",alignItems:"center",gap:"1rem",textAlign:"left"}}>
+        <button onClick={()=>{setMode("pedagogai");window.scrollTo(0,0);if(window.gtag)window.gtag("event","open_flik",{flik:"PedagogAI"});}}
+          style={{width:"100%",background:"linear-gradient(135deg,#4527a0,#6a1b9a)",color:"white",border:"none",borderRadius:16,padding:"1.2rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",boxShadow:"0 4px 20px rgba(69,39,160,0.25)",marginBottom:"1.2rem",display:"flex",alignItems:"center",gap:"1rem",textAlign:"left"}}>
           <div style={{fontSize:"2rem",flexShrink:0}}>🧠</div>
           <div>
             <div style={{fontSize:"1rem",fontWeight:700,marginBottom:".15rem"}}>PedagogAI – din pedagogiska assistent</div>
-            <div style={{fontSize:".75rem",opacity:.88}}>Fråga om pedagogik, Lgr22, bedömning, klassrumssituationer och mer · AI-driven konversation</div>
+            <div style={{fontSize:".75rem",opacity:.88}}>Fråga om pedagogik, Lgr22, bedömning, NPF och klassrumssituationer · AI-driven konversation</div>
           </div>
         </button>
+
+        <div style={{background:"white",borderRadius:12,padding:".7rem 1rem",border:"1px solid #c8e6c9",marginBottom:"1.2rem"}}>
+          <p style={{margin:0,color:"#2e7d32",fontSize:".78rem",fontWeight:700}}>🧩 Nytt: NPF-anpassningar</p>
+          <p style={{margin:".2rem 0 0",color:"#4a7c59",fontSize:".75rem"}}>Guidat läge frågar nu om NPF-profiler i klassen och genererar ett separat anpassningskort (ADHD, AST, dyslexi, dyskalkyli m.fl.)</p>
+        </div>
 
         <div style={{background:"white",borderRadius:12,padding:".7rem 1rem",border:"1px solid #c8e6c9",marginBottom:"1.2rem"}}>
           <p style={{margin:0,color:"#2e7d32",fontSize:".78rem",fontWeight:700}}>💬 Prova i chattläget:</p>
           <p style={{margin:".2rem 0 0",color:"#4a7c59",fontSize:".75rem"}}>"Prov matte åk 6 procent" · "Genomgång franska åk 8 preteritum" · "Quiz biologi immunförsvaret"</p>
         </div>
+
         <p style={{color:"#a5d6a7",fontSize:".7rem"}}>av MD · lektionsguiden.vercel.app</p>
       </div>
     </div>

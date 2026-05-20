@@ -2,93 +2,172 @@ import { useState, useRef, useEffect } from "react";
 
 // ─── FEEDBACK MODAL ───────────────────────────────────────────────────────────
 function FeedbackModal({ onClose, source }) {
-  const [step, setStep] = useState("form"); // form | sending | done | error
-  const [betyg, setBetyg] = useState(null);
-  const [kommentar, setKommentar] = useState("");
+  const [step, setStep] = useState("form");
+  const [svar, setSvar] = useState({
+    lage: "", stadium: "", frekvens: "",
+    enkelhet: 0, tidsbesparing: 0, passning: 0,
+    differentiering: 0, lgr22: 0, npf: 0,
+    chatt: 0, guidat: 0, pedagogai: 0, export_: 0, sva: 0,
+    tidsvinst: "", rekommenderar: "",
+    fungerade: "", saknas: "", ovrigt: ""
+  });
+
+  function set(k, v) { setSvar(p => ({ ...p, [k]: v })); }
+
+  const ScaleRow = ({ label, field }) => (
+    <div style={{display:"flex",alignItems:"center",gap:".4rem",padding:".4rem 0",borderBottom:"1px solid #f1f8e9"}}>
+      <span style={{flex:1,fontSize:".78rem",color:"#1a3a2a",lineHeight:1.4}}>{label}</span>
+      <div style={{display:"flex",gap:".2rem",flexShrink:0}}>
+        {[1,2,3,4,5].map(n => (
+          <button key={n} onClick={() => set(field, n)}
+            style={{width:28,height:28,borderRadius:"50%",border:`2px solid ${svar[field]===n?"#2e7d32":"#c8e6c9"}`,
+              background:svar[field]===n?"#2e7d32":"white",color:svar[field]===n?"white":"#4a7c59",
+              cursor:"pointer",fontSize:".75rem",fontWeight:700,flexShrink:0}}>
+            {n}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const CheckRow = ({ label, field, options }) => (
+    <div style={{marginBottom:".5rem"}}>
+      {label && <p style={{margin:"0 0 .3rem",fontSize:".8rem",fontWeight:700,color:"#1a3a2a"}}>{label}</p>}
+      <div style={{display:"flex",flexWrap:"wrap",gap:".3rem"}}>
+        {options.map(opt => (
+          <button key={opt} onClick={() => set(field, svar[field]===opt?"":opt)}
+            style={{border:`2px solid ${svar[field]===opt?"#2e7d32":"#c8e6c9"}`,borderRadius:50,
+              padding:".25rem .7rem",background:svar[field]===opt?"#e8f5e9":"white",
+              color:svar[field]===opt?"#1b5e20":"#4a7c59",cursor:"pointer",
+              fontFamily:"Georgia,serif",fontSize:".75rem",fontWeight:svar[field]===opt?700:400}}>
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   async function skicka() {
-    if (!betyg) return;
     setStep("sending");
     try {
       const res = await fetch("https://formspree.io/f/mjgzgdzr", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          betyg,
-          kommentar: kommentar.trim() || "(inget)",
-          källa: source,
-          tidpunkt: new Date().toLocaleString("sv-SE"),
-        }),
+        body: JSON.stringify({ ...svar, källa: source, tidpunkt: new Date().toLocaleString("sv-SE") }),
       });
-      if (res.ok) setStep("done");
-      else setStep("error");
-    } catch {
-      setStep("error");
-    }
+      if (res.ok) setStep("done"); else setStep("error");
+    } catch { setStep("error"); }
   }
 
+  const sectionStyle = {background:"linear-gradient(135deg,#2e7d32,#1b5e20)",borderRadius:8,
+    padding:".4rem .8rem",marginBottom:".6rem",marginTop:".8rem"};
+  const sectionText = {margin:0,color:"white",fontWeight:700,fontSize:".82rem"};
+
   return (
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem"}}
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,
+        display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"1rem",overflowY:"auto"}}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{background:"white",borderRadius:18,padding:"1.6rem",maxWidth:380,width:"100%",boxShadow:"0 8px 40px rgba(0,0,0,0.18)",fontFamily:"Georgia,serif"}}>
+      <div style={{background:"white",borderRadius:18,padding:"1.4rem",maxWidth:500,width:"100%",
+          boxShadow:"0 8px 40px rgba(0,0,0,0.2)",fontFamily:"Georgia,serif",marginTop:"1rem",marginBottom:"1rem"}}>
+
         {step === "form" && <>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"1rem"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:".8rem"}}>
             <div>
-              <div style={{fontSize:"1.3rem",marginBottom:".2rem"}}>💬</div>
-              <h3 style={{margin:0,color:"#1a3a2a",fontSize:"1rem"}}>Ge feedback</h3>
-              <p style={{margin:".2rem 0 0",color:"#4a7c59",fontSize:".75rem"}}>Hjälp oss förbättra LektionsGuiden</p>
+              <div style={{fontSize:"1.2rem",marginBottom:".15rem"}}>💬</div>
+              <h3 style={{margin:0,color:"#1a3a2a",fontSize:"1rem"}}>Feedbackformulär</h3>
+              <p style={{margin:".15rem 0 0",color:"#4a7c59",fontSize:".73rem"}}>LektionsGuiden · Din feedback hjälper oss förbättra appen</p>
             </div>
-            <button onClick={onClose} style={{background:"#f1f8e9",border:"none",borderRadius:"50%",width:30,height:30,cursor:"pointer",fontSize:"1rem",color:"#4a7c59"}}>✕</button>
+            <button onClick={onClose} style={{background:"#f1f8e9",border:"none",borderRadius:"50%",
+              width:28,height:28,cursor:"pointer",fontSize:".9rem",color:"#4a7c59",flexShrink:0}}>✕</button>
           </div>
 
-          <p style={{margin:"0 0 .7rem",color:"#1a3a2a",fontSize:".85rem",fontWeight:700}}>Hur nöjd är du med appen?</p>
-          <div style={{display:"flex",gap:".4rem",marginBottom:"1.1rem"}}>
-            {["😞","😐","🙂","😄","🤩"].map((e,i) => (
-              <button key={i} onClick={() => setBetyg(i+1)}
-                style={{flex:1,fontSize:"1.5rem",padding:".4rem",border:`2px solid ${betyg===i+1?"#2e7d32":"#e0f2e9"}`,borderRadius:10,background:betyg===i+1?"#e8f5e9":"white",cursor:"pointer",transition:"all .15s"}}>
-                {e}
-              </button>
-            ))}
-          </div>
+          {/* Sektion 1 */}
+          <div style={sectionStyle}><p style={sectionText}>1. Om dig</p></div>
+          <CheckRow label="Vilket läge använde du?" field="lage" options={["Chattläge","Guidat läge","PedagogAI"]} />
+          <CheckRow label="Vilket stadium?" field="stadium" options={["Lågstadiet 1–3","Mellanstadiet 4–6","Högstadiet 7–9"]} />
+          <CheckRow label="Hur ofta använder du digitala planeringsverktyg?" field="frekvens" options={["Dagligen","Varje vecka","Sällan"]} />
 
-          <p style={{margin:"0 0 .4rem",color:"#1a3a2a",fontSize:".85rem",fontWeight:700}}>Kommentar <span style={{fontWeight:400,color:"#4a7c59"}}>(valfritt)</span></p>
-          <textarea value={kommentar} onChange={e => setKommentar(e.target.value)}
-            placeholder="Vad fungerar bra? Vad saknar du? Övriga tankar…"
-            rows={3} style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:10,padding:".6rem .8rem",fontFamily:"Georgia,serif",fontSize:".83rem",color:"#1a3a2a",resize:"none",boxSizing:"border-box",outline:"none"}}/>
+          {/* Sektion 2 */}
+          <div style={sectionStyle}><p style={sectionText}>2. Användbarhet  <span style={{fontWeight:400,fontSize:".73rem",opacity:.9}}>(1 = Inte alls · 5 = Mycket bra)</span></p></div>
+          <ScaleRow label="Det var enkelt att hitta det jag letade efter" field="enkelhet" />
+          <ScaleRow label="Appen sparade tid i min planering" field="tidsbesparing" />
+          <ScaleRow label="Genomgångarna passade min klass" field="passning" />
+          <ScaleRow label="Differentieringen (nivåerna) var pedagogiskt användbar" field="differentiering" />
+          <ScaleRow label="Kopplingen till Lgr22 var tydlig och relevant" field="lgr22" />
+          <ScaleRow label="NPF-anpassningarna var konkreta och praktiska" field="npf" />
 
-          <div style={{display:"flex",gap:".5rem",marginTop:".9rem"}}>
-            <button onClick={onClose} style={{flex:1,background:"none",border:"2px solid #c8e6c9",borderRadius:50,padding:".55rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",color:"#4a7c59"}}>Avbryt</button>
-            <button onClick={skicka} disabled={!betyg}
-              style={{flex:2,background:betyg?"linear-gradient(135deg,#2e7d32,#1b5e20)":"#c8e6c9",color:"white",border:"none",borderRadius:50,padding:".55rem",cursor:betyg?"pointer":"default",fontFamily:"Georgia,serif",fontSize:".82rem",fontWeight:700}}>
+          {/* Sektion 3 */}
+          <div style={sectionStyle}><p style={sectionText}>3. Specifika funktioner  <span style={{fontWeight:400,fontSize:".73rem",opacity:.9}}>(1–5)</span></p></div>
+          <ScaleRow label="Chattläge – skriv fritt och få genomgång direkt" field="chatt" />
+          <ScaleRow label="Guidat läge – välj klass, ämne och moment" field="guidat" />
+          <ScaleRow label="PedagogAI – pedagogisk assistent" field="pedagogai" />
+          <ScaleRow label="Kopiera- och skrivutfunktionen" field="export_" />
+          <ScaleRow label="SVA (Svenska som andraspråk) som eget ämne" field="sva" />
+
+          <CheckRow label="Hur lång tid sparar du per lektionsplanering?" field="tidsvinst"
+            options={["Ingen","5–10 min","10–20 min","Mer än 20 min"]} />
+          <CheckRow label="Skulle du rekommendera appen till en kollega?" field="rekommenderar"
+            options={["Ja, definitivt","Troligtvis ja","Kanske","Nej"]} />
+
+          {/* Sektion 4 */}
+          <div style={sectionStyle}><p style={sectionText}>4. Öppna frågor</p></div>
+          <p style={{margin:"0 0 .3rem",fontSize:".8rem",fontWeight:700,color:"#1a3a2a"}}>Vad fungerade bäst?</p>
+          <textarea value={svar.fungerade} onChange={e=>set("fungerade",e.target.value)}
+            placeholder="Skriv gärna specifikt…" rows={2}
+            style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:8,padding:".5rem .7rem",
+              fontFamily:"Georgia,serif",fontSize:".8rem",resize:"none",boxSizing:"border-box",outline:"none",marginBottom:".6rem"}}/>
+          <p style={{margin:"0 0 .3rem",fontSize:".8rem",fontWeight:700,color:"#1a3a2a"}}>Vad saknar du eller vad kan förbättras?</p>
+          <textarea value={svar.saknas} onChange={e=>set("saknas",e.target.value)}
+            placeholder="T.ex. funktioner, innehåll, design…" rows={2}
+            style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:8,padding:".5rem .7rem",
+              fontFamily:"Georgia,serif",fontSize:".8rem",resize:"none",boxSizing:"border-box",outline:"none",marginBottom:".6rem"}}/>
+          <p style={{margin:"0 0 .3rem",fontSize:".8rem",fontWeight:700,color:"#1a3a2a"}}>Övriga kommentarer <span style={{fontWeight:400,color:"#4a7c59"}}>(valfritt)</span></p>
+          <textarea value={svar.ovrigt} onChange={e=>set("ovrigt",e.target.value)}
+            rows={2} style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:8,padding:".5rem .7rem",
+              fontFamily:"Georgia,serif",fontSize:".8rem",resize:"none",boxSizing:"border-box",outline:"none",marginBottom:".8rem"}}/>
+
+          <div style={{display:"flex",gap:".5rem"}}>
+            <button onClick={onClose} style={{flex:1,background:"none",border:"2px solid #c8e6c9",
+              borderRadius:50,padding:".55rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",color:"#4a7c59"}}>Avbryt</button>
+            <button onClick={skicka}
+              style={{flex:2,background:"linear-gradient(135deg,#2e7d32,#1b5e20)",color:"white",border:"none",
+                borderRadius:50,padding:".55rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".82rem",fontWeight:700}}>
               Skicka feedback ✉️
             </button>
           </div>
         </>}
 
         {step === "sending" && (
-          <div style={{textAlign:"center",padding:"1.5rem 0"}}>
+          <div style={{textAlign:"center",padding:"2rem 0"}}>
             <div style={{fontSize:"1.8rem",marginBottom:".5rem"}}>⏳</div>
             <p style={{color:"#4a7c59",fontSize:".88rem",margin:0}}>Skickar…</p>
           </div>
         )}
 
         {step === "done" && (
-          <div style={{textAlign:"center",padding:"1.5rem 0"}}>
-            <div style={{fontSize:"2rem",marginBottom:".5rem"}}>✅</div>
+          <div style={{textAlign:"center",padding:"2rem 0"}}>
+            <div style={{fontSize:"2.2rem",marginBottom:".5rem"}}>✅</div>
             <h3 style={{color:"#1b5e20",margin:"0 0 .3rem",fontSize:"1rem"}}>Tack för din feedback!</h3>
-            <p style={{color:"#4a7c59",fontSize:".82rem",margin:"0 0 1rem",lineHeight:1.6}}>Det hjälper oss att göra appen bättre för alla lärare.</p>
-            <button onClick={onClose} style={{background:"linear-gradient(135deg,#2e7d32,#1b5e20)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.5rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".83rem",fontWeight:700}}>Stäng</button>
+            <p style={{color:"#4a7c59",fontSize:".82rem",margin:"0 0 1.2rem",lineHeight:1.6}}>
+              Det hjälper oss att göra LektionsGuiden bättre för alla lärare.
+            </p>
+            <button onClick={onClose} style={{background:"linear-gradient(135deg,#2e7d32,#1b5e20)",
+              color:"white",border:"none",borderRadius:50,padding:".55rem 1.8rem",
+              cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".83rem",fontWeight:700}}>Stäng</button>
           </div>
         )}
 
         {step === "error" && (
-          <div style={{textAlign:"center",padding:"1.5rem 0"}}>
+          <div style={{textAlign:"center",padding:"2rem 0"}}>
             <div style={{fontSize:"2rem",marginBottom:".5rem"}}>⚠️</div>
             <h3 style={{color:"#b71c1c",margin:"0 0 .3rem",fontSize:"1rem"}}>Något gick fel</h3>
             <p style={{color:"#4a7c59",fontSize:".82rem",margin:"0 0 1rem"}}>Kontrollera internetanslutningen och försök igen.</p>
             <div style={{display:"flex",gap:".5rem",justifyContent:"center"}}>
-              <button onClick={() => setStep("form")} style={{background:"linear-gradient(135deg,#2e7d32,#1b5e20)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.2rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",fontWeight:700}}>Försök igen</button>
-              <button onClick={onClose} style={{background:"none",border:"2px solid #c8e6c9",borderRadius:50,padding:".55rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",color:"#4a7c59"}}>Stäng</button>
+              <button onClick={()=>setStep("form")} style={{background:"linear-gradient(135deg,#2e7d32,#1b5e20)",
+                color:"white",border:"none",borderRadius:50,padding:".55rem 1.2rem",
+                cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",fontWeight:700}}>Försök igen</button>
+              <button onClick={onClose} style={{background:"none",border:"2px solid #c8e6c9",borderRadius:50,
+                padding:".55rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",color:"#4a7c59"}}>Stäng</button>
             </div>
           </div>
         )}
@@ -96,6 +175,8 @@ function FeedbackModal({ onClose, source }) {
     </div>
   );
 }
+
+
 
 // ─── LGR22 ───────────────────────────────────────────────────────────────────
 const LGR22 = {

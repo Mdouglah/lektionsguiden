@@ -1002,6 +1002,7 @@ function PedagogAI({onBack}) {
 // ─── STARTSIDA ────────────────────────────────────────────────────────────────
 export default function LektionsGuiden() {
   const [mode,setMode]=useState(null);
+  const [feedbackOpen,setFeedbackOpen]=useState(false);
   if (mode==="chat") return <ChattLage onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
   if (mode==="guide") return <GuidatLage onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
   if (mode==="pedagogai") return <PedagogAI onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
@@ -1009,10 +1010,21 @@ export default function LektionsGuiden() {
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5e9,#f1f8e9,#e0f2f1)",fontFamily:"Georgia,serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"2rem 1rem"}}>
       <style>{`@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.fi{animation:fi .4s ease}`}</style>
+      {feedbackOpen && <FeedbackModal onClose={()=>setFeedbackOpen(false)} source="Startsida" />}
       <div className="fi" style={{textAlign:"center",maxWidth:480,width:"100%"}}>
         <span style={{fontSize:"2.8rem"}}>🌿</span>
         <h1 style={{fontSize:"1.9rem",color:"#1b5e20",margin:".4rem 0 .2rem",fontWeight:700}}>LektionsGuiden</h1>
-        <p style={{color:"#4a7c59",marginBottom:"2rem",fontSize:".88rem"}}>Differentierad undervisning · Lgr22 · Åk 1–9</p>
+        <p style={{color:"#4a7c59",marginBottom:"1rem",fontSize:".88rem"}}>Differentierad undervisning · Lgr22 · Åk 1–9</p>
+        <div style={{marginBottom:"1.5rem"}}>
+          <button onClick={()=>setFeedbackOpen(true)}
+            style={{background:"transparent",border:"1px solid #c8e6c9",color:"#4a7c59",
+              borderRadius:50,padding:"6px 18px",fontSize:".78rem",cursor:"pointer",
+              fontFamily:"Georgia,serif",transition:"all .2s"}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor="#2e7d32";e.currentTarget.style.color="#2e7d32";}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor="#c8e6c9";e.currentTarget.style.color="#4a7c59";}}>
+            💬 Lämna feedback
+          </button>
+        </div>
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1rem"}}>
           <button onClick={()=>{setMode("chat");window.scrollTo(0,0);if(window.gtag)window.gtag("event","open_flik",{flik:"Chattläge"});}}

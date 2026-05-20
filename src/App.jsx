@@ -47,16 +47,45 @@ function FeedbackModal({ onClose, source }) {
     </div>
   );
 
-  async function skicka() {
-    setStep("sending");
-    try {
-      const res = await fetch("https://formspree.io/f/mjgzgdzr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ ...svar, källa: source, tidpunkt: new Date().toLocaleString("sv-SE") }),
-      });
-      if (res.ok) setStep("done"); else setStep("error");
-    } catch { setStep("error"); }
+  function skicka() {
+    const rad = (label, val) => val ? `${label}: ${val}` : "";
+    const skala = (label, val) => val ? `${label}: ${val}/5` : "";
+    const body = [
+      "=== OM DIG ===",
+      rad("Läge", svar.lage),
+      rad("Stadium", svar.stadium),
+      rad("Hur ofta digitala verktyg", svar.frekvens),
+      "",
+      "=== ANVÄNDBARHET (1-5) ===",
+      skala("Enkelt att hitta", svar.enkelhet),
+      skala("Sparade tid", svar.tidsbesparing),
+      skala("Genomgångarna passade klassen", svar.passning),
+      skala("Differentieringen användbar", svar.differentiering),
+      skala("Lgr22-kopplingen tydlig", svar.lgr22),
+      skala("NPF-anpassningarna konkreta", svar.npf),
+      "",
+      "=== SPECIFIKA FUNKTIONER (1-5) ===",
+      skala("Chattläge", svar.chatt),
+      skala("Guidat läge", svar.guidat),
+      skala("PedagogAI", svar.pedagogai),
+      skala("Kopiera/skriv ut", svar.export_),
+      skala("SVA som eget ämne", svar.sva),
+      rad("Tidsbesparing per lektion", svar.tidsvinst),
+      rad("Skulle rekommendera", svar.rekommenderar),
+      "",
+      "=== ÖPPNA FRÅGOR ===",
+      rad("Vad fungerade bäst", svar.fungerade),
+      rad("Vad saknas/kan förbättras", svar.saknas),
+      rad("Övriga kommentarer", svar.ovrigt),
+      "",
+      `Källa: ${source}`,
+      `Tidpunkt: ${new Date().toLocaleString("sv-SE")}`,
+    ].filter(r => r !== undefined).join("\n");
+
+    const subject = encodeURIComponent(`LektionsGuiden – Feedback från lärare (${source})`);
+    const bodyEncoded = encodeURIComponent(body);
+    window.location.href = `mailto:mustafa.douglah@enkoping.se?subject=${subject}&body=${bodyEncoded}`;
+    setStep("done");
   }
 
   const sectionStyle = {background:"linear-gradient(135deg,#2e7d32,#1b5e20)",borderRadius:8,

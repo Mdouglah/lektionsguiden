@@ -1,216 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 
-// ─── FEEDBACK MODAL ───────────────────────────────────────────────────────────
-function FeedbackModal({ onClose, source }) {
-  const [step, setStep] = useState("form");
-  const [svar, setSvar] = useState({
-    lage: "", stadium: "", frekvens: "",
-    enkelhet: 0, tidsbesparing: 0, passning: 0,
-    differentiering: 0, lgr22: 0, npf: 0,
-    chatt: 0, guidat: 0, pedagogai: 0, export_: 0, sva: 0,
-    tidsvinst: "", rekommenderar: "",
-    fungerade: "", saknas: "", ovrigt: ""
-  });
-
-  function set(k, v) { setSvar(p => ({ ...p, [k]: v })); }
-
-  const ScaleRow = ({ label, field }) => (
-    <div style={{display:"flex",alignItems:"center",gap:".4rem",padding:".4rem 0",borderBottom:"1px solid #f1f8e9"}}>
-      <span style={{flex:1,fontSize:".78rem",color:"#1a3a2a",lineHeight:1.4}}>{label}</span>
-      <div style={{display:"flex",gap:".2rem",flexShrink:0}}>
-        {[1,2,3,4,5].map(n => (
-          <button key={n} onClick={() => set(field, n)}
-            style={{width:28,height:28,borderRadius:"50%",border:`2px solid ${svar[field]===n?"#2e7d32":"#c8e6c9"}`,
-              background:svar[field]===n?"#2e7d32":"white",color:svar[field]===n?"white":"#4a7c59",
-              cursor:"pointer",fontSize:".75rem",fontWeight:700,flexShrink:0}}>
-            {n}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
-  const CheckRow = ({ label, field, options }) => (
-    <div style={{marginBottom:".5rem"}}>
-      {label && <p style={{margin:"0 0 .3rem",fontSize:".8rem",fontWeight:700,color:"#1a3a2a"}}>{label}</p>}
-      <div style={{display:"flex",flexWrap:"wrap",gap:".3rem"}}>
-        {options.map(opt => (
-          <button key={opt} onClick={() => set(field, svar[field]===opt?"":opt)}
-            style={{border:`2px solid ${svar[field]===opt?"#2e7d32":"#c8e6c9"}`,borderRadius:50,
-              padding:".25rem .7rem",background:svar[field]===opt?"#e8f5e9":"white",
-              color:svar[field]===opt?"#1b5e20":"#4a7c59",cursor:"pointer",
-              fontFamily:"Georgia,serif",fontSize:".75rem",fontWeight:svar[field]===opt?700:400}}>
-            {opt}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
-  function skicka() {
-    const rad = (label, val) => val ? `${label}: ${val}` : "";
-    const skala = (label, val) => val ? `${label}: ${val}/5` : "";
-    const body = [
-      "=== OM DIG ===",
-      rad("Läge", svar.lage),
-      rad("Stadium", svar.stadium),
-      rad("Hur ofta digitala verktyg", svar.frekvens),
-      "",
-      "=== ANVÄNDBARHET (1-5) ===",
-      skala("Enkelt att hitta", svar.enkelhet),
-      skala("Sparade tid", svar.tidsbesparing),
-      skala("Genomgångarna passade klassen", svar.passning),
-      skala("Differentieringen användbar", svar.differentiering),
-      skala("Lgr22-kopplingen tydlig", svar.lgr22),
-      skala("NPF-anpassningarna konkreta", svar.npf),
-      "",
-      "=== SPECIFIKA FUNKTIONER (1-5) ===",
-      skala("Chattläge", svar.chatt),
-      skala("Guidat läge", svar.guidat),
-      skala("PedagogAI", svar.pedagogai),
-      skala("Kopiera/skriv ut", svar.export_),
-      skala("SVA som eget ämne", svar.sva),
-      rad("Tidsbesparing per lektion", svar.tidsvinst),
-      rad("Skulle rekommendera", svar.rekommenderar),
-      "",
-      "=== ÖPPNA FRÅGOR ===",
-      rad("Vad fungerade bäst", svar.fungerade),
-      rad("Vad saknas/kan förbättras", svar.saknas),
-      rad("Övriga kommentarer", svar.ovrigt),
-      "",
-      `Källa: ${source}`,
-      `Tidpunkt: ${new Date().toLocaleString("sv-SE")}`,
-    ].filter(r => r !== undefined).join("\n");
-
-    const subject = encodeURIComponent(`LektionsGuiden – Feedback från lärare (${source})`);
-    const bodyEncoded = encodeURIComponent(body);
-    window.location.href = `mailto:mustafa.douglah@enkoping.se?subject=${subject}&body=${bodyEncoded}`;
-    setStep("done");
-  }
-
-  const sectionStyle = {background:"linear-gradient(135deg,#2e7d32,#1b5e20)",borderRadius:8,
-    padding:".4rem .8rem",marginBottom:".6rem",marginTop:".8rem"};
-  const sectionText = {margin:0,color:"white",fontWeight:700,fontSize:".82rem"};
-
-  return (
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,
-        display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"1rem",overflowY:"auto"}}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{background:"white",borderRadius:18,padding:"1.4rem",maxWidth:500,width:"100%",
-          boxShadow:"0 8px 40px rgba(0,0,0,0.2)",fontFamily:"Georgia,serif",marginTop:"1rem",marginBottom:"1rem"}}>
-
-        {step === "form" && <>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:".8rem"}}>
-            <div>
-              <div style={{fontSize:"1.2rem",marginBottom:".15rem"}}>💬</div>
-              <h3 style={{margin:0,color:"#1a3a2a",fontSize:"1rem"}}>Feedbackformulär</h3>
-              <p style={{margin:".15rem 0 0",color:"#4a7c59",fontSize:".73rem"}}>LektionsGuiden · Din feedback hjälper oss förbättra appen</p>
-            </div>
-            <button onClick={onClose} style={{background:"#f1f8e9",border:"none",borderRadius:"50%",
-              width:28,height:28,cursor:"pointer",fontSize:".9rem",color:"#4a7c59",flexShrink:0}}>✕</button>
-          </div>
-
-          {/* Sektion 1 */}
-          <div style={sectionStyle}><p style={sectionText}>1. Om dig</p></div>
-          <CheckRow label="Vilket läge använde du?" field="lage" options={["Chattläge","Guidat läge","PedagogAI"]} />
-          <CheckRow label="Vilket stadium?" field="stadium" options={["Lågstadiet 1–3","Mellanstadiet 4–6","Högstadiet 7–9"]} />
-          <CheckRow label="Hur ofta använder du digitala planeringsverktyg?" field="frekvens" options={["Dagligen","Varje vecka","Sällan"]} />
-
-          {/* Sektion 2 */}
-          <div style={sectionStyle}><p style={sectionText}>2. Användbarhet  <span style={{fontWeight:400,fontSize:".73rem",opacity:.9}}>(1 = Inte alls · 5 = Mycket bra)</span></p></div>
-          <ScaleRow label="Det var enkelt att hitta det jag letade efter" field="enkelhet" />
-          <ScaleRow label="Appen sparade tid i min planering" field="tidsbesparing" />
-          <ScaleRow label="Genomgångarna passade min klass" field="passning" />
-          <ScaleRow label="Differentieringen (nivåerna) var pedagogiskt användbar" field="differentiering" />
-          <ScaleRow label="Kopplingen till Lgr22 var tydlig och relevant" field="lgr22" />
-          <ScaleRow label="NPF-anpassningarna var konkreta och praktiska" field="npf" />
-
-          {/* Sektion 3 */}
-          <div style={sectionStyle}><p style={sectionText}>3. Specifika funktioner  <span style={{fontWeight:400,fontSize:".73rem",opacity:.9}}>(1–5)</span></p></div>
-          <ScaleRow label="Chattläge – skriv fritt och få genomgång direkt" field="chatt" />
-          <ScaleRow label="Guidat läge – välj klass, ämne och moment" field="guidat" />
-          <ScaleRow label="PedagogAI – pedagogisk assistent" field="pedagogai" />
-          <ScaleRow label="Kopiera- och skrivutfunktionen" field="export_" />
-          <ScaleRow label="SVA (Svenska som andraspråk) som eget ämne" field="sva" />
-
-          <CheckRow label="Hur lång tid sparar du per lektionsplanering?" field="tidsvinst"
-            options={["Ingen","5–10 min","10–20 min","Mer än 20 min"]} />
-          <CheckRow label="Skulle du rekommendera appen till en kollega?" field="rekommenderar"
-            options={["Ja, definitivt","Troligtvis ja","Kanske","Nej"]} />
-
-          {/* Sektion 4 */}
-          <div style={sectionStyle}><p style={sectionText}>4. Öppna frågor</p></div>
-          <p style={{margin:"0 0 .3rem",fontSize:".8rem",fontWeight:700,color:"#1a3a2a"}}>Vad fungerade bäst?</p>
-          <textarea value={svar.fungerade} onChange={e=>set("fungerade",e.target.value)}
-            placeholder="Skriv gärna specifikt…" rows={2}
-            style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:8,padding:".5rem .7rem",
-              fontFamily:"Georgia,serif",fontSize:".8rem",resize:"none",boxSizing:"border-box",outline:"none",marginBottom:".6rem"}}/>
-          <p style={{margin:"0 0 .3rem",fontSize:".8rem",fontWeight:700,color:"#1a3a2a"}}>Vad saknar du eller vad kan förbättras?</p>
-          <textarea value={svar.saknas} onChange={e=>set("saknas",e.target.value)}
-            placeholder="T.ex. funktioner, innehåll, design…" rows={2}
-            style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:8,padding:".5rem .7rem",
-              fontFamily:"Georgia,serif",fontSize:".8rem",resize:"none",boxSizing:"border-box",outline:"none",marginBottom:".6rem"}}/>
-          <p style={{margin:"0 0 .3rem",fontSize:".8rem",fontWeight:700,color:"#1a3a2a"}}>Övriga kommentarer <span style={{fontWeight:400,color:"#4a7c59"}}>(valfritt)</span></p>
-          <textarea value={svar.ovrigt} onChange={e=>set("ovrigt",e.target.value)}
-            rows={2} style={{width:"100%",border:"2px solid #a5d6a7",borderRadius:8,padding:".5rem .7rem",
-              fontFamily:"Georgia,serif",fontSize:".8rem",resize:"none",boxSizing:"border-box",outline:"none",marginBottom:".8rem"}}/>
-
-          <div style={{display:"flex",gap:".5rem"}}>
-            <button onClick={onClose} style={{flex:1,background:"none",border:"2px solid #c8e6c9",
-              borderRadius:50,padding:".55rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",color:"#4a7c59"}}>Avbryt</button>
-            <button onClick={skicka}
-              style={{flex:2,background:"linear-gradient(135deg,#2e7d32,#1b5e20)",color:"white",border:"none",
-                borderRadius:50,padding:".55rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".82rem",fontWeight:700}}>
-              Skicka feedback ✉️
-            </button>
-          </div>
-        </>}
-
-        {step === "sending" && (
-          <div style={{textAlign:"center",padding:"2rem 0"}}>
-            <div style={{fontSize:"1.8rem",marginBottom:".5rem"}}>⏳</div>
-            <p style={{color:"#4a7c59",fontSize:".88rem",margin:0}}>Skickar…</p>
-          </div>
-        )}
-
-        {step === "done" && (
-          <div style={{textAlign:"center",padding:"2rem 0"}}>
-            <div style={{fontSize:"2.2rem",marginBottom:".5rem"}}>✅</div>
-            <h3 style={{color:"#1b5e20",margin:"0 0 .3rem",fontSize:"1rem"}}>Tack för din feedback!</h3>
-            <p style={{color:"#4a7c59",fontSize:".82rem",margin:"0 0 1.2rem",lineHeight:1.6}}>
-              Det hjälper oss att göra LektionsGuiden bättre för alla lärare.
-            </p>
-            <button onClick={onClose} style={{background:"linear-gradient(135deg,#2e7d32,#1b5e20)",
-              color:"white",border:"none",borderRadius:50,padding:".55rem 1.8rem",
-              cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".83rem",fontWeight:700}}>Stäng</button>
-          </div>
-        )}
-
-        {step === "error" && (
-          <div style={{textAlign:"center",padding:"2rem 0"}}>
-            <div style={{fontSize:"2rem",marginBottom:".5rem"}}>⚠️</div>
-            <h3 style={{color:"#b71c1c",margin:"0 0 .3rem",fontSize:"1rem"}}>Något gick fel</h3>
-            <p style={{color:"#4a7c59",fontSize:".82rem",margin:"0 0 1rem"}}>Kontrollera internetanslutningen och försök igen.</p>
-            <div style={{display:"flex",gap:".5rem",justifyContent:"center"}}>
-              <button onClick={()=>setStep("form")} style={{background:"linear-gradient(135deg,#2e7d32,#1b5e20)",
-                color:"white",border:"none",borderRadius:50,padding:".55rem 1.2rem",
-                cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",fontWeight:700}}>Försök igen</button>
-              <button onClick={onClose} style={{background:"none",border:"2px solid #c8e6c9",borderRadius:50,
-                padding:".55rem 1rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem",color:"#4a7c59"}}>Stäng</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-
-
 // ─── LGR22 ───────────────────────────────────────────────────────────────────
 const LGR22 = {
 "Svenska":{ kort:"Eleven ska läsa, analysera och kommunicera i tal och skrift med anpassning till syfte och mottagare.", citat:"Lgr22, Svenska: 'Undervisningen ska stimulera elevernas intresse för att läsa och skriva samt ge dem möjlighet att möta och arbeta med olika typer av texter och digitala verktyg.'" },
-"SVA":{ kort:"Eleven ska utveckla förmåga att kommunicera på svenska och förstå och använda det svenska språket i olika sammanhang.", citat:"Lgr22, Svenska som andraspråk: 'Undervisningen ska ge eleverna möjlighet att möta och använda svenska i meningsfulla och funktionella sammanhang och stimulera till vidare kommunikation på svenska.'" },
 "Matematik":{ kort:"Eleven ska formulera och lösa problem, använda matematiska metoder och föra matematiska resonemang.", citat:"Lgr22, Matematik: 'Undervisningen ska bidra till att eleverna utvecklar förmåga att argumentera logiskt och föra matematiska resonemang.'" },
 "Engelska":{ kort:"Eleven ska kommunicera på engelska i tal och skrift och förstå olika typer av texter.", citat:"Lgr22, Engelska: 'Undervisningen ska ge eleverna möjlighet att kommunicera på engelska i autentiska sammanhang och i möten med andras kulturer.'" },
 "Spanska":{ kort:"Eleven ska kommunicera på spanska och reflektera över kulturer i spansktalande länder.", citat:"Lgr22, Moderna språk – Spanska: 'Undervisningen ska ge eleverna möjlighet att kommunicera på målspråket och reflektera över likheter och skillnader mellan olika kulturer.'" },
@@ -228,20 +20,22 @@ const LGR22 = {
 "Idrott och hälsa":{ kort:"Eleven ska röra sig allsidigt och reflektera kring hälsa, livsstil och välmående.", citat:"Lgr22, Idrott och hälsa: 'Undervisningen ska ge eleverna förutsättningar att röra sig allsidigt i olika sammanhang och få en förståelse för hur livsstilsval påverkar hälsan.'" },
 "Slöjd":{ kort:"Eleven ska formge och framställa föremål och utveckla förmåga att planera och utvärdera skapande processer.", citat:"Lgr22, Slöjd: 'Undervisningen ska ge eleverna möjlighet att arbeta med olika material och tekniker och ge dem förutsättningar att utveckla sin kreativitet och sitt hantverk.'" },
 "Teknik":{ kort:"Eleven ska identifiera tekniska lösningar och konstruera med hänsyn till hållbarhet.", citat:"Lgr22, Teknik: 'Undervisningen ska ge eleverna förutsättningar att utveckla sin förmåga att identifiera tekniska lösningar och deras funktion i vardagen.'" },
-"Hemkunskap":{ kort:"Eleven ska planera och tillaga mat, hantera resurser och reflektera kring hälsa och hållbar livsstil.", citat:"Lgr22, Hem- och konsumentkunskap: 'Undervisningen ska ge eleverna förutsättningar att göra välgrundade val som konsumenter och hushålla med resurser på ett hållbart sätt.'" }
+"Hemkunskap":{ kort:"Eleven ska planera och tillaga mat, hantera resurser och reflektera kring hälsa och hållbar livsstil.", citat:"Lgr22, Hem- och konsumentkunskap: 'Undervisningen ska ge eleverna förutsättningar att göra välgrundade val som konsumenter och hushålla med resurser på ett hållbart sätt.'" },
+"NO":{ kort:"Eleven ska utveckla kunskaper om naturen, kroppen och enkla naturvetenskapliga samband.", citat:"Lgr22, NO (åk 1–3): 'Undervisningen ska ge eleverna möjlighet att ställa frågor om naturen och människan utifrån egna upplevelser och aktuella händelser.'" },
+"SO":{ kort:"Eleven ska utveckla kunskaper om samhälle, historia, geografi och medmänskliga relationer.", citat:"Lgr22, SO (åk 1–3): 'Undervisningen ska ge eleverna möjlighet att utveckla kunskaper om historiska sammanhang, geografiska förhållanden och hur samhällen är organiserade.'" }
 };
 
 // ─── ÄMNESDATA ───────────────────────────────────────────────────────────────
 const DATA = {
-1:{"Svenska":{"Bokstäver och ljud":["Vokaler: a, e, i, o, u","Konsonanter och deras ljud","Korta och långa vokaler","Bokstavsordningen","Versaler och gemener"],"Läsning":["Ordbilder","Läsa enkla meningar","Läsförståelse med bilder","Rim och ramsor","Läsa högt i par"],"Skrivning":["Skriva sitt förnamn","Skriva enkla ord","Skriva en enkel mening","Stor bokstav i meningsbörjan","Punkt i slutet"]},"SVA":{"Vardagsspråk":["Hälsningsfraser på svenska","Namn på saker i klassrummet","Färger och former","Siffror 1–10","Min familj"],"Muntlig kommunikation":["Presentera sig","Berätta om sin dag","Enkla frågor och svar","Lyssna och förstå"],"Läsning och skrivning":["Känna igen bokstäver","Skriva sitt namn","Läsa enkla ord med bild"]},"Matematik":{"Tal och räkning":["Räkna 1–5","Räkna 1–10","Skriva siffror 0–10","Räkna framåt","Räkna bakåt","Addition till 10","Subtraktion till 5"],"Geometri":["Känna igen cirkeln","Känna igen kvadraten","Känna igen triangeln","Sortera former","Jämföra storlekar"]},"Bild":{"Skapande":["Rita med penna","Blanda färger","Måla med penslar","Klippa och klistra","Forma med lera"]},"Musik":{"Musicerande":["Sjunga enkla sånger","Rytm – klappa i takt","Enkla instrument"]},"Idrott och hälsa":{"Rörelse":["Grundrörelser","Balans och koordination","Enkla lekar"],"Hälsa":["Hygien","Varför vi rör på oss"]},"Slöjd":{"Textilslöjd":["Trä ett nål","Enkelt broderi"],"Träslöjd":["Känna igen material","Enkla konstruktioner"]},"Teknik":{"Teknik i vardagen":["Vad är teknik?","Enkla maskiner","Konstruera med klossar"]}},
-2:{"Svenska":{"Läsning":["Läsa ord med dubbelteckning","Läsa berättande text","Hitta information i faktatexter","Förstå händelseförlopp","Läsa högt med flyt"],"Skrivning":["Skriva en berättelse","Skriva beskrivande text","Punkt och frågetecken","Sammanhängande meningar"],"Grammatik":["Substantiv","Verb","Adjektiv","Stor bokstav vid namn","Singular och plural"]},"SVA":{"Vardagsspråk":["Berätta om skolan","Mat och måltider","Kläder och väder","Kroppen","Tid och dagar"],"Muntlig kommunikation":["Berätta om sin vardag","Delta i enkla samtal","Förstå instruktioner"],"Läsning och skrivning":["Läsa enkla meningar","Skriva enkla meningar","Ordbilder och sammanhang"]},"Matematik":{"Tal och räkning":["Talen 11–20","Talen 20–100","Tiokamrater","Addition till 20","Addition med uppställning","Subtraktion till 20","Jämföra tal"],"Mätning":["Mäta längd","Väga föremål","Klockan – hel och halv","Dagar, veckor, månader"]},"Engelska":{"Kommunikation":["Hälsningsfraser","Färger och siffror","Djur och natur","Veckodagar","Beskriv dig själv"]},"Bild":{"Skapande":["Teckna former","Måla med olika tekniker"]},"Musik":{"Musicerande":["Sjunga i grupp","Spela xylofon","Klappa rytmmönster"]},"Idrott och hälsa":{"Rörelse":["Bollspel","Simundervisning","Stafetter"],"Hälsa":["Kost och rörelse"]},"Slöjd":{"Textilslöjd":["Grundläggande sömnad"],"Träslöjd":["Slipa och forma trä"]},"Teknik":{"Teknik i vardagen":["Enkla mekanismer","Konstruera broar"]}},
-3:{"Svenska":{"Läsning":["Lässtrategier – förutspå","Lässtrategier – ställa frågor","Lässtrategier – summera","Läsa faktatexter","Jämföra faktatext och skönlitteratur","Texters budskap"],"Skrivning":["Berättelse med handling","Instruktioner","Faktatexter","Styckeindelning","Bindeord"],"Grammatik":["Ordklasser","Subjekt och predikat","Komma i uppräkning","Plural"]},"SVA":{"Vardagsspråk":["Berätta om fritid och intressen","Natur och årstider","Högtider i Sverige","Samhälle och regler","Mat och hälsa"],"Muntlig kommunikation":["Presentera ett ämne","Delta aktivt i klassrumsdiskussion","Ställa och svara på frågor"],"Läsning och skrivning":["Läsa faktatexter med stöd","Skriva en kort berättelse","Använda ordlista"]},"Matematik":{"Tal och räkning":["Tal upp till 1000","Multiplikationstabellen 1–5","Multiplikationstabellen 6–10","Division","Samband mult. och div."],"Geometri":["Area","Omkrets","Koordinatsystem"],"Statistik":["Läsa tabeller","Stapeldiagram","Tolka data"]},"Engelska":{"Kommunikation":["Hälsa och presentera sig","Berätta om familj","Beskriva sin dag","Enkla berättelser"]},"Bild":{"Skapande":["Perspektiv och djup","Porträtt","Skulptur"]},"Musik":{"Musicerande":["Spela ackord","Sjunga tvåstämmigt","Komponera"]},"Idrott och hälsa":{"Rörelse":["Friidrott","Simning","Bollspel"],"Friluftsliv":["Orientering","Allemansrätten"]},"Slöjd":{"Textilslöjd":["Sy ett eget plagg","Broderi"],"Träslöjd":["Såga och hyvel","Limma"]},"Teknik":{"Konstruktion":["Hållfasta konstruktioner","Enkla maskiner"],"Hållbar teknik":["Återbruk"]},"Hemkunskap":{"Mat och måltider":["Enkel matlagning","Köksredskap och hygien","Näringslära"],"Hushållskunskap":["Sortera sopor","Rengöring"]}},
-4:{"Svenska":{"Läsning":["Analysera karaktärer","Karaktärers motiv","Inferenser","Jämföra texter","Källkritik"],"Skrivning":["Argumenterande text","Novellskrivning","Beskrivande text","Formell vs informell stil"],"Grammatik":["Ordklasser – fördjupning","Bisatser","Kommatecken","Direkt och indirekt tal"]},"SVA":{"Kommunikation":["Berätta om händelser","Diskutera i grupp","Förstå och använda ämnesspråk"],"Läsning":["Läsa och förstå faktatexter","Lässtrategier för SVA-elever","Ord och begrepp i texter"],"Skrivning":["Skriva sammanhängande text","Enkel argumentation","Stavning och meningsbyggnad"]},"Matematik":{"Tal och räkning":["Decimaltal – tiondel","Decimaltal – hundradel","Bråk","Skriftlig multiplikation","Skriftlig division"],"Algebra":["Vad är en ekvation?","Lösa enkla ekvationer","Mönster i talföljder"]},"Engelska":{"Grammatik":["Verb i presens","Verb i preteritum","Frågeord","Negation"],"Kommunikation":["Berätta om sin dag","Beskriva familj","Skriva mejl"]},"Biologi":{"Kropp och hälsa":["Hjärtat","Lungorna","Matsmältning","Skelett och muskler"],"Natur":["Djur och livsmiljöer","Växter","Fotosyntesen"]},"Fysik":{"Kraft och rörelse":["Vad är kraft?","Tyngdkraft","Friktion"],"Energi":["Energiformer","Elektrisk krets","Magnetism"]},"Kemi":{"Ämnen":["Fast, flytande, gasform","Blandningar","Lösningar"]},"Geografi":{"Kartan":["Väderstreck och skala","Sverige – landskap","Norden"],"Klimat":["Väder i Sverige","Hav och sjöar"]},"Historia":{"Forntid":["Stenåldern","Bronsåldern","Järnåldern","Vikingatiden","Nordisk mytologi"]},"Religionskunskap":{"Religioner":["Kristendom","Islam","Judendom","Högtider","Etik och moral"]},"Samhällskunskap":{"Demokrati":["Vad är demokrati?","Regler och lagar","Hållbar utveckling"]},"Bild":{"Skapande":["Komposition","Färglära"]},"Musik":{"Musicerande":["Melodiinstrument","Sjunga i ensemble"]},"Idrott och hälsa":{"Rörelse":["Simning","Friidrott","Bollspel"]},"Slöjd":{"Textilslöjd":["Sy med maskin"],"Träslöjd":["Planera ett träarbete"]},"Teknik":{"Konstruktion":["Designprocessen","Hållfasta konstruktioner"],"Digitalteknik":["Programmering","Algoritmer"]},"Hemkunskap":{"Mat":["Laga enkel mat","Näringslära","Hygien"],"Hushåll":["Hushållsekonomi","Miljöval"]}},
-5:{"Svenska":{"Läsning":["Källkritik","Nyhetsartiklar","Skönlitteraturanalys – tema","Skönlitteraturanalys – miljö","Retoriska grepp","Poesi"],"Skrivning":["Argumenterande text","Reportage","Insändare","Källhänvisning"],"Grammatik":["Satsdelar","Adjektivets komparation","Adverb","Meningsbyggnad"]},"SVA":{"Kommunikation":["Argumentera och diskutera","Presentera ett ämne muntligt","Förstå och använda formellt språk"],"Läsning":["Analysera texters budskap","Källkritik för SVA-elever","Ämnesspråk i NO och SO"],"Skrivning":["Skriva argumenterande text","Referera och citera","Utöka ordförrådet"]},"Matematik":{"Tal och räkning":["Bråk – addition","Bråk – multiplikation","Decimaltal","Procent","Negativa tal","Prioriteringsregler"],"Geometri":["Vinklar","Area av triangel","Area av parallellogram"],"Statistik":["Medelvärde","Median","Typvärde","Sannolikhet"]},"Engelska":{"Grammatik":["Alla tempus","Konditionalis","Modala hjälpverb"],"Kommunikation":["Presentera ett ämne","Diskutera","Skriva berättelse"]},"Biologi":{"Cellen":["Cellen – delar","Djurcell vs växcell","Kroppens organ","Pubertet"],"Ekologi":["Ekosystem","Näringskedjor","Fotosyntesen – fördjupning","Biologisk mångfald"]},"Fysik":{"Kraft":["Rörelse och hastighet","Effekt och energi"],"Elektricitet":["Elektriska kretsar","Ohms lag","Magnetfält"]},"Kemi":{"Ämnen":["Kemiska egenskaper","Syror och baser","Neutralisation"]},"Geografi":{"Världen":["Kontinenter","Klimatzoner","Befolkningstäthet"],"Hållbarhet":["Jordens resurser","Klimatförändringar"]},"Historia":{"Medeltid":["Feodalsamhället","Korsfararna","Pesten","Renässansen","Reformationen"],"Kolonialism":["Kolonisationen","Slavhandeln"]},"Religionskunskap":{"Religioner":["Hinduism","Buddhism","Kristendom – fördjupning","Islam – fördjupning","Judendom – fördjupning"],"Etik":["Etiska modeller","Mänskliga rättigheter"]},"Samhällskunskap":{"Demokrati":["Demokrati – former","Barnkonventionen","Sveriges riksdag"],"Ekonomi":["Privatekonomi","Konsumtion"]},"Bild":{"Skapande":["Perspektivteckning","Grafik"]},"Musik":{"Musicerande":["Ackordinstrument","Flerstämmigt"]},"Idrott och hälsa":{"Rörelse":["Simning","Lagidrotter","Konditionsträning"],"Friluftsliv":["Orientering","Första hjälpen"]},"Slöjd":{"Textilslöjd":["Sy med mönster"],"Träslöjd":["Svarv"]},"Teknik":{"Konstruktion":["Konstruera broar","Robotkonstruktion"],"Digitalteknik":["Programmering – loopar","Micro:bit"]},"Hemkunskap":{"Mat":["Laga varierade rätter","Matkultur","Allergier"],"Hushåll":["Planera och handla","Hushållsbudget"]}},
-6:{"Svenska":{"Läsning":["Kritisk läsning av media","Reklamspråk","Litteraturhistoria","Berättarperspektiv","Språkliga val","Tema och budskap"],"Skrivning":["Utredande text","Debattartikel","Krönika","Berättartekniker","Formell kommunikation"],"Grammatik":["Nominalfras","Aktiv och passiv sats","Satsadverbial","Stilistik"]},"SVA":{"Kommunikation":["Diskutera samhällsfrågor","Formell och informell kommunikation","Retorik och argumentation"],"Läsning":["Läsa och analysera skönlitteratur","Ämnesspråk i alla ämnen","Nyanserat ordförråd"],"Skrivning":["Skriva utredande text","Skriva krönika","Källhänvisning och referatteknik"]},"Matematik":{"Tal och räkning":["Procent och förändringsfaktor","Procentuell förändring","Rationella tal","Proportionalitet","Skala"],"Algebra":["Förenkla uttryck","Lösa ekvationer","Koordinatsystem","Linjära funktioner"],"Geometri":["Pythagoras sats","Volymer","Enhetsomvandlingar"]},"Engelska":{"Grammatik":["Konditionalis","Passiv form","Modala hjälpverb","Relativa bisatser"],"Kommunikation":["Muntlig presentation","Formella texter","Diskutera åsikter"]},"Spanska":{"Kommunikation":["Presentera sig","Vardagliga fraser","Beskriva familj","Beställa mat","Handla","Fråga om vägen"],"Grammatik":["Substantiv – genus","Artiklar","Presens av ser och estar","Presens av regelbundna verb","Adjektiv","Frågeord"]},"Franska":{"Kommunikation":["Hälsningar","Berätta om sig själv","Siffror och tid","Beskriva familj","Beställa på café"],"Grammatik":["Artiklar","Presens av être","Presens av avoir","Presens av -er verb","Negation","Frågebildning"]},"Tyska":{"Kommunikation":["Hälsa och presentera sig","Berätta om familjen","Beskriva hem","Tala om mat","Fritidsintressen"],"Grammatik":["Substantiv och genus","Pronomen","Presens av sein","Presens av verben","Nominativ och ackusativ"]},"Biologi":{"Genetik":["DNA och arv","Dominant och recessiv","Ärftlighet och miljö","Evolution","Artbegreppet"],"Ekologi":["Ekosystem","Energiflöde","Kretslopp","Människans påverkan"]},"Fysik":{"Ljus och ljud":["Ljud – vågor","Ljus – reflektion","Refraktion","Optik"],"Energi":["Energiformer","Effekt och energi","Förnybara energikällor"]},"Kemi":{"Grundämnen":["Periodiska systemet","Atomen","Metaller och ickemetaller"],"Syror och baser":["Syror – pH","Baser – pH","Neutralisation","Indikatorer"]},"Geografi":{"Naturgeografi":["Tektoniska plattor","Vulkaner","Klimatzoner"],"Kulturgeografi":["Befolkningstillväxt","Migration","Urbanisering"]},"Historia":{"Revolutioner":["Franska revolutionen","Napoleontiden","Industrialiseringen","Imperialismen"]},"Religionskunskap":{"Religion och samhälle":["Religion och politik","Sekularisering","Etik – utilitarism"]},"Samhällskunskap":{"Politik":["Sveriges statsskick","Kommuner och regioner","EU"]},"Bild":{"Skapande":["Komposition","Foto och film"]},"Musik":{"Musicerande":["Ensemble","Arrangera","Musikproduktion"]},"Idrott och hälsa":{"Rörelse":["Bollsport","Simning – livräddning","Konditionsträning"],"Hälsa":["Kost och sömn","Stress","Drogprevention"]},"Slöjd":{"Textilslöjd":["Sy ett komplext projekt"],"Träslöjd":["Avancerade sammanfogningar"]},"Teknik":{"Konstruktion":["Tekniska system","Hållbar produktutveckling"],"Digitalteknik":["Programmering – funktioner","Informationssäkerhet"]},"Hemkunskap":{"Mat":["Laga varierade rätter","Bakning","Hållbar matkonsumtion"],"Konsumentekonomi":["Budget","Reklam och konsumtion"]}},
-7:{"Svenska":{"Läsning":["Modernistisk lyrik","Epik – romanen","Retorisk analys","Språk och makt"],"Skrivning":["Vetenskaplig rapport","Krönika","Litterär essä","Argumenterande tal"]},"SVA":{"Kommunikation":["Avancerad muntlig kommunikation","Debatt och retorik","Presentera och argumentera"],"Läsning":["Läsa skönlitteratur och analysera","Källkritik och informationssökning","Ämnesspråk på avancerad nivå"],"Skrivning":["Skriva analytisk text","Vetenskapligt skrivande","Nyanserat språk och stil"]},"Matematik":{"Tal och räkning":["Negativa tal","Rationella tal","Potenser","Kvadratrötter","Prioriteringsregler"],"Algebra":["Linjära funktioner","Ekvation för en linje","Ekvationssystem","Andragradsekvationer","Förenkla uttryck"],"Geometri":["Pythagoras sats","Area och omkrets","Volymer","Koordinatsystem","Skala och proportion"],"Statistik":["Histogram","Lådagram","Normalfördelning","Korrelation","Medelvärde och median"],"Sannolikhet":["Kombinatorik","Sannolikhet – grundläggande","Relativ frekvens"]},"Engelska":{"Litteratur":["Engelskspråkig skönlitteratur","Analysera karaktärer","Analysera stil","Jämföra texter"],"Kommunikation":["Debatt","Akademiskt skrivande","Presentationsteknik"]},"Spanska":{"Kommunikation":["Beskriva rutiner","Fritid och intressen","Handla och pruta","Berätta om upplevelse","Skriva personligt brev"],"Grammatik":["Preteritum – regelrätt","Preteritum – oregelbundet","Reflexiva verb","Objektspronomen","Prepositioner"]},"Franska":{"Kommunikation":["Berätta om rutiner","Handla och äta ute","Beskriva en resa","Skriva vykort","Diskutera film och musik"],"Grammatik":["Passé composé med avoir","Passé composé med être","Oregelbundna particip","Negation – fördjupning","Jämförelse"]},"Tyska":{"Kommunikation":["Berätta om skola","Diskutera mat","Planera aktiviteter","Beskriva en resa","Skriva mejl"],"Grammatik":["Dativ","Modala hjälpverb","Perfekt","Ordföljd i bisatser","Imperativ"]},"Biologi":{"Genetik":["Celldelning","DNA och genuttryck","Mutationer","Genteknik"],"Kropp":["Nervsystemet","Hormonsystemet","Immunförsvaret"],"Ekologi":["Ekosystemtjänster","Biologisk mångfald","Klimat och ekosystem"]},"Fysik":{"Mekanik":["Newtons lagar","Rörelsemängd","Arbete och energi","Effekt"],"Elektricitet":["Seriekoppling","Parallellkoppling","Ohms lag","Induktion"]},"Kemi":{"Organisk kemi":["Kolkedjor","Funktionella grupper","Förbränning","Polymerer"],"Kvantitativ kemi":["Molbegreppet","Molmassa","Balansera likvationer","Koncentration"]},"Geografi":{"Naturgeografi":["Klimatsystem","Jordbruk och mark","Naturresurser"],"Kulturgeografi":["Globalisering","Turism","Fattigdom och ojämlikhet"]},"Historia":{"Modern historia":["Industrialismen","Arbetarrörelsen","Första världskriget","Mellankrigstiden"]},"Religionskunskap":{"Etik":["Etiska teorier","Religionsfrihet","Bioetik","Religion och genus"]},"Samhällskunskap":{"Politik":["Sveriges statsskick","EU – demokrati","Internationella org.","Media och demokrati"],"Ekonomi":["Makroekonomi","Arbetsmarknad","Välfärdsstaten"]},"Bild":{"Skapande":["Konstnärlig gestaltning","Film och rörlig bild"]},"Musik":{"Musicerande":["Ensemblespel","Musikproduktion – DAW","Komponera"]},"Idrott och hälsa":{"Rörelse":["Bollsport – taktik","Orientering","Styrketräning"],"Hälsa":["Kost och prestation","Psykisk hälsa"]},"Slöjd":{"Textilslöjd":["Konstruera och sy avancerat"],"Träslöjd":["Avancerad konstruktion"]},"Teknik":{"Tekniska lösningar":["Mekanismer och maskiner","Hållfasta konstruktioner","Materiallära","Produktutvecklingsprocessen"],"Arbetssätt för teknisk utveckling":["Skisser och ritningar","Modeller och prototyper","Designprocessen","Problemlösning"],"Teknik och samhälle":["Teknikens historiska utveckling","Hållbar teknik","Teknikens påverkan på miljön"],"Digitalteknik":["Programmering – funktioner och loopar","Objektorienterad programmering","AI – introduktion","Informationssäkerhet"]},"Hemkunskap":{"Mat":["Näringslära – fördjupning","Matkultur","Hållbar mat"],"Konsumentekonomi":["Sparande","Konsumenträtt"]}},
-8:{"Svenska":{"Läsning":["Postkolonial analys","Feministisk analys","Diskursanalys","Ideologi i text","Mediekritik"],"Skrivning":["Akademisk essä","Litterär analys","Vetenskaplig rapport","Akademiskt språk"]},"SVA":{"Kommunikation":["Avancerad argumentation","Kommunicera i formella sammanhang","Interkulturell kommunikation"],"Läsning":["Läsa och analysera komplexa texter","Kritisk läsning och källvärdering","Akademiskt ordförråd"],"Skrivning":["Skriva akademisk text","Analysera och värdera","Avancerad meningsbyggnad"]},"Matematik":{"Algebra":["Andragradsekvationer – formel","Andragradsekvationer – faktorisering","Andragradsfunktioner","Exponentialfunktioner","Logaritmer"],"Geometri":["Trigonometri","Vektorer","Bevisföring"]},"Engelska":{"Grammatik":["Alla tempus","Perfekt och pluperfekt","Konditionalis typ 3","Komplexa bisatser"],"Kommunikation":["Argumenterande tal","Engelska i vetenskap","Interkulturell kommunikation"]},"Spanska":{"Kommunikation":["Diskutera samhällsfrågor","Argumentera","Beskriva känslor","Analysera spansk text","Skriva argumenterande text"],"Grammatik":["Imperfecto","Preteritum vs imperfecto","Subjunktiv – intro","Indirekt tal","Passiv konstruktion"]},"Franska":{"Kommunikation":["Diskutera samhällsfrågor","Argumentera","Beskriva dåtid","Skriva formellt brev","Analysera text"],"Grammatik":["Imparfait","Imparfait vs passé composé","Futur simple","Konditionalis","Subjonctif – intro"]},"Tyska":{"Kommunikation":["Diskutera händelser","Argumentera","Beskriva dåtid","Sammanfatta text","Skriva formellt brev"],"Grammatik":["Genitiv","Konjunktioner","Pluskvamperfekt","Konjunktiv II – intro","Passiv"]},"Biologi":{"Genetik":["Proteinsyntesen","Epigenetik","CRISPR","Stamceller – etik"],"Kropp":["Immunförsvar","Folksjukdomar","Läkemedel","Medicinsk etik"],"Ekologi":["Ekosystemtjänster","Artutrotning","Klimatanpassning"]},"Fysik":{"Termodynamik":["Temperatur och värme","Specifik värmekapacitet","Termodynamikens lagar","Värmeöverföring"],"Modern fysik":["Relativitetsteorin","E=mc²","Fotoelektriska effekten","Kvantmekanik"]},"Kemi":{"Elektrokemi":["Galvaniska celler","Elektrolys","Korrosion"],"Biokemi":["Proteiner","Enzymer","Kolhydrater","Metabolism"]},"Geografi":{"Globala utmaningar":["Klimatkonsekvenser","Vatten och konflikt","Energiomställning","Hållbar stad"],"Geopolitik":["Konflikter","Handelsflöden","Kolonialismens arv"]},"Historia":{"1900-tal":["Andra världskriget","Förintelsen","Kalla kriget","Avkolonisering","Vietnamkriget"]},"Religionskunskap":{"Etik":["Medicinsk etik","Krigets etik","Miljöetik","Existentiella frågor"]},"Samhällskunskap":{"Ekonomi":["Ekonomiska system","Skattefrågor","Global ojämlikhet","Finanskris"],"Rättssamhälle":["Rättssystemet","Brott och påföljder","Internationell rätt"]},"Bild":{"Skapande":["Avancerat projekt","Installationskonst"]},"Musik":{"Musicerande":["Avancerat ensemble","Egna låtar"]},"Idrott och hälsa":{"Rörelse":["Träningslära","Lagsport – ledarskap"],"Hälsa":["Träning och hälsa","Mental träning"]},"Slöjd":{"Textilslöjd":["Självständigt projekt"],"Träslöjd":["Avancerat träprojekt"]},"Teknik":{"Tekniska lösningar":["Styr- och reglerteknik","Energiteknik","Kommunikationsteknik","Produktionsteknik"],"Arbetssätt för teknisk utveckling":["Tekniska ritningar och CAD","Systematisk problemlösning","Test och utvärdering","Dokumentation"],"Teknik och samhälle":["Teknikens etiska frågor","Globala tekniska system","Hållbar produktutveckling","Teknik och genus"],"Digitalteknik":["Algoritmer och datastrukturer","Cybersäkerhet","Nätverk och internet","Programmering – avancerat"]},"Hemkunskap":{"Mat":["Specialkost","Avancerade tekniker"],"Konsumentekonomi":["Lån och krediter","Försäkringar"]}},
-9:{"Svenska":{"Läsning":["Litteratur och samhälle","Argumentationsanalys","Retoriska strategier","Jämförande analys","Inför nationellt prov"],"Skrivning":["Nationella provets uppgifter","Argumenterande text","Utredande text","Vetenskaplig rapport"]},"SVA":{"Kommunikation":["Debatt och retorik på avancerad nivå","Formell yrkeskommunikation","Presentera och analysera"],"Läsning":["Inför nationellt prov SVA","Analysera och tolka komplexa texter","Kritisk textanalys"],"Skrivning":["Nationella provets skrivuppgifter","Argumenterande och utredande text","Akademiskt skrivande"]},"Matematik":{"Algebra och analys":["Polynomekvationer","Rationella ekvationer","Komplexa tal","Derivata – definition","Derivata – tillämpningar","Integraler"],"Statistik":["Kombinatorik","Sannolikhetsfördelningar","Statistisk inferens"]},"Engelska":{"Fördjupning":["Litterär analys","Akademisk engelska","Kritisk medieanalys","Engelska i vetenskap"],"Kommunikation":["Förhandling","Engelska i yrkeslivet","Avancerad presentation"]},"Spanska":{"Kommunikation":["Debatt och retorik","Analysera litteratur","Yrkesliv","Presentera ståndpunkt","Analytisk text"],"Grammatik":["Subjunktiv i bisatser","Konditionalis","Passiv med se","Stilistik"]},"Franska":{"Kommunikation":["Debatt","Analysera litteratur","Samhälls- och kulturfrågor","Analytisk text","Presentera ämne"],"Grammatik":["Subjonctif – fördjupning","Subjonctif passé","Konditionalis","Passiv – alla tempus"]},"Tyska":{"Kommunikation":["Debatt","Analysera litteratur","Samhällsfrågor","Yrkeskommunikation","Analytisk text"],"Grammatik":["Konjunktiv II","Konditionala satser","Passiv i alla tempus","Avancerad satsbyggnad"]},"Biologi":{"Evolution":["Evolutionens mekanismer","Systematik","Samevolution","Artbildning"],"Ekologi":["Klimatmodeller","Ekosystemens resiliens","Restaurering","Naturförvaltning"]},"Fysik":{"Kärnfysik":["Atomkärnan","Radioaktivitet","Halveringstid","Fission och fusion","Kärnkraft"],"Astrofysik":["Stjärnors liv","HR-diagrammet","Supernovor","Big Bang","Mörk materia"]},"Kemi":{"Industriell kemi":["Haber-processen","Kontaktprocessen","Polymerer","Industriell katalys"],"Miljökemi":["Växthuseffekten","Kolcykeln","Försurning","Ozon","Miljögifter"]},"Geografi":{"Hållbarhet":["Agenda 2030","Energiomställning","Cirkulär ekonomi","Klimaträttvisa"],"Geopolitik":["Framtidens städer","Vattenresurser","Migration","Teknik och hållbarhet"]},"Historia":{"Samtidshistoria":["Kalla krigets slut","Globaliseringen","Folkrörelser","11 september","Nutida konflikter"]},"Religionskunskap":{"Etik":["AI och etik","Klimatkrisen","Genus och religion","Yttrandefrihet","Döden och det bortom"]},"Samhällskunskap":{"Demokrati":["Demokratins utmaningar","Digitalisering","Yttrandefrihet","Aktivism"],"Globalt":["Klimatpolitik","Migration","Global fattigdom","Säkerhetspolitik"]},"Bild":{"Skapande":["Examensarbete","Utställning"]},"Musik":{"Musicerande":["Ensemble inför publik","Självständig produktion"]},"Idrott och hälsa":{"Rörelse":["Träningsplanering","Idrott och identitet"],"Friluftsliv":["Avancerad orientering","Ledarskap"]},"Slöjd":{"Avancerat":["Examensarbete","Avancerad produkt"]},"Teknik":{"Tekniska lösningar":["Avancerade tekniska system","Förnybar energiteknik","Bioteknik","Nanoteknik – introduktion"],"Arbetssätt för teknisk utveckling":["Innovation och entreprenörskap","Projektmetodik","Teknikutvecklingsprocessen","Patent och upphovsrätt"],"Teknik och samhälle":["Teknikens framtid","Hållbar innovation","Teknik och globala utmaningar","Etik i teknikutveckling"],"Digitalteknik":["Avancerad programmering","Big data och AI","Digital säkerhet","Teknikens roll i samhällsutvecklingen"]},"Hemkunskap":{"Mat":["Växtbaserad kost","Matproduktion och miljö"],"Ekonomi":["Ekonomisk planering","Boende och hushåll"]}}
+1:{"Svenska":{"Bokstäver och ljud":["Vokaler: a, e, i, o, u","Konsonanter och deras ljud","Korta och långa vokaler","Bokstavsordningen","Versaler och gemener"],"Läsning":["Ordbilder","Läsa enkla meningar","Läsförståelse med bilder","Rim och ramsor","Läsa högt i par"],"Skrivning":["Skriva sitt förnamn","Skriva enkla ord","Skriva en enkel mening","Stor bokstav i meningsbörjan","Punkt i slutet"]},"Matematik":{"Tal och räkning":["Räkna 1–5","Räkna 1–10","Skriva siffror 0–10","Räkna framåt","Räkna bakåt","Addition till 10","Subtraktion till 5"],"Geometri":["Känna igen cirkeln","Känna igen kvadraten","Känna igen triangeln","Sortera former","Jämföra storlekar"]},"NO":{"Natur":["Djur och deras namn","Årstidernas växling","Växter vi känner igen","Djur på land och i vatten","Solen, månen och stjärnorna"],"Kropp och hälsa":["Kroppens delar","Sinnen – se, höra, känna, lukta, smaka","Sömn och vila","Hygien och tandvård","Vad händer när vi äter?"]},"SO":{"Mig och min omvärld":["Familjen och hemmet","Skolan och klassrummet","Regler och ansvar","Min by, min stad","Att hjälpa varandra"],"Tid och historia":["Igår, idag och imorgon","Högtider och traditioner","Berättelser om förr","Gamla föremål – vad berättar de?"]},"Bild":{"Skapande":["Rita med penna","Blanda färger","Måla med penslar","Klippa och klistra","Forma med lera"]},"Musik":{"Musicerande":["Sjunga enkla sånger","Rytm – klappa i takt","Enkla instrument"]},"Idrott och hälsa":{"Rörelse":["Grundrörelser","Balans och koordination","Enkla lekar"],"Hälsa":["Hygien","Varför vi rör på oss"]},"Slöjd":{"Textilslöjd":["Trä ett nål","Enkelt broderi"],"Träslöjd":["Känna igen material","Enkla konstruktioner"]},"Teknik":{"Teknik i vardagen":["Vad är teknik?","Enkla maskiner","Konstruera med klossar"]}},
+2:{"Svenska":{"Läsning":["Läsa ord med dubbelteckning","Läsa berättande text","Hitta information i faktatexter","Förstå händelseförlopp","Läsa högt med flyt"],"Skrivning":["Skriva en berättelse","Skriva beskrivande text","Punkt och frågetecken","Sammanhängande meningar"],"Grammatik":["Substantiv","Verb","Adjektiv","Stor bokstav vid namn","Singular och plural"]},"Matematik":{"Tal och räkning":["Talen 11–20","Talen 20–100","Tiokamrater","Addition till 20","Addition med uppställning","Subtraktion till 20","Jämföra tal"],"Mätning":["Mäta längd","Väga föremål","Klockan – hel och halv","Dagar, veckor, månader"]},"Engelska":{"Kommunikation":["Hälsningsfraser","Färger och siffror","Djur och natur","Veckodagar","Beskriv dig själv"]},"NO":{"Natur och miljö":["Djurens livscykel","Växternas delar – rot, stam, blad, blomma","Vatten i naturen","Årstider och väder","Djur och deras mat"],"Kropp och hälsa":["Kroppens organ – enkelt","Mat och näring","Rörelse och hälsa","Sunda vanor","Sjukdom och bakterier – intro"]},"SO":{"Samhälle och historia":["Vad är ett samhälle?","Lagar och regler","Sverige – var bor vi?","Yrken och arbete","Historia nära oss – gamla bilder, berättelser"],"Geografi – nära":["Kartans grunder","Mitt bostadsområde","Natur och stad","Hav, sjöar och floder i Sverige","Kompassriktningar"]},"Bild":{"Skapande":["Teckna former","Måla med olika tekniker"]},"Musik":{"Musicerande":["Sjunga i grupp","Spela xylofon","Klappa rytmmönster"]},"Idrott och hälsa":{"Rörelse":["Bollspel","Simundervisning","Stafetter"],"Hälsa":["Kost och rörelse"]},"Slöjd":{"Textilslöjd":["Grundläggande sömnad"],"Träslöjd":["Slipa och forma trä"]},"Teknik":{"Teknik i vardagen":["Enkla mekanismer","Konstruera broar"]}},
+3:{"Svenska":{"Läsning":["Lässtrategier – förutspå","Lässtrategier – ställa frågor","Lässtrategier – summera","Läsa faktatexter","Jämföra faktatext och skönlitteratur","Texters budskap"],"Skrivning":["Berättelse med handling","Instruktioner","Faktatexter","Styckeindelning","Bindeord"],"Grammatik":["Ordklasser","Subjekt och predikat","Komma i uppräkning","Plural"]},"Matematik":{"Tal och räkning":["Tal upp till 1000","Multiplikationstabellen 1–5","Multiplikationstabellen 6–10","Division","Samband mult. och div."],"Geometri":["Area","Omkrets","Koordinatsystem"],"Statistik":["Läsa tabeller","Stapeldiagram","Tolka data"]},"Engelska":{"Kommunikation":["Hälsa och presentera sig","Berätta om familj","Beskriva sin dag","Enkla berättelser"]},"NO":{"Biologi":["Fotosyntesen – enkelt","Djur och deras ungar","Kroppens organ","Ekosystem – skog och sjö","Insekter och deras roll"],"Fysik och kemi":["Vatten – fast, flytande, gas","Magneter","Ljus och skugga","Enkla elektriska kretsar","Blandningar och lösningar – intro"]},"SO":{"Historia":["Forntiden – hur levde människor förr?","Vikingatiden – enkelt","Tidslinje – då och nu","Uppfinningar som förändrat världen","Livet förr vs idag"],"Geografi":["Sverige – landskap och städer","Norden – grannländer","Kartan – Sverige","Klimat och väder i Sverige","Natur och människa"],"Samhällskunskap":["Demokrati – vad betyder det?","Regler i samhället","Val och röstning – enkelt","Att ta ansvar","Hållbar utveckling – intro"]},"Bild":{"Skapande":["Perspektiv och djup","Porträtt","Skulptur"]},"Musik":{"Musicerande":["Spela ackord","Sjunga tvåstämmigt","Komponera"]},"Idrott och hälsa":{"Rörelse":["Friidrott","Simning","Bollspel"],"Friluftsliv":["Orientering","Allemansrätten"]},"Slöjd":{"Textilslöjd":["Sy ett eget plagg","Broderi"],"Träslöjd":["Såga och hyvel","Limma"]},"Teknik":{"Konstruktion":["Hållfasta konstruktioner","Enkla maskiner"],"Hållbar teknik":["Återbruk"]},"Hemkunskap":{"Mat och måltider":["Enkel matlagning","Köksredskap och hygien","Näringslära"],"Hushållskunskap":["Sortera sopor","Rengöring"]}},
+4:{"Svenska":{"Läsning":["Analysera karaktärer","Karaktärers motiv","Inferenser","Jämföra texter","Källkritik"],"Skrivning":["Argumenterande text","Novellskrivning","Beskrivande text","Formell vs informell stil"],"Grammatik":["Ordklasser – fördjupning","Bisatser","Kommatecken","Direkt och indirekt tal"]},"Matematik":{"Tal och räkning":["Decimaltal – tiondel","Decimaltal – hundradel","Bråk","Skriftlig multiplikation","Skriftlig division"],"Algebra":["Vad är en ekvation?","Lösa enkla ekvationer","Mönster i talföljder"]},"Engelska":{"Grammatik":["Verb i presens","Verb i preteritum","Frågeord","Negation"],"Kommunikation":["Berätta om sin dag","Beskriva familj","Skriva mejl"]},"Biologi":{"Kropp och hälsa":["Hjärtat","Lungorna","Matsmältning","Skelett och muskler"],"Natur":["Djur och livsmiljöer","Växter","Fotosyntesen"]},"Fysik":{"Kraft och rörelse":["Vad är kraft?","Tyngdkraft","Friktion"],"Energi":["Energiformer","Elektrisk krets","Magnetism"]},"Kemi":{"Ämnen":["Fast, flytande, gasform","Blandningar","Lösningar"]},"NO":{"Biologi":["Djur och livsmiljöer","Växter och fotosyntesen","Kropp och hälsa – organ","Ekosystem – skog och sjö","Djurens anpassningar"],"Fysik":["Vad är kraft?","Tyngdkraft och friktion","Energiformer","Elektrisk krets","Magnetism"],"Kemi":["Fast, flytande, gasform","Blandningar och lösningar","Enkla kemiska reaktioner","Vatten – kretslopp","Luften vi andas"]},"Geografi":{"Kartan":["Väderstreck och skala","Sverige – landskap","Norden"],"Klimat":["Väder i Sverige","Hav och sjöar"]},"Historia":{"Forntid":["Stenåldern","Bronsåldern","Järnåldern","Vikingatiden","Nordisk mytologi"]},"Religionskunskap":{"Religioner":["Kristendom","Islam","Judendom","Högtider","Etik och moral"]},"Samhällskunskap":{"Demokrati":["Vad är demokrati?","Regler och lagar","Hållbar utveckling"]},"SO":{"Historia":["Stenåldern","Bronsåldern","Järnåldern","Vikingatiden","Nordisk mytologi"],"Geografi":["Väderstreck och skala","Sverige – landskap och städer","Norden – länder och grannfolk","Hav, sjöar och vattendrag","Klimat i Sverige"],"Samhällskunskap":["Vad är demokrati?","Regler och lagar","Barnkonventionen","Hållbar utveckling – intro","Att rösta och bestämma"],"Religionskunskap":["Kristendom","Islam","Judendom","Högtider och traditioner","Etik och moral"]},"Bild":{"Skapande":["Komposition","Färglära"]},"Musik":{"Musicerande":["Melodiinstrument","Sjunga i ensemble"]},"Idrott och hälsa":{"Rörelse":["Simning","Friidrott","Bollspel"]},"Slöjd":{"Textilslöjd":["Sy med maskin"],"Träslöjd":["Planera ett träarbete"]},"Teknik":{"Konstruktion":["Designprocessen","Hållfasta konstruktioner"],"Digitalteknik":["Programmering","Algoritmer"]},"Hemkunskap":{"Mat":["Laga enkel mat","Näringslära","Hygien"],"Hushåll":["Hushållsekonomi","Miljöval"]}},
+5:{"Svenska":{"Läsning":["Källkritik","Nyhetsartiklar","Skönlitteraturanalys – tema","Skönlitteraturanalys – miljö","Retoriska grepp","Poesi"],"Skrivning":["Argumenterande text","Reportage","Insändare","Källhänvisning"],"Grammatik":["Satsdelar","Adjektivets komparation","Adverb","Meningsbyggnad"]},"Matematik":{"Tal och räkning":["Bråk – addition","Bråk – multiplikation","Decimaltal","Procent","Negativa tal","Prioriteringsregler"],"Geometri":["Vinklar","Area av triangel","Area av parallellogram"],"Statistik":["Medelvärde","Median","Typvärde","Sannolikhet"]},"Engelska":{"Grammatik":["Alla tempus","Konditionalis","Modala hjälpverb"],"Kommunikation":["Presentera ett ämne","Diskutera","Skriva berättelse"]},"Biologi":{"Cellen":["Cellen – delar","Djurcell vs växcell","Kroppens organ","Pubertet"],"Ekologi":["Ekosystem","Näringskedjor","Fotosyntesen – fördjupning","Biologisk mångfald"]},"Fysik":{"Kraft":["Rörelse och hastighet","Effekt och energi"],"Elektricitet":["Elektriska kretsar","Ohms lag","Magnetfält"]},"Kemi":{"Ämnen":["Kemiska egenskaper","Syror och baser","Neutralisation"]},"NO":{"Biologi":["Cellen – livets grund","Kroppens organ","Pubertet","Ekosystem och näringskedjor","Biologisk mångfald"],"Fysik":["Rörelse och hastighet","Kraft och energi","Elektriska kretsar","Ohms lag","Magnetfält"],"Kemi":["Kemiska egenskaper","Syror och baser","Neutralisation","Ämnen och material","Blandningar"]},"Geografi":{"Världen":["Kontinenter","Klimatzoner","Befolkningstäthet"],"Hållbarhet":["Jordens resurser","Klimatförändringar"]},"Historia":{"Medeltid":["Feodalsamhället","Korsfararna","Pesten","Renässansen","Reformationen"],"Kolonialism":["Kolonisationen","Slavhandeln"]},"Religionskunskap":{"Religioner":["Hinduism","Buddhism","Kristendom – fördjupning","Islam – fördjupning","Judendom – fördjupning"],"Etik":["Etiska modeller","Mänskliga rättigheter"]},"Samhällskunskap":{"Demokrati":["Demokrati – former","Barnkonventionen","Sveriges riksdag"],"Ekonomi":["Privatekonomi","Konsumtion"]},"SO":{"Historia":["Feodalsamhället","Korsfararna","Pesten och dess konsekvenser","Renässansen","Kolonisationen och slavhandeln"],"Geografi":["Världens kontinenter","Klimatzoner","Befolkningstäthet","Jordens resurser","Klimatförändringar"],"Samhällskunskap":["Demokrati – olika former","Barnkonventionen","Sveriges riksdag","Privatekonomi","Hållbar konsumtion"],"Religionskunskap":["Hinduism","Buddhism","Världsreligionerna jämfört","Etiska modeller","Mänskliga rättigheter"]},"Bild":{"Skapande":["Perspektivteckning","Grafik"]},"Musik":{"Musicerande":["Ackordinstrument","Flerstämmigt"]},"Idrott och hälsa":{"Rörelse":["Simning","Lagidrotter","Konditionsträning"],"Friluftsliv":["Orientering","Första hjälpen"]},"Slöjd":{"Textilslöjd":["Sy med mönster"],"Träslöjd":["Svarv"]},"Teknik":{"Konstruktion":["Konstruera broar","Robotkonstruktion"],"Digitalteknik":["Programmering – loopar","Micro:bit"]},"Hemkunskap":{"Mat":["Laga varierade rätter","Matkultur","Allergier"],"Hushåll":["Planera och handla","Hushållsbudget"]}},
+6:{"Svenska":{"Läsning":["Kritisk läsning av media","Reklamspråk","Litteraturhistoria","Berättarperspektiv","Språkliga val","Tema och budskap"],"Skrivning":["Utredande text","Debattartikel","Krönika","Berättartekniker","Formell kommunikation"],"Grammatik":["Nominalfras","Aktiv och passiv sats","Satsadverbial","Stilistik"]},"Matematik":{"Tal och räkning":["Procent och förändringsfaktor","Procentuell förändring","Rationella tal","Proportionalitet","Skala"],"Algebra":["Förenkla uttryck","Lösa ekvationer","Koordinatsystem","Linjära funktioner"],"Geometri":["Pythagoras sats","Volymer","Enhetsomvandlingar"]},"Engelska":{"Grammatik":["Konditionalis","Passiv form","Modala hjälpverb","Relativa bisatser"],"Kommunikation":["Muntlig presentation","Formella texter","Diskutera åsikter"]},"Spanska":{"Kommunikation":["Presentera sig","Vardagliga fraser","Beskriva familj","Beställa mat","Handla","Fråga om vägen"],"Grammatik":["Substantiv – genus","Artiklar","Presens av ser och estar","Presens av regelbundna verb","Adjektiv","Frågeord"]},"Franska":{"Kommunikation":["Hälsningar","Berätta om sig själv","Siffror och tid","Beskriva familj","Beställa på café"],"Grammatik":["Artiklar","Presens av être","Presens av avoir","Presens av -er verb","Negation","Frågebildning"]},"Tyska":{"Kommunikation":["Hälsa och presentera sig","Berätta om familjen","Beskriva hem","Tala om mat","Fritidsintressen"],"Grammatik":["Substantiv och genus","Pronomen","Presens av sein","Presens av verben","Nominativ och ackusativ"]},"Biologi":{"Genetik":["DNA och arv","Dominant och recessiv","Ärftlighet och miljö","Evolution","Artbegreppet"],"Ekologi":["Ekosystem","Energiflöde","Kretslopp","Människans påverkan"]},"Fysik":{"Ljus och ljud":["Ljud – vågor","Ljus – reflektion","Refraktion","Optik"],"Energi":["Energiformer","Effekt och energi","Förnybara energikällor"]},"Kemi":{"Grundämnen":["Periodiska systemet","Atomen","Metaller och ickemetaller"],"Syror och baser":["Syror – pH","Baser – pH","Neutralisation","Indikatorer"]},"NO":{"Biologi":["DNA och arv","Evolution och artbegreppet","Ekosystem och energiflöde","Kretslopp i naturen","Människans påverkan på miljön"],"Fysik":["Ljud – vågor och egenskaper","Ljus – reflektion och refraktion","Energiformer och effekt","Förnybara energikällor","Optik"],"Kemi":["Periodiska systemet","Atomen – grundstruktur","Syror och baser – pH","Neutralisation","Indikatorer"]},"Geografi":{"Naturgeografi":["Tektoniska plattor","Vulkaner","Klimatzoner"],"Kulturgeografi":["Befolkningstillväxt","Migration","Urbanisering"]},"Historia":{"Revolutioner":["Franska revolutionen","Napoleontiden","Industrialiseringen","Imperialismen"]},"Religionskunskap":{"Religion och samhälle":["Religion och politik","Sekularisering","Etik – utilitarism"]},"Samhällskunskap":{"Politik":["Sveriges statsskick","Kommuner och regioner","EU"]},"SO":{"Historia":["Franska revolutionen","Napoleontiden","Industrialiseringen","Imperialismen och kolonialismen","Sverige under 1800-talet"],"Geografi":["Tektoniska plattor och vulkaner","Klimatzoner i världen","Befolkningstillväxt och migration","Urbanisering","Jordens naturresurser"],"Samhällskunskap":["Sveriges statsskick","Kommuner och regioner","EU – uppbyggnad och syfte","Demokrati och mänskliga rättigheter","Mediernas roll"],"Religionskunskap":["Religion och politik","Sekularisering","Etik – utilitarism och pliktetik","Religion och genus","Existentiella frågor"]},"Bild":{"Skapande":["Komposition","Foto och film"]},"Musik":{"Musicerande":["Ensemble","Arrangera","Musikproduktion"]},"Idrott och hälsa":{"Rörelse":["Bollsport","Simning – livräddning","Konditionsträning"],"Hälsa":["Kost och sömn","Stress","Drogprevention"]},"Slöjd":{"Textilslöjd":["Sy ett komplext projekt"],"Träslöjd":["Avancerade sammanfogningar"]},"Teknik":{"Konstruktion":["Tekniska system","Hållbar produktutveckling"],"Digitalteknik":["Programmering – funktioner","Informationssäkerhet"]},"Hemkunskap":{"Mat":["Laga varierade rätter","Bakning","Hållbar matkonsumtion"],"Konsumentekonomi":["Budget","Reklam och konsumtion"]}},
+7:{"Svenska":{"Läsning":["Modernistisk lyrik","Epik – romanen","Retorisk analys","Språk och makt"],"Skrivning":["Vetenskaplig rapport","Krönika","Litterär essä","Argumenterande tal"]},"Matematik":{"Tal och räkning":["Negativa tal","Rationella tal","Potenser","Kvadratrötter","Prioriteringsregler"],"Algebra":["Linjära funktioner","Ekvation för en linje","Ekvationssystem","Andragradsekvationer","Förenkla uttryck"],"Geometri":["Pythagoras sats","Area och omkrets","Volymer","Koordinatsystem","Skala och proportion"],"Statistik":["Histogram","Lådagram","Normalfördelning","Korrelation","Medelvärde och median"],"Sannolikhet":["Kombinatorik","Sannolikhet – grundläggande","Relativ frekvens"]},"Engelska":{"Litteratur":["Engelskspråkig skönlitteratur","Analysera karaktärer","Analysera stil","Jämföra texter"],"Kommunikation":["Debatt","Akademiskt skrivande","Presentationsteknik"]},"Spanska":{"Kommunikation":["Beskriva rutiner","Fritid och intressen","Handla och pruta","Berätta om upplevelse","Skriva personligt brev"],"Grammatik":["Preteritum – regelrätt","Preteritum – oregelbundet","Reflexiva verb","Objektspronomen","Prepositioner"]},"Franska":{"Kommunikation":["Berätta om rutiner","Handla och äta ute","Beskriva en resa","Skriva vykort","Diskutera film och musik"],"Grammatik":["Passé composé med avoir","Passé composé med être","Oregelbundna particip","Negation – fördjupning","Jämförelse"]},"Tyska":{"Kommunikation":["Berätta om skola","Diskutera mat","Planera aktiviteter","Beskriva en resa","Skriva mejl"],"Grammatik":["Dativ","Modala hjälpverb","Perfekt","Ordföljd i bisatser","Imperativ"]},"Biologi":{"Genetik":["Celldelning","DNA och genuttryck","Mutationer","Genteknik"],"Kropp":["Nervsystemet","Hormonsystemet","Immunförsvaret"],"Ekologi":["Ekosystemtjänster","Biologisk mångfald","Klimat och ekosystem"]},"Fysik":{"Mekanik":["Newtons lagar","Rörelsemängd","Arbete och energi","Effekt"],"Elektricitet":["Seriekoppling","Parallellkoppling","Ohms lag","Induktion"]},"Kemi":{"Organisk kemi":["Kolkedjor","Funktionella grupper","Förbränning","Polymerer"],"Kvantitativ kemi":["Molbegreppet","Molmassa","Balansera likvationer","Koncentration"]},"Geografi":{"Naturgeografi":["Klimatsystem","Jordbruk och mark","Naturresurser"],"Kulturgeografi":["Globalisering","Turism","Fattigdom och ojämlikhet"]},"Historia":{"Modern historia":["Industrialismen","Arbetarrörelsen","Första världskriget","Mellankrigstiden"]},"Religionskunskap":{"Etik":["Etiska teorier","Religionsfrihet","Bioetik","Religion och genus"]},"Samhällskunskap":{"Politik":["Sveriges statsskick","EU – demokrati","Internationella org.","Media och demokrati"],"Ekonomi":["Makroekonomi","Arbetsmarknad","Välfärdsstaten"]},"Bild":{"Skapande":["Konstnärlig gestaltning","Film och rörlig bild"]},"Musik":{"Musicerande":["Ensemblespel","Musikproduktion – DAW","Komponera"]},"Idrott och hälsa":{"Rörelse":["Bollsport – taktik","Orientering","Styrketräning"],"Hälsa":["Kost och prestation","Psykisk hälsa"]},"Slöjd":{"Textilslöjd":["Konstruera och sy avancerat"],"Träslöjd":["Avancerad konstruktion"]},"Teknik":{"Tekniska lösningar":["Mekanismer och maskiner","Hållfasta konstruktioner","Materiallära","Produktutvecklingsprocessen"],"Arbetssätt för teknisk utveckling":["Skisser och ritningar","Modeller och prototyper","Designprocessen","Problemlösning"],"Teknik och samhälle":["Teknikens historiska utveckling","Hållbar teknik","Teknikens påverkan på miljön"],"Digitalteknik":["Programmering – funktioner och loopar","Objektorienterad programmering","AI – introduktion","Informationssäkerhet"]},"Hemkunskap":{"Mat":["Näringslära – fördjupning","Matkultur","Hållbar mat"],"Konsumentekonomi":["Sparande","Konsumenträtt"]}},
+8:{"Svenska":{"Läsning":["Postkolonial analys","Feministisk analys","Diskursanalys","Ideologi i text","Mediekritik"],"Skrivning":["Akademisk essä","Litterär analys","Vetenskaplig rapport","Akademiskt språk"]},"Matematik":{"Algebra":["Andragradsekvationer – formel","Andragradsekvationer – faktorisering","Andragradsfunktioner","Exponentialfunktioner","Logaritmer"],"Geometri":["Trigonometri","Vektorer","Bevisföring"]},"Engelska":{"Grammatik":["Alla tempus","Perfekt och pluperfekt","Konditionalis typ 3","Komplexa bisatser"],"Kommunikation":["Argumenterande tal","Engelska i vetenskap","Interkulturell kommunikation"]},"Spanska":{"Kommunikation":["Diskutera samhällsfrågor","Argumentera","Beskriva känslor","Analysera spansk text","Skriva argumenterande text"],"Grammatik":["Imperfecto","Preteritum vs imperfecto","Subjunktiv – intro","Indirekt tal","Passiv konstruktion"]},"Franska":{"Kommunikation":["Diskutera samhällsfrågor","Argumentera","Beskriva dåtid","Skriva formellt brev","Analysera text"],"Grammatik":["Imparfait","Imparfait vs passé composé","Futur simple","Konditionalis","Subjonctif – intro"]},"Tyska":{"Kommunikation":["Diskutera händelser","Argumentera","Beskriva dåtid","Sammanfatta text","Skriva formellt brev"],"Grammatik":["Genitiv","Konjunktioner","Pluskvamperfekt","Konjunktiv II – intro","Passiv"]},"Biologi":{"Genetik":["Proteinsyntesen","Epigenetik","CRISPR","Stamceller – etik"],"Kropp":["Immunförsvar","Folksjukdomar","Läkemedel","Medicinsk etik"],"Ekologi":["Ekosystemtjänster","Artutrotning","Klimatanpassning"]},"Fysik":{"Termodynamik":["Temperatur och värme","Specifik värmekapacitet","Termodynamikens lagar","Värmeöverföring"],"Modern fysik":["Relativitetsteorin","E=mc²","Fotoelektriska effekten","Kvantmekanik"]},"Kemi":{"Elektrokemi":["Galvaniska celler","Elektrolys","Korrosion"],"Biokemi":["Proteiner","Enzymer","Kolhydrater","Metabolism"]},"Geografi":{"Globala utmaningar":["Klimatkonsekvenser","Vatten och konflikt","Energiomställning","Hållbar stad"],"Geopolitik":["Konflikter","Handelsflöden","Kolonialismens arv"]},"Historia":{"1900-tal":["Andra världskriget","Förintelsen","Kalla kriget","Avkolonisering","Vietnamkriget"]},"Religionskunskap":{"Etik":["Medicinsk etik","Krigets etik","Miljöetik","Existentiella frågor"]},"Samhällskunskap":{"Ekonomi":["Ekonomiska system","Skattefrågor","Global ojämlikhet","Finanskris"],"Rättssamhälle":["Rättssystemet","Brott och påföljder","Internationell rätt"]},"Bild":{"Skapande":["Avancerat projekt","Installationskonst"]},"Musik":{"Musicerande":["Avancerat ensemble","Egna låtar"]},"Idrott och hälsa":{"Rörelse":["Träningslära","Lagsport – ledarskap"],"Hälsa":["Träning och hälsa","Mental träning"]},"Slöjd":{"Textilslöjd":["Självständigt projekt"],"Träslöjd":["Avancerat träprojekt"]},"Teknik":{"Tekniska lösningar":["Styr- och reglerteknik","Energiteknik","Kommunikationsteknik","Produktionsteknik"],"Arbetssätt för teknisk utveckling":["Tekniska ritningar och CAD","Systematisk problemlösning","Test och utvärdering","Dokumentation"],"Teknik och samhälle":["Teknikens etiska frågor","Globala tekniska system","Hållbar produktutveckling","Teknik och genus"],"Digitalteknik":["Algoritmer och datastrukturer","Cybersäkerhet","Nätverk och internet","Programmering – avancerat"]},"Hemkunskap":{"Mat":["Specialkost","Avancerade tekniker"],"Konsumentekonomi":["Lån och krediter","Försäkringar"]}},
+9:{"Svenska":{"Läsning":["Litteratur och samhälle","Argumentationsanalys","Retoriska strategier","Jämförande analys","Inför nationellt prov"],"Skrivning":["Nationella provets uppgifter","Argumenterande text","Utredande text","Vetenskaplig rapport"]},"Matematik":{"Algebra och analys":["Polynomekvationer","Rationella ekvationer","Komplexa tal","Derivata – definition","Derivata – tillämpningar","Integraler"],"Statistik":["Kombinatorik","Sannolikhetsfördelningar","Statistisk inferens"]},"Engelska":{"Fördjupning":["Litterär analys","Akademisk engelska","Kritisk medieanalys","Engelska i vetenskap"],"Kommunikation":["Förhandling","Engelska i yrkeslivet","Avancerad presentation"]},"Spanska":{"Kommunikation":["Debatt och retorik","Analysera litteratur","Yrkesliv","Presentera ståndpunkt","Analytisk text"],"Grammatik":["Subjunktiv i bisatser","Konditionalis","Passiv med se","Stilistik"]},"Franska":{"Kommunikation":["Debatt","Analysera litteratur","Samhälls- och kulturfrågor","Analytisk text","Presentera ämne"],"Grammatik":["Subjonctif – fördjupning","Subjonctif passé","Konditionalis","Passiv – alla tempus"]},"Tyska":{"Kommunikation":["Debatt","Analysera litteratur","Samhällsfrågor","Yrkeskommunikation","Analytisk text"],"Grammatik":["Konjunktiv II","Konditionala satser","Passiv i alla tempus","Avancerad satsbyggnad"]},"Biologi":{"Evolution":["Evolutionens mekanismer","Systematik","Samevolution","Artbildning"],"Ekologi":["Klimatmodeller","Ekosystemens resiliens","Restaurering","Naturförvaltning"]},"Fysik":{"Kärnfysik":["Atomkärnan","Radioaktivitet","Halveringstid","Fission och fusion","Kärnkraft"],"Astrofysik":["Stjärnors liv","HR-diagrammet","Supernovor","Big Bang","Mörk materia"]},"Kemi":{"Industriell kemi":["Haber-processen","Kontaktprocessen","Polymerer","Industriell katalys"],"Miljökemi":["Växthuseffekten","Kolcykeln","Försurning","Ozon","Miljögifter"]},"Geografi":{"Hållbarhet":["Agenda 2030","Energiomställning","Cirkulär ekonomi","Klimaträttvisa"],"Geopolitik":["Framtidens städer","Vattenresurser","Migration","Teknik och hållbarhet"]},"Historia":{"Samtidshistoria":["Kalla krigets slut","Globaliseringen","Folkrörelser","11 september","Nutida konflikter"]},"Religionskunskap":{"Etik":["AI och etik","Klimatkrisen","Genus och religion","Yttrandefrihet","Döden och det bortom"]},"Samhällskunskap":{"Demokrati":["Demokratins utmaningar","Digitalisering","Yttrandefrihet","Aktivism"],"Globalt":["Klimatpolitik","Migration","Global fattigdom","Säkerhetspolitik"]},"Bild":{"Skapande":["Examensarbete","Utställning"]},"Musik":{"Musicerande":["Ensemble inför publik","Självständig produktion"]},"Idrott och hälsa":{"Rörelse":["Träningsplanering","Idrott och identitet"],"Friluftsliv":["Avancerad orientering","Ledarskap"]},"Slöjd":{"Avancerat":["Examensarbete","Avancerad produkt"]},"Teknik":{"Tekniska lösningar":["Avancerade tekniska system","Förnybar energiteknik","Bioteknik","Nanoteknik – introduktion"],"Arbetssätt för teknisk utveckling":["Innovation och entreprenörskap","Projektmetodik","Teknikutvecklingsprocessen","Patent och upphovsrätt"],"Teknik och samhälle":["Teknikens framtid","Hållbar innovation","Teknik och globala utmaningar","Etik i teknikutveckling"],"Digitalteknik":["Avancerad programmering","Big data och AI","Digital säkerhet","Teknikens roll i samhällsutvecklingen"]},"Hemkunskap":{"Mat":["Växtbaserad kost","Matproduktion och miljö"],"Ekonomi":["Ekonomisk planering","Boende och hushåll"]}}
 };
 
 // ─── KONSTANTER ───────────────────────────────────────────────────────────────
@@ -281,6 +75,7 @@ const NPF_PROFILER = [
 function buildNPF(profiles, chapter, subject) {
   const w = chapter ? chapter.split(" ")[0] : subject;
   const anpassningar = {};
+
   if (profiles.includes("adhd")) {
     anpassningar["adhd"] = [
       `Dela upp genomgången i tydliga block om 5–7 minuter – ge en visuell signal (t.ex. timer på tavlan) vid varje skifte.`,
@@ -291,6 +86,7 @@ function buildNPF(profiles, chapter, subject) {
       `Placera eleven nära tavlan och läraren, bort från fönster och dörr för att minska distraktioner.`,
     ];
   }
+
   if (profiles.includes("ast")) {
     anpassningar["ast"] = [
       `Presentera lektionens struktur tydligt i början: "Vi gör X (10 min), sedan Y (15 min), sedan Z (10 min)."`,
@@ -301,6 +97,7 @@ function buildNPF(profiles, chapter, subject) {
       `Erbjud skriftliga instruktioner som komplement till muntliga – eleven kan återgå till dem vid behov.`,
     ];
   }
+
   if (profiles.includes("dyslexi")) {
     anpassningar["dyslexi"] = [
       `Minimera textmängden på tavlan och i material – använd punktlistor, bilder och diagram istället för långa meningar.`,
@@ -311,6 +108,7 @@ function buildNPF(profiles, chapter, subject) {
       `Ge stödstrukturer: färdiga meningsstartar, ordlistor och mallar för att minska skrivbördan.`,
     ];
   }
+
   if (profiles.includes("dyskalkyli")) {
     anpassningar["dyskalkyli"] = [
       `Tillåt alltid hjälpmedel: räknare, tallinje, rutpapper och formelsamling – det handlar om förståelse, inte huvudräkning.`,
@@ -321,6 +119,7 @@ function buildNPF(profiles, chapter, subject) {
       `Bekräfta elevens förståelse av principen bakom ${w} – inte enbart om rätt svar uppnåddes.`,
     ];
   }
+
   if (profiles.includes("hog")) {
     anpassningar["hog"] = [
       `Förbered fördjupningsfrågor kopplade till ${w} som eleven kan arbeta med när grunduppgifterna är klara.`,
@@ -331,6 +130,7 @@ function buildNPF(profiles, chapter, subject) {
       `Uppmuntra eleven att formulera egna frågor och hypoteser om ${w} – tränar metakognition.`,
     ];
   }
+
   if (profiles.includes("annat")) {
     anpassningar["annat"] = [
       `Var tydlig med lektionens mål och struktur från start – hjälper alla elever oavsett specifik profil.`,
@@ -341,6 +141,7 @@ function buildNPF(profiles, chapter, subject) {
       `Samråd med specialpedagog om du är osäker på elevens behov – åtgärdsprogram och extra anpassningar.`,
     ];
   }
+
   return anpassningar;
 }
 
@@ -349,6 +150,7 @@ function NPFCard({ profiles, chapter, subject }) {
   const anpassningar = buildNPF(profiles, chapter, subject);
   const aktiva = NPF_PROFILER.filter(p => profiles.includes(p.id));
   if (aktiva.length === 0) return null;
+
   return (
     <div style={{background:"white",borderRadius:14,padding:"1.1rem",boxShadow:"0 2px 12px rgba(46,125,50,.08)",marginBottom:".7rem",border:"2px solid #e8eaf6"}}>
       <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".9rem",paddingBottom:".7rem",borderBottom:"1px solid #e8eaf6"}}>
@@ -358,6 +160,7 @@ function NPFCard({ profiles, chapter, subject }) {
           <div style={{fontSize:".72rem",color:"#4a7c59"}}>{chapter} · {aktiva.length} {aktiva.length===1?"profil":"profiler"} valda</div>
         </div>
       </div>
+
       {aktiva.map((profil, idx) => (
         <div key={profil.id} style={{marginBottom: idx < aktiva.length-1 ? "1rem" : 0, paddingBottom: idx < aktiva.length-1 ? "1rem" : 0, borderBottom: idx < aktiva.length-1 ? "1px solid #f1f8e9" : "none"}}>
           <div style={{display:"inline-flex",alignItems:"center",gap:".4rem",background:profil.bgFarg,border:`1.5px solid ${profil.farg}`,borderRadius:50,padding:".2rem .8rem",marginBottom:".55rem"}}>
@@ -425,8 +228,7 @@ function parseInput(text) {
   if (t.includes("blandad")||t.includes("mix")) numLevels = 3;
   if (![2,3,4].includes(numLevels)) numLevels = 3;
   let subject = "Matematik";
-  if (t.includes("sva")||t.includes("svenska som andraspråk")) subject="SVA";
-  else if (t.includes("matte")) subject="Matematik";
+  if (t.includes("matte")) subject="Matematik";
   else if (t.includes("matematik")) subject="Matematik";
   else if (t.includes("franska")) subject="Franska";
   else if (t.includes("spanska")) subject="Spanska";
@@ -447,11 +249,13 @@ function parseInput(text) {
   else if (t.includes("slöjd")) subject="Slöjd";
   else if (t.includes("teknik")) subject="Teknik";
   else if (t.includes("hemkunskap")) subject="Hemkunskap";
+  else if (t.includes(" no ")||t.includes("natur och")||t.includes("naturkunskap")||t.startsWith("no ")) subject="NO";
+  else if (t.includes(" so ")||t.includes("samhällsorientering")||t.includes("so-")||t.startsWith("so ")) subject="SO";
   const gradeData = DATA[grade] || DATA[6];
   const subjectData = gradeData[subject] || {};
   const areas = Object.keys(subjectData);
   const defaultArea = areas[0] || subject;
-  const keywords = ["nationellt prov","preteritum","imperfecto","passé composé","imparfait","futur simple","subjunktiv","konjunktiv","perfekt","dativ","genitiv","konditionalis","grammatik","kommunikation","procent","bråk","decimaltal","algebra","ekvation","geometri","statistik","sannolikhet","multiplikation","division","addition","subtraktion","pythagoras","trigonometri","logaritm","derivata","potenser","rationella tal","källkritik","argumenterande text","läsförståelse","substantiv","verb","adjektiv","fotosyntesen","cellen","ekosystem","immunförsvaret","genetik","evolution","newtons lagar","elektricitet","termodynamik","radioaktivitet","franska revolutionen","vikingatiden","medeltiden","kalla kriget","industrialismen","demokrati","mänskliga rättigheter","klimatpolitik","vardagsspråk","muntlig kommunikation","ämnesspråk","ordförråd"];
+  const keywords = ["nationellt prov","preteritum","imperfecto","passé composé","imparfait","futur simple","subjunktiv","konjunktiv","perfekt","dativ","genitiv","konditionalis","grammatik","kommunikation","procent","bråk","decimaltal","algebra","ekvation","geometri","statistik","sannolikhet","multiplikation","division","addition","subtraktion","pythagoras","trigonometri","logaritm","derivata","potenser","rationella tal","källkritik","argumenterande text","läsförståelse","substantiv","verb","adjektiv","fotosyntesen","cellen","ekosystem","immunförsvaret","genetik","evolution","newtons lagar","elektricitet","termodynamik","radioaktivitet","franska revolutionen","vikingatiden","medeltiden","kalla kriget","industrialismen","demokrati","mänskliga rättigheter","klimatpolitik"];
   let chapter = subject + " – centralt moment";
   for (const kw of keywords) {
     if (t.includes(kw)) { chapter=kw.charAt(0).toUpperCase()+kw.slice(1); break; }
@@ -479,7 +283,7 @@ function exportProv(p) {
 }
 
 // ─── LESSON CARD ─────────────────────────────────────────────────────────────
-function LessonCard({l,onCopy,onPrint,copied,onFeedback}) {
+function LessonCard({l,onCopy,onPrint,copied}) {
   const [as,setAs]=useState(null);
   return (
     <div>
@@ -548,14 +352,13 @@ function LessonCard({l,onCopy,onPrint,copied,onFeedback}) {
       <div style={{display:"flex",gap:".45rem",flexWrap:"wrap"}}>
         <button onClick={onCopy} style={{background:"linear-gradient(135deg,#1565c0,#0d47a1)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer"}}>{copied?"✅ Kopierat!":"📋 Kopiera"}</button>
         <button onClick={onPrint} style={{background:"linear-gradient(135deg,#6a1b9a,#4a148c)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer"}}>🖨️ Skriv ut</button>
-        <button onClick={onFeedback} style={{background:"white",border:"2px solid #a5d6a7",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer",color:"#2e7d32"}}>💬 Feedback</button>
       </div>
     </div>
   );
 }
 
 // ─── PROV CARD ────────────────────────────────────────────────────────────────
-function ProvCard({p,onCopy,copied,onFeedback}) {
+function ProvCard({p,onCopy,copied}) {
   const NIVA_FARG = ["#1b5e20","#2e7d32","#388e3c","#43a047"];
   return (
     <div>
@@ -579,7 +382,6 @@ function ProvCard({p,onCopy,copied,onFeedback}) {
       <div style={{display:"flex",gap:".45rem",flexWrap:"wrap",marginTop:".3rem"}}>
         <button onClick={onCopy} style={{background:"linear-gradient(135deg,#1565c0,#0d47a1)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer"}}>{copied?"✅ Kopierat!":"📋 Kopiera prov"}</button>
         <button onClick={()=>window.print()} style={{background:"linear-gradient(135deg,#6a1b9a,#4a148c)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer"}}>🖨️ Skriv ut</button>
-        <button onClick={onFeedback} style={{background:"white",border:"2px solid #a5d6a7",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer",color:"#2e7d32"}}>💬 Feedback</button>
       </div>
     </div>
   );
@@ -598,7 +400,6 @@ function GuidatLage({onBack}) {
   const [lesson,setLesson]=useState(null);
   const [variant,setVariant]=useState(0);
   const [copied,setCopied]=useState(false);
-  const [feedbackOpen,setFeedbackOpen]=useState(false);
 
   const grades=Object.keys(DATA).map(Number);
   const subjects=grade?Object.keys(DATA[grade]||{}):[];
@@ -617,8 +418,14 @@ function GuidatLage({onBack}) {
     window.scrollTo(0,0);
   }
 
-  function handleNpfNext() { generate(0, npfProfiles); }
-  function handleSkipNpf() { setNpfProfiles([]); generate(0, []); }
+  function handleNpfNext() {
+    generate(0, npfProfiles);
+  }
+
+  function handleSkipNpf() {
+    setNpfProfiles([]);
+    generate(0, []);
+  }
 
   function reset() {
     setGrade(null);setSubject(null);setArea(null);setChapter(null);
@@ -638,7 +445,6 @@ function GuidatLage({onBack}) {
         ul{padding-left:1.2rem;margin:.3rem 0}
         li{margin-bottom:.3rem;line-height:1.55;color:#1a2e1a}
       `}</style>
-      {feedbackOpen && <FeedbackModal onClose={()=>setFeedbackOpen(false)} source="Guidat läge" />}
       <div style={{maxWidth:660,margin:"0 auto"}}>
         <div style={{display:"flex",alignItems:"center",gap:".7rem",marginBottom:"1.2rem"}}>
           <button onClick={onBack} style={{background:"#2e7d32",color:"white",border:"none",borderRadius:8,padding:".4rem .85rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".8rem"}}>← Hem</button>
@@ -646,6 +452,7 @@ function GuidatLage({onBack}) {
           <div><div style={{color:"#1b5e20",fontWeight:700,fontSize:".95rem"}}>LektionsGuiden</div><div style={{color:"#4a7c59",fontSize:".72rem"}}>Guidat läge · Lgr22</div></div>
         </div>
 
+        {/* ── NPF-STEG ── */}
         {!lesson && npfStep && (
           <div style={{background:"white",borderRadius:18,padding:"1.5rem",boxShadow:"0 4px 20px rgba(46,125,50,.08)"}}>
             <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".3rem"}}>
@@ -662,7 +469,9 @@ function GuidatLage({onBack}) {
                   <div key={profil.id} className="npf-pill"
                     onClick={()=>toggleNpf(profil.id)}
                     style={{background: vald ? profil.bgFarg : "white", border: `2px solid ${vald ? profil.farg : "#a5d6a7"}`}}>
-                    <div style={{width:30,height:30,borderRadius:"50%",background:profil.farg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem",flexShrink:0}}>{profil.emoji}</div>
+                    <div style={{width:30,height:30,borderRadius:"50%",background:profil.farg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem",flexShrink:0}}>
+                      {profil.emoji}
+                    </div>
                     <div>
                       <div style={{fontSize:".82rem",fontWeight:700,color: vald ? profil.textFarg : "#1a3a2a"}}>{profil.label}</div>
                       <div style={{fontSize:".7rem",color: vald ? profil.farg : "#4a7c59"}}>{profil.undertitel}</div>
@@ -673,7 +482,9 @@ function GuidatLage({onBack}) {
               })}
             </div>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:".5rem",flexWrap:"wrap"}}>
-              <button onClick={handleSkipNpf} style={{background:"none",border:"2px solid #c8e6c9",borderRadius:50,padding:".6rem 1.3rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".83rem",color:"#4a7c59"}}>Hoppa över</button>
+              <button onClick={handleSkipNpf} style={{background:"none",border:"2px solid #c8e6c9",borderRadius:50,padding:".6rem 1.3rem",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".83rem",color:"#4a7c59"}}>
+                Hoppa över
+              </button>
               <button className="gbtn" onClick={handleNpfNext}>
                 {npfProfiles.length > 0 ? `✨ Skapa genomgång med ${npfProfiles.length} profil${npfProfiles.length > 1 ? "er" : ""}` : "✨ Skapa genomgång"}
               </button>
@@ -681,6 +492,7 @@ function GuidatLage({onBack}) {
           </div>
         )}
 
+        {/* ── VÄLJ-FORMULÄR ── */}
         {!lesson && !npfStep && (
           <div style={{background:"white",borderRadius:18,padding:"1.5rem",boxShadow:"0 4px 20px rgba(46,125,50,.08)"}}>
             <h2 style={{color:"#1a3a2a",marginTop:0,fontSize:"1.1rem"}}>Välj klass</h2>
@@ -720,18 +532,20 @@ function GuidatLage({onBack}) {
                 ))}
               </div>
               <div style={{display:"flex",justifyContent:"flex-end"}}>
-                <button className="gbtn" disabled={!numLevels} onClick={()=>setNpfStep(true)} style={{opacity:numLevels?1:.4}}>Nästa →</button>
+                <button className="gbtn" disabled={!numLevels} onClick={()=>setNpfStep(true)} style={{opacity:numLevels?1:.4}}>
+                  Nästa →
+                </button>
               </div>
             </>}
           </div>
         )}
 
+        {/* ── RESULTAT ── */}
         {lesson && (
           <div>
             <LessonCard l={lesson} copied={copied}
               onCopy={()=>{navigator.clipboard.writeText(exportLesson(lesson)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}}
-              onPrint={()=>window.print()}
-              onFeedback={()=>setFeedbackOpen(true)}/>
+              onPrint={()=>window.print()}/>
             {npfProfiles.length > 0 && (
               <NPFCard profiles={npfProfiles} chapter={lesson.meta.chapter} subject={lesson.meta.subject} />
             )}
@@ -749,10 +563,10 @@ function GuidatLage({onBack}) {
 // ─── CHATTLÄGE ────────────────────────────────────────────────────────────────
 const EXEMPEL = [
   "Genomgång matte åk 6 om procent, 3 nivåer",
-  "Genomgång SVA åk 5, muntlig kommunikation, 3 nivåer",
+  "Genomgång NO åk 2, djurens livscykel, 2 nivåer",
+  "Genomgång SO åk 3, vikingatiden, 2 nivåer",
   "Genomgång svenska åk 8, 3 nivåer",
-  "Genomgång matte åk 9, algebra, 3 nivåer",
-  "Genomgång biologi åk 7, genetik, 2 nivåer",
+  "Genomgång biologi åk 7, genetik, 2 nivåer"
 ];
 
 function ChattLage({onBack}) {
@@ -760,7 +574,6 @@ function ChattLage({onBack}) {
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
   const [copied,setCopied]=useState(false);
-  const [feedbackOpen,setFeedbackOpen]=useState(false);
   const chatEndRef=useRef(null);
   const scrollContainerRef=useRef(null);
 
@@ -776,7 +589,7 @@ function ChattLage({onBack}) {
         setMessages(prev=>[...prev,{role:"assistant",content:type,data:result}]);
         setTimeout(()=>{if(scrollContainerRef.current)scrollContainerRef.current.scrollTop=0;},50);
       } catch(e) {
-        setMessages(prev=>[...prev,{role:"assistant",content:"Försök t.ex: Genomgång matte åk 6, Prov svenska åk 9, Genomgång SVA åk 7"}]);
+        setMessages(prev=>[...prev,{role:"assistant",content:"Försök t.ex: Genomgång matte åk 6, Genomgång NO åk 2, Prov SO åk 4, Prov svenska åk 9"}]);
       }
       setLoading(false);
     },800);
@@ -785,12 +598,10 @@ function ChattLage({onBack}) {
   return (
     <div style={{height:"100vh",background:"linear-gradient(135deg,#e8f5e9,#f1f8e9)",fontFamily:"Georgia,serif",display:"flex",flexDirection:"column"}}>
       <style>{`@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}.dot{animation:pulse 1.2s ease infinite}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.fi{animation:fi .35s ease}ul{padding-left:1.2rem;margin:.3rem 0}li{margin-bottom:.28rem;line-height:1.55;color:#1a2e1a}textarea:focus{border-color:#2e7d32!important;outline:none}`}</style>
-      {feedbackOpen && <FeedbackModal onClose={()=>setFeedbackOpen(false)} source="Chattläge" />}
       <div style={{background:"#1b5e20",padding:".8rem 1rem",display:"flex",alignItems:"center",gap:".65rem",boxShadow:"0 2px 8px rgba(0,0,0,.15)",flexShrink:0}}>
         <button onClick={onBack} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:7,padding:".28rem .6rem",color:"white",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".78rem"}}>← Hem</button>
         <span style={{fontSize:"1.15rem"}}>🌿</span>
         <div><div style={{color:"white",fontWeight:700,fontSize:".88rem"}}>LektionsGuiden</div><div style={{color:"#a5d6a7",fontSize:".65rem"}}>Chattläge · Lgr22 · Genomgångar & Prov</div></div>
-        <button onClick={()=>setFeedbackOpen(true)} style={{marginLeft:"auto",background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:50,padding:".25rem .75rem",color:"white",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".72rem"}}>💬 Feedback</button>
       </div>
       <div ref={scrollContainerRef} style={{flex:1,overflowY:"auto",padding:".9rem",maxWidth:680,width:"100%",margin:"0 auto",boxSizing:"border-box"}}>
         {messages.length===0&&(
@@ -813,8 +624,8 @@ function ChattLage({onBack}) {
                   <div style={{background:"white",borderRadius:"4px 16px 16px 16px",padding:".9rem",boxShadow:"0 2px 12px rgba(46,125,50,.1)"}}>
                     <p style={{margin:"0 0 .5rem",color:"#1a3a2a",fontSize:".83rem",fontWeight:700}}>{msg.content==="__prov__"?"📝 Här är ditt prov!":"✅ Här är din genomgång!"}</p>
                     {msg.data && msg.content==="__prov__"
-                      ? <ProvCard p={msg.data} copied={copied} onFeedback={()=>setFeedbackOpen(true)} onCopy={()=>{navigator.clipboard.writeText(exportProv(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}}/>
-                      : msg.data ? <LessonCard l={msg.data} copied={copied} onFeedback={()=>setFeedbackOpen(true)} onCopy={()=>{navigator.clipboard.writeText(exportLesson(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}} onPrint={()=>window.print()}/> : null}
+                      ? <ProvCard p={msg.data} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportProv(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}}/>
+                      : msg.data ? <LessonCard l={msg.data} copied={copied} onCopy={()=>{navigator.clipboard.writeText(exportLesson(msg.data)).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);});}} onPrint={()=>window.print()}/> : null}
                   </div>
                 </div>
               : <div style={{width:"100%"}}>
@@ -836,7 +647,7 @@ function ChattLage({onBack}) {
       </div>
       <div style={{background:"white",borderTop:"1px solid #e8f5e9",padding:".7rem .9rem",boxShadow:"0 -2px 12px rgba(46,125,50,.06)",flexShrink:0}}>
         <div style={{maxWidth:680,margin:"0 auto",display:"flex",gap:".45rem",alignItems:"flex-end"}}>
-          <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage(input);}}} placeholder="T.ex. 'SVA åk 6 muntlig kommunikation' eller 'Genomgång franska åk 8'..." rows={2}
+          <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage(input);}}} placeholder="T.ex. 'Prov matte åk 6 procent' eller 'Genomgång franska åk 8'..." rows={2}
             style={{flex:1,border:"2px solid #a5d6a7",borderRadius:12,padding:".6rem .85rem",fontFamily:"Georgia,serif",fontSize:".86rem",color:"#1a3a2a",resize:"none",lineHeight:1.5,boxSizing:"border-box"}}/>
           <button onClick={()=>sendMessage(input)} disabled={!input.trim()||loading}
             style={{background:!input.trim()||loading?"#c8e6c9":"linear-gradient(135deg,#2e7d32,#1b5e20)",color:"white",border:"none",borderRadius:10,padding:".68rem .95rem",cursor:!input.trim()||loading?"default":"pointer",fontSize:"1.05rem"}}>➤</button>
@@ -877,7 +688,6 @@ function PedagogAI({onBack}) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -919,7 +729,6 @@ function PedagogAI({onBack}) {
         .pai-msg{white-space:pre-wrap;line-height:1.7}
         textarea:focus{outline:none}
       `}</style>
-      {feedbackOpen && <FeedbackModal onClose={()=>setFeedbackOpen(false)} source="PedagogAI" />}
       <div style={{background:"linear-gradient(135deg,#4527a0,#6a1b9a)",padding:".8rem 1rem",display:"flex",alignItems:"center",gap:".65rem",boxShadow:"0 2px 12px rgba(69,39,160,.3)",flexShrink:0}}>
         <button onClick={onBack} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:7,padding:".28rem .6rem",color:"white",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".78rem"}}>← Hem</button>
         <div style={{fontSize:"1.2rem"}}>🧠</div>
@@ -927,7 +736,6 @@ function PedagogAI({onBack}) {
           <div style={{color:"white",fontWeight:700,fontSize:".95rem",letterSpacing:".3px"}}>PedagogAI</div>
           <div style={{color:"#ce93d8",fontSize:".65rem"}}>Din pedagogiska assistent · Lgr22 · Grundskolan åk 1–9</div>
         </div>
-        <button onClick={()=>setFeedbackOpen(true)} style={{background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:50,padding:".28rem .7rem",color:"white",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".72rem"}}>💬 Feedback</button>
         {messages.length > 0 && (
           <button onClick={()=>setMessages([])} style={{background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:7,padding:".28rem .7rem",color:"white",cursor:"pointer",fontFamily:"Georgia,serif",fontSize:".72rem"}}>Rensa</button>
         )}
@@ -1002,7 +810,6 @@ function PedagogAI({onBack}) {
 // ─── STARTSIDA ────────────────────────────────────────────────────────────────
 export default function LektionsGuiden() {
   const [mode,setMode]=useState(null);
-  const [feedbackOpen,setFeedbackOpen]=useState(false);
   if (mode==="chat") return <ChattLage onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
   if (mode==="guide") return <GuidatLage onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
   if (mode==="pedagogai") return <PedagogAI onBack={()=>{setMode(null);window.scrollTo(0,0);}}/>;
@@ -1010,21 +817,10 @@ export default function LektionsGuiden() {
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5e9,#f1f8e9,#e0f2f1)",fontFamily:"Georgia,serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"2rem 1rem"}}>
       <style>{`@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.fi{animation:fi .4s ease}`}</style>
-      {feedbackOpen && <FeedbackModal onClose={()=>setFeedbackOpen(false)} source="Startsida" />}
       <div className="fi" style={{textAlign:"center",maxWidth:480,width:"100%"}}>
         <span style={{fontSize:"2.8rem"}}>🌿</span>
         <h1 style={{fontSize:"1.9rem",color:"#1b5e20",margin:".4rem 0 .2rem",fontWeight:700}}>LektionsGuiden</h1>
-        <p style={{color:"#4a7c59",marginBottom:"1rem",fontSize:".88rem"}}>Differentierad undervisning · Lgr22 · Åk 1–9</p>
-        <div style={{marginBottom:"1.5rem"}}>
-          <button onClick={()=>setFeedbackOpen(true)}
-            style={{background:"transparent",border:"1px solid #c8e6c9",color:"#4a7c59",
-              borderRadius:50,padding:"6px 18px",fontSize:".78rem",cursor:"pointer",
-              fontFamily:"Georgia,serif",transition:"all .2s"}}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor="#2e7d32";e.currentTarget.style.color="#2e7d32";}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor="#c8e6c9";e.currentTarget.style.color="#4a7c59";}}>
-            💬 Lämna feedback
-          </button>
-        </div>
+        <p style={{color:"#4a7c59",marginBottom:"2rem",fontSize:".88rem"}}>Differentierad undervisning · Lgr22 · Åk 1–9</p>
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1rem"}}>
           <button onClick={()=>{setMode("chat");window.scrollTo(0,0);if(window.gtag)window.gtag("event","open_flik",{flik:"Chattläge"});}}
@@ -1051,13 +847,13 @@ export default function LektionsGuiden() {
         </button>
 
         <div style={{background:"white",borderRadius:12,padding:".7rem 1rem",border:"1px solid #c8e6c9",marginBottom:"1.2rem"}}>
-          <p style={{margin:0,color:"#2e7d32",fontSize:".78rem",fontWeight:700}}>🆕 Nytt: SVA + Digital feedback</p>
-          <p style={{margin:".2rem 0 0",color:"#4a7c59",fontSize:".75rem"}}>Svenska som andraspråk finns nu i alla årkurser · Feedbackknapp finns i alla lägen</p>
+          <p style={{margin:0,color:"#2e7d32",fontSize:".78rem",fontWeight:700}}>🧩 Nytt: NPF-anpassningar</p>
+          <p style={{margin:".2rem 0 0",color:"#4a7c59",fontSize:".75rem"}}>Guidat läge frågar nu om NPF-profiler i klassen och genererar ett separat anpassningskort (ADHD, AST, dyslexi, dyskalkyli m.fl.)</p>
         </div>
 
         <div style={{background:"white",borderRadius:12,padding:".7rem 1rem",border:"1px solid #c8e6c9",marginBottom:"1.2rem"}}>
           <p style={{margin:0,color:"#2e7d32",fontSize:".78rem",fontWeight:700}}>💬 Prova i chattläget:</p>
-          <p style={{margin:".2rem 0 0",color:"#4a7c59",fontSize:".75rem"}}>"SVA åk 5 muntlig kommunikation" · "Prov matte åk 6 procent" · "Genomgång franska åk 8"</p>
+          <p style={{margin:".2rem 0 0",color:"#4a7c59",fontSize:".75rem"}}>"Genomgång NO åk 2" · "SO åk 4 vikingatiden" · "Prov matte åk 6 procent" · "Genomgång franska åk 8"</p>
         </div>
 
         <p style={{color:"#a5d6a7",fontSize:".7rem"}}>av MD · lektionsguiden.vercel.app</p>

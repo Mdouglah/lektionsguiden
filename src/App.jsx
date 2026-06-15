@@ -178,6 +178,171 @@ function NPFCard({ profiles, chapter, subject }) {
   );
 }
 
+// ─── BYGG RESURSER ────────────────────────────────────────────────────────────
+function buildResurser(subject, chapter) {
+  const q = encodeURIComponent(chapter);
+  const qSubject = encodeURIComponent(subject);
+  const qFull = encodeURIComponent(`${chapter} ${subject}`);
+
+  // Bas-resurser som alltid visas
+  const resurser = [
+    {
+      kategori: "🎬 Film & video",
+      links: [
+        { label: `UR Play – "${chapter}"`, url: `https://urplay.se/search#query=${q}` },
+        { label: `YouTube – "${chapter} ${subject}"`, url: `https://www.youtube.com/results?search_query=${qFull}+skola` },
+      ]
+    },
+    {
+      kategori: "🖼️ Bilder",
+      links: [
+        { label: `Google Bilder – "${chapter}"`, url: `https://www.google.com/search?tbm=isch&q=${qFull}` },
+        { label: `Wikimedia Commons – "${chapter}"`, url: `https://commons.wikimedia.org/w/index.php?search=${q}` },
+      ]
+    },
+  ];
+
+  // Ämnesspecifika resurser
+  if (["SO","Historia","Geografi","Samhällskunskap","Religionskunskap"].includes(subject)) {
+    resurser.push({
+      kategori: "📖 Fakta & läromedel",
+      links: [
+        { label: `SO-rummet – "${chapter}"`, url: `https://www.so-rummet.se/search/node/${q}` },
+        { label: `NE.se – "${chapter}"`, url: `https://www.ne.se/sok/?q=${q}` },
+        { label: `Historiska museet`, url: `https://historiska.se/search/?q=${q}` },
+      ]
+    });
+    if (["Geografi","SO"].includes(subject)) {
+      resurser.push({
+        kategori: "🗺️ Kartor",
+        links: [
+          { label: `Google Maps`, url: `https://www.google.com/maps/search/${q}` },
+          { label: `Nationalatlasen`, url: `https://www.google.com/search?q=nationalatlasen+${q}` },
+        ]
+      });
+    }
+  }
+
+  if (["NO","Biologi","Fysik","Kemi"].includes(subject)) {
+    resurser.push({
+      kategori: "📖 Fakta & läromedel",
+      links: [
+        { label: `NO-rummet – "${chapter}"`, url: `https://www.no-rummet.se/search/node/${q}` },
+        { label: `NE.se – "${chapter}"`, url: `https://www.ne.se/sok/?q=${q}` },
+        { label: `Naturhistoriska museet`, url: `https://www.nrm.se/search?q=${q}` },
+      ]
+    });
+  }
+
+  if (["Svenska","Engelska","Spanska","Franska","Tyska"].includes(subject)) {
+    resurser.push({
+      kategori: "📖 Fakta & läromedel",
+      links: [
+        { label: `NE.se – "${chapter}"`, url: `https://www.ne.se/sok/?q=${q}` },
+        { label: `Studi.se – ${subject}`, url: `https://www.studi.se/search?q=${qFull}` },
+      ]
+    });
+    if (["Engelska","Spanska","Franska","Tyska"].includes(subject)) {
+      resurser.push({
+        kategori: "🎵 Ljud & uttal",
+        links: [
+          { label: `Forvo – uttal av ord`, url: `https://forvo.com/search/${q}` },
+          { label: `YouTube – "${chapter} ${subject} grammar"`, url: `https://www.youtube.com/results?search_query=${q}+${qSubject}+learn` },
+        ]
+      });
+    }
+  }
+
+  if (["Matematik"].includes(subject)) {
+    resurser.push({
+      kategori: "📖 Övningar & förklaringar",
+      links: [
+        { label: `Khan Academy – "${chapter}"`, url: `https://sv.khanacademy.org/search?search_again=1&q=${q}` },
+        { label: `Matteboken.se – "${chapter}"`, url: `https://www.matteboken.se/search?q=${q}` },
+        { label: `Studi.se – Matematik`, url: `https://www.studi.se/search?q=${qFull}` },
+      ]
+    });
+  }
+
+  if (["Musik"].includes(subject)) {
+    resurser.push({
+      kategori: "🎵 Ljud & musik",
+      links: [
+        { label: `YouTube – "${chapter}" musik`, url: `https://www.youtube.com/results?search_query=${qFull}` },
+        { label: `UR Play – Musik`, url: `https://urplay.se/search#query=${q}` },
+      ]
+    });
+  }
+
+  if (["Idrott och hälsa"].includes(subject)) {
+    resurser.push({
+      kategori: "🏃 Rörelsekort & inspiration",
+      links: [
+        { label: `YouTube – "${chapter}" övningar`, url: `https://www.youtube.com/results?search_query=${qFull}+övningar+barn` },
+        { label: `SISU Idrottsböcker`, url: `https://www.sisuidrottsbocker.se/search?q=${q}` },
+      ]
+    });
+  }
+
+  if (["Bild"].includes(subject)) {
+    resurser.push({
+      kategori: "🖼️ Konst & inspiration",
+      links: [
+        { label: `Nationalmuseum – sök konst`, url: `https://collection.nationalmuseum.se/eMP/eMuseumPlus?service=ExternalInterface&module=collection&objectGroup=searchResult&viewType=list&q=${q}` },
+        { label: `Google Arts & Culture`, url: `https://artsandculture.google.com/search?q=${q}` },
+      ]
+    });
+  }
+
+  return resurser;
+}
+
+// ─── RESURSER-KORT (komponent) ────────────────────────────────────────────────
+function ResurserKort({ subject, chapter }) {
+  const [open, setOpen] = useState(false);
+  const resurser = buildResurser(subject, chapter);
+
+  return (
+    <div style={{background:"white",borderRadius:10,marginBottom:".55rem",boxShadow:"0 2px 8px rgba(46,125,50,.07)",overflow:"hidden"}}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:".85rem .9rem",background:"none",border:"none",cursor:"pointer",fontFamily:"Georgia,serif",textAlign:"left"}}>
+        <span style={{display:"flex",alignItems:"center",gap:".5rem",fontWeight:700,color:"#1a3a2a",fontSize:".85rem"}}>
+          🔍 Visa resurser
+          <span style={{background:"#e8f5e9",borderRadius:50,padding:".1rem .55rem",fontSize:".7rem",color:"#2e7d32",fontWeight:700}}>
+            {resurser.reduce((s,r)=>s+r.links.length,0)} länkar
+          </span>
+        </span>
+        <span style={{color:"#2e7d32",fontSize:"1rem",transition:"transform .2s",transform:open?"rotate(180deg)":"rotate(0deg)"}}>▾</span>
+      </button>
+
+      {open && (
+        <div style={{borderTop:"1px solid #f1f8e9",padding:".85rem .9rem"}}>
+          <p style={{margin:"0 0 .8rem",fontSize:".75rem",color:"#4a7c59",fontStyle:"italic"}}>
+            Länkar öppnas i en ny flik. Kontrollera alltid att materialet passar din klass.
+          </p>
+          {resurser.map((kategori, ki) => (
+            <div key={ki} style={{marginBottom: ki < resurser.length-1 ? ".85rem" : 0}}>
+              <div style={{fontSize:".75rem",fontWeight:700,color:"#2e7d32",marginBottom:".35rem"}}>{kategori.kategori}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:".3rem"}}>
+                {kategori.links.map((link, li) => (
+                  <a key={li} href={link.url} target="_blank" rel="noopener noreferrer"
+                    style={{display:"flex",alignItems:"center",gap:".4rem",background:"#f8fdf8",border:"1px solid #c8e6c9",borderRadius:8,padding:".4rem .7rem",textDecoration:"none",color:"#1a3a2a",fontSize:".78rem",transition:"all .15s"}}
+                    onMouseEnter={e=>{e.currentTarget.style.background="#e8f5e9";e.currentTarget.style.borderColor="#2e7d32";}}
+                    onMouseLeave={e=>{e.currentTarget.style.background="#f8fdf8";e.currentTarget.style.borderColor="#c8e6c9";}}>
+                    <span style={{color:"#2e7d32",fontSize:".8rem"}}>↗</span>
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── BYGG LEKTION ─────────────────────────────────────────────────────────────
 function buildLesson(grade, subject, area, chapter, numLevels, v=0) {
   if (![2,3,4].includes(numLevels)) numLevels = 3;
@@ -349,6 +514,7 @@ function LessonCard({l,onCopy,onPrint,copied}) {
         <h4 style={{margin:"0 0 .4rem",color:"#1a3a2a",fontSize:".85rem"}}>💡 Tips till läraren</h4>
         <ul style={{margin:0,paddingLeft:"1.1rem"}}>{l.tips.map((t,i)=><li key={i} style={{fontSize:".8rem",marginBottom:".18rem",color:"#1a2e1a"}}>{t}</li>)}</ul>
       </div>
+      <ResurserKort subject={l.meta.subject} chapter={l.meta.chapter} />
       <div style={{display:"flex",gap:".45rem",flexWrap:"wrap"}}>
         <button onClick={onCopy} style={{background:"linear-gradient(135deg,#1565c0,#0d47a1)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer"}}>{copied?"✅ Kopierat!":"📋 Kopiera"}</button>
         <button onClick={onPrint} style={{background:"linear-gradient(135deg,#6a1b9a,#4a148c)",color:"white",border:"none",borderRadius:50,padding:".55rem 1.1rem",fontSize:".78rem",fontFamily:"Georgia,serif",fontWeight:700,cursor:"pointer"}}>🖨️ Skriv ut</button>
